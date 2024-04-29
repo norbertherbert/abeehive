@@ -1,0 +1,24 @@
+[package]
+name = "abeehive"
+version = "0.0.1"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[dependencies]
+yew = { version = "0.21", features = ["csr"] }
+yewdux = "0.10.0"
+wasm-bindgen = "0.2.92"
+wasm-bindgen-futures = "0.4"
+web-sys = { version = "0.3.56", features = ["HtmlInputElement"] }
+js-sys = "0.3"
+serde = { version = "1", features = ["derive"] }
+serde-wasm-bindgen = "0.6"
+gloo = "0.11.0"
+regex = "1.10.4"
+
+[workspace]
+members = ["src-tauri"]
+
+[lib]
+name = "abeehive"
+path = "src/lib.rs"
