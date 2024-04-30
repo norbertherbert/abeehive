@@ -5,10 +5,9 @@ use gloo::console::log;
 
 use crate::components::my_label::MyLabel;
 use crate::params::{
-    ParamType,
     param_id::ParamId,
     param_comp_type_props::ParamBitmapBit,
-    param_values::ValueUpdateData,
+    param_values::{ParamValue, ValueUpdateData},
 };
 
 
@@ -18,39 +17,42 @@ pub struct Props {
     pub label: &'static str,
     pub description: &'static str,
     pub items: &'static [ParamBitmapBit],
-    pub value: ParamType,
+    pub value: ParamValue,
     pub handle_onchange: Callback<ValueUpdateData>,
 }
-
 
 #[function_component(MyBitmap)]
 pub fn my_bitmap(props: &Props) -> Html {
 
-    let bitmap_state = use_state(|| props.value);
+    let bitmap = match props.value {
+        ParamValue::Valid(v) => v,
+        _ => 0  // TODO: select the right default value!
+    };
+
     let handle_onchange = props.handle_onchange.clone();
     let id = props.id;
+
     let on_checkbox_change = {
-        let bitmap_state = bitmap_state.clone();
+
         Callback::from(move |event: Event| {
             let checkbox = event
                 .target()
                 .unwrap()
                 .unchecked_into::<HtmlInputElement>();
 
-            checkbox.checked();
             let bitnum: usize = checkbox.value().parse().unwrap_or_default(); // TODO!
+
             let new_bitmap = if checkbox.checked() {
-                (1 << bitnum) | *bitmap_state
+                (1 << bitnum) | bitmap
             } else {
-                (!(1 << bitnum)) & *bitmap_state
+                (!(1 << bitnum)) & bitmap
             };
             
             log!("value:", new_bitmap.to_string());
-            handle_onchange.emit(ValueUpdateData{new_value: new_bitmap, param_id: id});
-            bitmap_state.set(new_bitmap);
+            handle_onchange.emit(ValueUpdateData{new_param_value: ParamValue::Valid(new_bitmap), param_id: id});
+
         })
     };
-
 
     let aria_id = format!("{}-aria", &props.id);
     let dropdown_id = format!("{}-dropdown", props.id);
@@ -96,7 +98,7 @@ pub fn my_bitmap(props: &Props) -> Html {
                                         <input 
                                             id={format!("{}-checkbox-{}", props.id, item.bit_number)} 
                                             type="checkbox"
-                                            checked = { (*bitmap_state >> item.bit_number) & 1 == 1 } 
+                                            checked = { (bitmap >> item.bit_number) & 1 == 1 } 
                                             value={item.bit_number.to_string()}
                                             onchange={on_checkbox_change.clone()}
                                             class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"

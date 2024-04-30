@@ -9,8 +9,7 @@ use crate::params::{
     ParamType,
     param_id::ParamId,
     param_comp_type_props::ParamOptionVariant,
-    param_values::ValueUpdateData,
-    // param_values::ParamValues,
+    param_values::{ParamValue, ValueUpdateData},
 };
 
 #[derive(Properties, PartialEq)]
@@ -19,7 +18,7 @@ pub struct Props {
     pub label: &'static str,
     pub description: &'static str,
     pub select_options: &'static [ParamOptionVariant],
-    pub value: ParamType,
+    pub value: ParamValue,
     pub handle_onchange: Callback<ValueUpdateData>,
 }
 
@@ -37,11 +36,20 @@ pub fn my_select(props: &Props) -> Html {
             .unwrap()
             .unchecked_into::<HtmlInputElement>()
             .value();
+        
         let value: ParamType = value.parse().unwrap(); // TODO!
-        handle_onchange.emit(ValueUpdateData{new_value: value, param_id: id});
+        let new_param_value = ParamValue::Valid(value);
+
+        handle_onchange.emit(ValueUpdateData{new_param_value, param_id: id});
     });
 
+
     let aria_id = format!("{}-aria", &props.id);
+    let value = match props.value {
+        ParamValue::Valid(v) => v,
+        _ => props.select_options[0].value  // TODO: select the right default value!
+    };
+
 
     html! {
         <div>
@@ -56,7 +64,7 @@ pub fn my_select(props: &Props) -> Html {
             <select 
                 id={props.id.to_string()} 
                 
-                value={props.value.clone().to_string()}
+                value={value.to_string()}
 
                 onchange={onchange} 
                 aria-describedby={aria_id.clone()} 
@@ -65,7 +73,7 @@ pub fn my_select(props: &Props) -> Html {
 
                 { 
                     props.select_options.iter().map(|item| {
-                        html!{ <option value={item.value.to_string()} selected={item.value == props.value} >{item.text}</option> }
+                        html!{ <option value={item.value.to_string()} selected={item.value == value} >{item.text}</option> }
                     }).collect::<Html>()
                 }
 

@@ -1,12 +1,15 @@
 // use std::fmt;
+// use yewdux::prelude::*;
+use std::ops::Deref;
 use serde::{Deserialize, Serialize};
 use serde_wasm_bindgen::to_value;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
-use yewdux::prelude::*;
 use gloo::console::log;
+use js_sys::{Function, Promise};
 
+// use abeehive::js::flowbite::initFlowbite;
 use abeehive::components::my_input::MyInput;
 use abeehive::components::my_hex_input::MyHexInput;
 use abeehive::components::my_optional_input::MyOptionalInput;
@@ -14,18 +17,12 @@ use abeehive::components::my_select::MySelect;
 // use abeehive::components::my_select1::MySelect1;
 use abeehive::components::my_bitmap::MyBitmap;
 use abeehive::components::my_transmit_strat_custom::MyTransmitStratCustom;
-
-use js_sys::{Function, Promise};
-
-
-// use abeehive::js::flowbite::initFlowbite;
-
+use abeehive::params::param_values::ParamValue;
 use abeehive::params::{
     param_comp_constants::CONF_PARAMS,
-    param_values::ParamValues,
     param_id::ParamId,
     param_options::TransmitStratOption,
-    param_values::ValueUpdateData,
+    param_values::{ParamValues, ValueUpdateData},
 };
 
 
@@ -43,88 +40,60 @@ extern "C" {
 
 
 
-
 #[derive(Serialize, Deserialize)]
-struct GreetArgs {
+struct SaveArgs {
     param_values: ParamValues,
 }
-
-#[derive(Serialize, Deserialize)]
-struct SaveAsArgs {
-    param_values: ParamValues,
-}
-
-
-
 
 #[function_component(App)]
 pub fn app() -> Html {
 
-    // let param_values_ref = use_mut_ref(|| {
-    //     let param_values: ParamValues = Default::default();
-    //     param_values
-    // });
 
     let force_update = use_force_update(); 
-
-    // let state = use_state(|| {
-    //     *param_values_ref.borrow()
-    // });
     
-    let (state, state_dispatch) = use_store::<ParamValues>();
-
+    let state = use_state(|| {
+        let param_values: ParamValues = Default::default();
+        param_values
+    });
+    
     let greet_msg = use_state(|| String::new());
 
     let param_value_changed: Callback<ValueUpdateData> = {
 
-        // let param_values_ref = param_values_ref.clone();
         let force_update = force_update.clone();
-
-        let state_dispatch = state_dispatch.clone();
+        let state = state.clone();
         
         Callback::from(move |value_update_data: ValueUpdateData| {
 
             match value_update_data.param_id {
 
                 ParamId::Mode => { 
-                    // param_values_ref.borrow_mut().mode = value_update_data.new_value;
-                    state_dispatch.reduce_mut(|state| state.mode = value_update_data.new_value );
+                    state.set(ParamValues{mode: value_update_data.new_param_value, ..state.deref().clone()});
                 },
                 ParamId::UlPeriod => { 
-                    // param_values_ref.borrow_mut().ul_period = value_update_data.new_value; 
-                    state_dispatch.reduce_mut(|state| state.ul_period = value_update_data.new_value );
+                    state.set(ParamValues{ul_period: value_update_data.new_param_value, ..state.deref().clone()});
                 },
                 ParamId::LoraPeriod => { 
-                    // param_values_ref.borrow_mut().lora_period = value_update_data.new_value; 
-                    state_dispatch.reduce_mut(|state| state.lora_period = value_update_data.new_value );
+                    state.set(ParamValues{lora_period: value_update_data.new_param_value, ..state.deref().clone()});
                 },
                 ParamId::PeriodicPosPeriod => { 
-                    // param_values_ref.borrow_mut().periodic_pos_period = value_update_data.new_value;
-                    state_dispatch.reduce_mut(|state| state.periodic_pos_period = value_update_data.new_value ); 
+                    state.set(ParamValues{periodic_pos_period: value_update_data.new_param_value, ..state.deref().clone()});
                 },
                 ParamId::GeolocSensor => { 
-                    // param_values_ref.borrow_mut().geoloc_sensor = value_update_data.new_value; 
-                    state_dispatch.reduce_mut(|state| state.geoloc_sensor = value_update_data.new_value );
+                    state.set(ParamValues{geoloc_sensor: value_update_data.new_param_value, ..state.deref().clone()});
                 },
                 ParamId::GeolocMethod => { 
-                    // param_values_ref.borrow_mut().geoloc_method = value_update_data.new_value; 
-                    state_dispatch.reduce_mut(|state| state.geoloc_method = value_update_data.new_value );
+                    state.set(ParamValues{geoloc_method: value_update_data.new_param_value, ..state.deref().clone()});
                 },
                 ParamId::TransmitStrat => { 
-                    // param_values_ref.borrow_mut().transmit_strat = value_update_data.new_value;
-                    state_dispatch.reduce_mut(|state| state.transmit_strat = value_update_data.new_value );
-
-
+                    state.set(ParamValues{transmit_strat: value_update_data.new_param_value, ..state.deref().clone()});
                     force_update.force_update();
-                    // state.set(*param_values_ref.borrow()); 
                 },
                 ParamId::TransmitStratCustom => { 
-                    // param_values_ref.borrow_mut().transmit_strat_custom = value_update_data.new_value; 
-                    state_dispatch.reduce_mut(|state| state.transmit_strat_custom = value_update_data.new_value );
+                    state.set(ParamValues{transmit_strat_custom: value_update_data.new_param_value, ..state.deref().clone()});
                 },
                 ParamId::ConfigFlags => { 
-                    // param_values_ref.borrow_mut().config_flags = value_update_data.new_value;
-                    state_dispatch.reduce_mut(|state| state.config_flags = value_update_data.new_value );
+                    state.set(ParamValues{config_flags: value_update_data.new_param_value, ..state.deref().clone()});
                 },
 
             };
@@ -134,34 +103,11 @@ pub fn app() -> Html {
 
 
     let on_submit = {
-
-        // let param_values_ref = param_values_ref.clone();
-        // let state = state.clone();
         let greet_msg = greet_msg.clone();
-
         let state = state.clone();
-        // let state_dispatch = state_dispatch.clone();
-
         Callback::from(move |_: MouseEvent| {
-
-            let greet_msg = greet_msg.clone();
-
-            // let x: ParamValues = *param_values_ref.borrow();
-            
-            let x = *state;
-
-            let args = to_value( &GreetArgs{ param_values: x.clone() } ).unwrap();
-
-            spawn_local(async move {
-
-                let new_msg = invoke("greet", args).await.as_string().unwrap();
-                log!(&new_msg);
-                greet_msg.set(new_msg);
-
-            });
-            
-            // state_dispatch.set(*param_values_ref.borrow());
-
+            let serialized_state = toml::to_string(&*state).unwrap();
+            greet_msg.set(serialized_state);
         })
     };
 
@@ -176,12 +122,10 @@ pub fn app() -> Html {
     };
 
     let on_save_as = {
-        // let param_values_ref = param_values_ref.clone();
         let state = state.clone();
         Callback::from(move |_: MouseEvent| {
-            // let param_values: ParamValues = (*param_values_ref.borrow()).clone();
             let param_values: ParamValues = (*state).clone();
-            let args = to_value( &GreetArgs{ param_values } ).unwrap();
+            let args = to_value( &SaveArgs{ param_values } ).unwrap();
             spawn_local(async move {
                 invoke("save_as", args).await; //.as_string().unwrap();
             });
@@ -190,49 +134,60 @@ pub fn app() -> Html {
 
 
     #[derive(Deserialize, Debug)]
-    struct FileOpenEvent {
-        // payload: String,
-        payload: ParamValues,
+    struct MenuClickEvent {
+        payload: (String, String),
     }
 
 
     {
-        // let force_update = force_update.clone();
-        // let param_values_ref = param_values_ref.clone();
-        let state_dispatch = state_dispatch.clone();
+
+        let state = state.clone();
+
         use_effect( move || {
 
-            let file_open_closure = Closure::<dyn FnMut(JsValue)>::new(move |raw| {
+            let menu_click_closure = Closure::<dyn FnMut(JsValue)>::new(move |raw| {
+                let file_open_event: MenuClickEvent = serde_wasm_bindgen::from_value(raw).unwrap();
 
-                let file_open_event: FileOpenEvent = serde_wasm_bindgen::from_value(raw).unwrap();
-                log!(format!("{}", &file_open_event.payload));
+                match file_open_event.payload.0.as_str() {
+                    "FileOpen" => {
+                        log!(format!("{}", &file_open_event.payload.0));
+                        let param_values: ParamValues = toml::from_str(&file_open_event.payload.1).unwrap();
+                        dbg!(&param_values);
+                        // state_dispatch.set(param_values);
+                        state.set(param_values);
+                    },
+                    "FileSave" => {
+                        log!(format!("{}", &file_open_event.payload.0));
 
-                // param_values_ref.replace(file_open_event.payload);
-                state_dispatch.set(file_open_event.payload);
+                        let param_values: ParamValues = (*state).clone();
+                        let args = to_value( &SaveArgs{ param_values } ).unwrap();
+                        spawn_local(async move {
+                            invoke("save_as", args).await; //.as_string().unwrap();
+                        });
 
-                // force_update.force_update();
+                    },
+                    _ => {},
+                }
 
             });
+            let unlisten_menu_click = listen_("MenuClick", &menu_click_closure);
 
-            let unlisten = listen_("FileOpen", &file_open_closure);
-            let listener = (unlisten, file_open_closure);
+
+            let listeners = (unlisten_menu_click, menu_click_closure);
             || {
-                    let promise = listener.0.clone();
+                    let promise_0 = listeners.0.clone();
                     spawn_local(async move {
-                        let unlisten: Function = wasm_bindgen_futures::JsFuture::from(promise)
+                        let unlisten_0: Function = wasm_bindgen_futures::JsFuture::from(promise_0)
                             .await
                             .unwrap()
                             .into();
-                        unlisten.call0(&JsValue::undefined()).unwrap();
+                        unlisten_0.call0(&JsValue::undefined()).unwrap();
                     });
-                    drop(listener);
+                    drop(listeners);
             }
 
         });
     }
-
-
-
 
     html! {
         <main class="m-5">
@@ -244,10 +199,7 @@ pub fn app() -> Html {
                         label={CONF_PARAMS.mode.label}
                         description={CONF_PARAMS.mode.description}
                         select_options={CONF_PARAMS.mode.options}
-
-                        // value={param_values_ref.borrow().mode}
-                        value={state.mode}
-
+                        value={state.mode.clone()}
                         handle_onchange={param_value_changed.clone()}
                     />
 
@@ -255,10 +207,7 @@ pub fn app() -> Html {
                         id={CONF_PARAMS.ul_period.id}
                         label={CONF_PARAMS.ul_period.label}
                         description={CONF_PARAMS.ul_period.description}
-
-                        // value={param_values_ref.borrow().ul_period}
-                        value={state.ul_period}
-
+                        value={state.ul_period.clone()}
                         valid_range={CONF_PARAMS.ul_period.valid_range}
                         handle_onchange={param_value_changed.clone()}
                     />
@@ -267,10 +216,7 @@ pub fn app() -> Html {
                         id={CONF_PARAMS.lora_period.id}
                         label={CONF_PARAMS.lora_period.label}
                         description={CONF_PARAMS.lora_period.description}
-
-                        // value={param_values_ref.borrow().lora_period}
-                        value={state.lora_period}
-
+                        value={state.lora_period.clone()}
                         valid_range={CONF_PARAMS.lora_period.valid_range}
                         handle_onchange={param_value_changed.clone()}
                     />
@@ -279,52 +225,37 @@ pub fn app() -> Html {
                         id={CONF_PARAMS.periodic_pos_period.id}
                         label={CONF_PARAMS.periodic_pos_period.label}
                         description={CONF_PARAMS.periodic_pos_period.description}
-
-                        // value={param_values_ref.borrow().periodic_pos_period}
-                        value={state.periodic_pos_period}
-
+                        value={state.periodic_pos_period.clone()}
                         disabled_value={CONF_PARAMS.periodic_pos_period.disabled_value}
                         default_value={CONF_PARAMS.periodic_pos_period.default_value}
                         valid_range={CONF_PARAMS.periodic_pos_period.valid_range}
                         handle_onchange={param_value_changed.clone()}
                     />
 
-
-
-
                     <MySelect
                         id={CONF_PARAMS.geoloc_sensor.id}
                         label={CONF_PARAMS.geoloc_sensor.label}
                         description={CONF_PARAMS.geoloc_sensor.description}
                         select_options={CONF_PARAMS.geoloc_sensor.options}
-
-                        // value={param_values_ref.borrow().geoloc_sensor}
-                        value={state.geoloc_sensor}
-
+                        value={state.geoloc_sensor.clone()}
                         handle_onchange={param_value_changed.clone()}
                     />
 
-                    // <MySelect1<tauri_app_ui::params::param_options1::GeolocMethodOption1>
-                    //     id={CONF_PARAMS.geoloc_method.id}
-                    //     label={CONF_PARAMS.geoloc_method.label}
-                    //     description={CONF_PARAMS.geoloc_method.description}
-                    //     select_options={tauri_app_ui::params::param_options1::GeolocMethodOption1::VARIANTS}
-                    //     value={param_values_ref.borrow().geoloc_method}
-                    //     handle_onchange={param_value_changed.clone()}
-                    // />
-
-
-
+                    // // <MySelect1<tauri_app_ui::params::param_options1::GeolocMethodOption1>
+                    // //     id={CONF_PARAMS.geoloc_method.id}
+                    // //     label={CONF_PARAMS.geoloc_method.label}
+                    // //     description={CONF_PARAMS.geoloc_method.description}
+                    // //     select_options={tauri_app_ui::params::param_options1::GeolocMethodOption1::VARIANTS}
+                    // //     value={param_values_ref.borrow().geoloc_method}
+                    // //     handle_onchange={param_value_changed.clone()}
+                    // // />
 
                     <MySelect
                         id={CONF_PARAMS.geoloc_method.id}
                         label={CONF_PARAMS.geoloc_method.label}
                         description={CONF_PARAMS.geoloc_method.description}
                         select_options={CONF_PARAMS.geoloc_method.options}
-
-                        // value={param_values_ref.borrow().geoloc_method}
-                        value={state.geoloc_method}
-
+                        value={state.geoloc_method.clone()}
                         handle_onchange={param_value_changed.clone()}
                     />
 
@@ -334,15 +265,11 @@ pub fn app() -> Html {
                             label={CONF_PARAMS.transmit_strat.label}
                             description={CONF_PARAMS.transmit_strat.description}
                             select_options={CONF_PARAMS.transmit_strat.options}
-
-                            // value={param_values_ref.borrow().transmit_strat}
-                            value={state.transmit_strat}
-
+                            value={state.transmit_strat.clone()}
                             handle_onchange={param_value_changed.clone()}
                         />
                         <div 
-                            // hidden={ param_values_ref.borrow().transmit_strat != TransmitStratOption::CUSTOM.value }
-                            hidden={ state.transmit_strat != TransmitStratOption::CUSTOM.value }
+                            hidden={ state.transmit_strat.clone() != ParamValue::Valid(TransmitStratOption::CUSTOM.value) }
                             class={"ml-5 mt-2"}
                         >
                             <MyTransmitStratCustom 
@@ -350,10 +277,7 @@ pub fn app() -> Html {
                                 label={CONF_PARAMS.transmit_strat_custom.label}
                                 description={CONF_PARAMS.transmit_strat_custom.description}
                                 items={CONF_PARAMS.transmit_strat_custom.bits}
-
-                                // value={param_values_ref.borrow().transmit_strat_custom}
-                                value={state.transmit_strat_custom}
-
+                                value={state.transmit_strat_custom.clone()}
                                 handle_onchange={param_value_changed.clone()}
                             />
                         </div>
@@ -364,10 +288,7 @@ pub fn app() -> Html {
                         label={CONF_PARAMS.config_flags.label}
                         description={CONF_PARAMS.config_flags.description}
                         items={CONF_PARAMS.config_flags.bits}
-
-                        // value={param_values_ref.borrow().config_flags}
-                        value={state.config_flags}
-
+                        value={state.config_flags.clone()}
                         handle_onchange={param_value_changed.clone()}
                     />
 
@@ -388,8 +309,6 @@ pub fn app() -> Html {
                         <div class="tooltip-arrow" data-popper-arrow="true"></div>
                     </div>
 
-
-
                     <button
                         id="btn-save-as" 
                         class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
@@ -404,7 +323,6 @@ pub fn app() -> Html {
                     >
                         { "Save As..." }
                     </button>
-
 
                 </div>
             </div>

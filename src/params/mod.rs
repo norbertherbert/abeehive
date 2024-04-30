@@ -6,6 +6,5 @@ pub mod param_options1;
 pub mod param_bitmaps;
 // pub mod param_bitmaps1;
 pub mod param_values;
-pub mod param_values1;
 
 pub type ParamType = i32;

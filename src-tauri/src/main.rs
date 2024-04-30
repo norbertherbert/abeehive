@@ -100,7 +100,6 @@ fn main() {
         .add_submenu(file_menu);
         // .add_native_item(MenuItem::Quit);
 
-
     tauri::Builder::default()
         .setup(|app| {
             APP_HANDLE.set(app.handle().clone()).unwrap();
@@ -109,46 +108,29 @@ fn main() {
         .menu(menu)
         .on_menu_event(|event| match event.menu_item_id() {
             "open_file" => {
-
                 dialog::FileDialogBuilder::default()
                 .add_filter("Text", &["txt"])
                 .pick_file(move |path_buf| match path_buf {
                     Some(file_path) => {
-                        println!("{:?}", file_path);
-        
                         let mut data = Vec::new();
                         let mut f = File::open(file_path).expect("Unable to open file");
                         f.read_to_end(&mut data).expect("Unable to read data");
-                        println!("{}", data.len());
         
                         let data = String::from_utf8_lossy(&data[..]);
                         let data: &str = data.borrow();
-        
-                        // println!("{}", data);
-                        // app.emit_all("FileOpen", data.to_string() ).unwrap();
-        
-                        let param_values: ParamValues = toml::from_str(data).unwrap();
-                        dbg!(param_values);
 
                         let app = APP_HANDLE.get().unwrap();
-                        app.emit_all("FileOpen", param_values ).unwrap();
-        
+                        app.emit_all("MenuClick", ("FileOpen".to_string(), data.to_string()) ).unwrap();
                     }
                     _ => {}
                 })
-        
-
-
-
-
-
-            }
+            },
             "save_to_file" => {
-
-            }
-            _ => {}
+                let app = APP_HANDLE.get().unwrap();
+                app.emit_all("MenuClick", ("FileSave".to_string(), "".to_string()) ).unwrap();
+            },
+            _ => { }
         })
-
         .invoke_handler(tauri::generate_handler![greet, save_as, open])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

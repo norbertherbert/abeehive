@@ -2,14 +2,12 @@ use yew::prelude::*;
 use wasm_bindgen::JsCast;
 use web_sys::HtmlInputElement;
 use regex::Regex;
-// use std::fmt;
-// use gloo::console::log;
 
 use crate::components::my_label::MyLabel;
 use crate::params::{
     ParamType,
     param_id::ParamId,
-    param_values::ValueUpdateData,
+    param_values::{ParamValue, ValueUpdateData},
 };
 
 
@@ -18,64 +16,57 @@ pub struct Props {
     pub id: ParamId,
     pub label: &'static str,
     pub description: &'static str,
-    pub value: ParamType,
+    pub value: ParamValue,
     pub disabled_value: ParamType,
     pub default_value: ParamType,
     pub valid_range: (ParamType, ParamType),
     pub handle_onchange: Callback<ValueUpdateData>,
 }
 
-
-#[derive(Clone, PartialEq)]
-pub enum StateData {
-    Valid(String),
-    Invalid(String),
-    Disabled
-}
-
-pub fn validate_num(valid_range: (ParamType, ParamType), value: ParamType) -> bool {
-    if value < valid_range.0 || valid_range.1 < value {
-        false
-    } else {
-        true
-    }
-}
-
 const REGEX_STR: &str = "^[0-9]+$";
-// const REGEX_STR: &str = "^[A-Fa-f0-9]{4}$";
+// const REGEX_STR: &str = "^[A-Fa-f0-9]{8}$";
 const RADIX_NUM: u32 = 10;
 // const RADIX_NUM: u32 = 16;
 pub fn format_num(value_num: ParamType) -> String {
     format!("{}", value_num)
-    // format!("{:04x}", value_num)
+    // format!("{:08x}", value_num)
+}
+
+pub fn validate_num(valid_range: (ParamType, ParamType), value_num: ParamType) -> ParamValue {
+    if value_num < valid_range.0 || valid_range.1 < value_num {
+        ParamValue::Invalid(format_num(value_num))
+    } else {
+        ParamValue::Valid(value_num)
+    }
+}
+
+pub fn validate_str(valid_range: (ParamType, ParamType), value_str: &str) -> ParamValue {
+
+    if value_str=="" {
+        return ParamValue::None;
+    } 
+
+    let re = Regex::new(REGEX_STR).unwrap();
+    if !re.is_match(value_str) {
+        return ParamValue::Invalid(value_str.to_string());
+    } 
+
+    let Ok(value_num) = ParamType::from_str_radix(value_str, RADIX_NUM) else {
+        return ParamValue::Invalid(value_str.to_string());
+    };
+
+    validate_num(valid_range, value_num)
+
 }
 
 #[function_component(MyOptionalInput)]
 pub fn my_optional_input(props: &Props) -> Html {
 
-    let state = {
-        let value_num = props.value;
-        let valid_range = props.valid_range;
-        use_state( move || {
-            if props.value == props.disabled_value {
-                StateData::Disabled
-            } else {
-                let is_valid = validate_num(valid_range, value_num);
-                if is_valid {
-                    StateData::Valid(format_num(value_num))
-                } else {
-                    StateData::Invalid(format_num(value_num))
-                }
-            }
-        })
-    };
-
+    
     let checkbox_noderef = use_node_ref();
     let text_input_noderef = use_node_ref();
 
     let on_toggle = {
-
-        let state = state.clone();
 
         let disabled_value = props.disabled_value;
         let default_value = props.default_value;
@@ -99,11 +90,9 @@ pub fn my_optional_input(props: &Props) -> Html {
                 // text_input.set_value(&default_value.to_string());
                 // text_input.set_disabled(false);
                 // text_input.set_class_name(&enabled_classes);
-
                 // let _ = text_input.focus();
 
-                handle_onchange.emit(ValueUpdateData{new_value: default_value, param_id: id});
-                state.set(StateData::Valid(default_value.to_string()));
+                handle_onchange.emit(ValueUpdateData{new_param_value: ParamValue::Valid(default_value), param_id: id});
 
             } else {
 
@@ -111,21 +100,18 @@ pub fn my_optional_input(props: &Props) -> Html {
                 // text_input.set_disabled(true);
                 // text_input.set_class_name(&disabled_classes);
                 
-                handle_onchange.emit(ValueUpdateData{new_value: disabled_value, param_id: id});
-                state.set(StateData::Disabled);
+                handle_onchange.emit(ValueUpdateData{new_param_value: ParamValue::Valid(disabled_value), param_id: id});
 
             }
 
         })
     };
 
-
     let onchange = {
     
-        let state = state.clone();
-        let handle_onchange = props.handle_onchange.clone();
         let valid_range = props.valid_range;
-        let id = props.id; 
+        let handle_onchange = props.handle_onchange.clone();
+        let id = props.id;
 
         Callback::from(move |event: Event| {
 
@@ -135,31 +121,18 @@ pub fn my_optional_input(props: &Props) -> Html {
                 .unchecked_into::<HtmlInputElement>()
                 .value();
 
-            let re = Regex::new(REGEX_STR).unwrap();
-            if !re.is_match(&value_string) {
-                state.set( StateData::Invalid(value_string) );
-                return;
-            } 
+            let new_param_value = validate_str(valid_range, &value_string);
 
-            let Ok(value_num) = ParamType::from_str_radix(&value_string, RADIX_NUM) else {
-                state.set( StateData::Invalid(value_string) );
-                return;
-            };
-
-            if !validate_num(valid_range, value_num) {
-                state.set( StateData::Invalid(format_num(value_num)) );
-                return;
-            } 
-
-            handle_onchange.emit(ValueUpdateData{new_value: value_num, param_id: id});
-            state.set( StateData::Valid(format_num(value_num)) );
+            handle_onchange.emit(ValueUpdateData{new_param_value, param_id: id});
 
         })
     };
 
-
+    let param_value = props.value.clone();
     let aria_id = format!("{}-aria", &props.id);
     let checkbox_id = format!("{}-checkbox", &props.id);
+
+    let is_disabled = props.value == ParamValue::Valid(props.disabled_value);
 
     html! {
         <div>
@@ -169,10 +142,9 @@ pub fn my_optional_input(props: &Props) -> Html {
                 label={props.label}
                 description={props.description}
                 is_valid= { 
-                    match &*state { 
-                        StateData::Valid(_) => true,
-                        StateData::Invalid(_) => false,
-                        StateData::Disabled => true,
+                    match &param_value { 
+                        ParamValue::Valid(_) => true,
+                        _ => false,
                     } 
                 }
             />
@@ -188,13 +160,7 @@ pub fn my_optional_input(props: &Props) -> Html {
                             id={checkbox_id}
                             ref={checkbox_noderef}
                             class="sr-only peer"
-                            checked={ 
-                                match &*state { 
-                                    StateData::Valid(_) => true,
-                                    StateData::Invalid(_) => true,
-                                    StateData::Disabled => false
-                                } 
-                            } 
+                            checked={ !is_disabled } 
                             onchange={on_toggle}
                         />
                         <div 
@@ -210,26 +176,33 @@ pub fn my_optional_input(props: &Props) -> Html {
                     id={props.id.to_string()}
                     ref={text_input_noderef}
                     class={ 
-                        match &*state { 
-                            StateData::Valid(_) => classes!("ps-14", "my-valid-optional-input"),
-                            StateData::Invalid(_) => classes!("ps-14", "my-invalid-optional-input"),
-                            StateData::Disabled => classes!("ps-14", "my-disabled-optional-input")
-                        } 
+                        match is_disabled {
+                            true => {
+                                classes!("ps-14", "my-disabled-optional-input")
+                            },
+                            false => {
+                                match &param_value {
+                                    ParamValue::Valid(_) => classes!("ps-14", "my-valid-optional-input"),
+                                    _ => classes!("ps-14", "my-invalid-optional-input"),
+                                }
+                            },
+                        }
                     } 
                     value={
-                        match &*state { 
-                            StateData::Valid(v) => v.to_string().clone(),
-                            StateData::Invalid(v) => v.to_string().clone(),
-                            StateData::Disabled => props.disabled_value.to_string().clone(),
-                        } 
+                        match is_disabled {
+                            true => {
+                                props.disabled_value.to_string().clone()
+                            },
+                            false => {
+                                match &param_value {
+                                    ParamValue::Valid(v) => v.to_string().clone(),
+                                    ParamValue::Invalid(v) => v.to_string().clone(),
+                                    ParamValue::None => "".to_string(),
+                                }
+                            },
+                        }
                     }
-                    disabled={ 
-                        match &*state { 
-                            StateData::Valid(_) => false,
-                            StateData::Invalid(_) => false,
-                            StateData::Disabled => true
-                        } 
-                    } 
+                    disabled={ is_disabled } 
                     aria-describedby={aria_id.clone()}
                     onchange={onchange}
                 />
