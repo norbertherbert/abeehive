@@ -402,7 +402,7 @@ pub static CONFIG_FLAGS: PrmDatBitmap = PrmDatBitmap {
     bits: &[
         ConfigFlagsBit::FRAME_PENDING_ENABLED,
         ConfigFlagsBit::LONG_BUTTON_PRESS_FOR_OFF,
-        // ConfigFlagsBit::DEPRECATED_2,
+        ConfigFlagsBit::DEPRECATED_2,
         ConfigFlagsBit::CONF_DL_ACK,
         ConfigFlagsBit::WIFI_SCAN_ENC,
         ConfigFlagsBit::BLE_ACTIVE_AT_START,
@@ -419,7 +419,7 @@ pub static CONFIG_FLAGS: PrmDatBitmap = PrmDatBitmap {
         ConfigFlagsBit::BEEPS_IN_SOS_MODE,
         ConfigFlagsBit::ADR_ON_TOO_LONG_PAYLOAD,
         ConfigFlagsBit::EXTENDED_POSITION_PAYLOAD,
-        // ConfigFlagsBit::RESERVED_19,
+        ConfigFlagsBit::RESERVED_19,
         ConfigFlagsBit::CLI_OVER_BLE_ENABLED,
         ConfigFlagsBit::BLE_PASSKEY_ENABLED,
         ConfigFlagsBit::GNSS_FIX_AFTER_WIFI_SCAN_WHEN_STATIC,
@@ -437,8 +437,10 @@ impl ConfigFlagsBit {
         bit: 1,
         txt: "Long button press activates OFF mode",
     };
-    // pub const DEPRECATED_2: BitmapBit =
-    // BitmapBit{bit: 2, txt: "Deprecated_2"};
+    pub const DEPRECATED_2: BitmapBit = BitmapBit{
+        bit: 2, txt: 
+        "Deprecated_2"
+    };
     pub const CONF_DL_ACK: BitmapBit = BitmapBit {
         bit: 3,
         txt: "Config downlinks are acknowledged",
@@ -503,8 +505,10 @@ impl ConfigFlagsBit {
         bit: 18,
         txt: "Extended position payload enabled",
     };
-    // pub const RESERVED_19: BitmapBit =
-    // BitmapBit{bit: 19, txt: "Reserved_19"};
+    pub const RESERVED_19: BitmapBit = BitmapBit {
+        bit: 19, 
+        txt: "Reserved_19"
+    };
     pub const CLI_OVER_BLE_ENABLED: BitmapBit = BitmapBit {
         bit: 20,
         txt: "CLI over BLE is enabled",

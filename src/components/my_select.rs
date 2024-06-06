@@ -1,6 +1,6 @@
-use yew::prelude::*;
 use wasm_bindgen::JsCast;
 use web_sys::HtmlInputElement;
+use yew::prelude::*;
 
 use crate::components::my_label::MyLabel;
 
@@ -32,9 +32,6 @@ pub fn my_select(props: &Props) -> Html {
                 .unwrap()
                 .unchecked_into::<HtmlInputElement>()
                 .value();
-
-            use gloo::console::log;
-            log!(&txt);
 
             handle_onchange.emit((id, txt));
         })

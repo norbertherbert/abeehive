@@ -5,7 +5,7 @@ use gloo::console::log;
 use js_sys::{Function, Promise};
 use serde::{Deserialize, Serialize};
 use serde_wasm_bindgen::to_value;
-use std::ops::Deref;
+// use std::ops::Deref;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
@@ -19,7 +19,10 @@ use abeehive::components::my_select::MySelect;
 use abeehive::components::my_bitmap::MyBitmap;
 // use abeehive::components::my_transmit_strat_custom::MyTransmitStratCustom;
 // use abeehive::params::param_values::ParamValue;
-use abeehive::params::param_values::{ParamValues, ValueUpdateData};
+use abeehive::params::param_values::{
+    ParamValues, 
+    // ValueUpdateData
+};
 
 use abeehive::prm::dat::*;
 
@@ -206,6 +209,49 @@ impl Component for BeeQueenApp {
                                 }
                             />
 
+
+                            // <div>
+                            //     <MySelect
+                            //         id={TRANSMIT_STRAT.id}
+                            //         label={TRANSMIT_STRAT.label}
+                            //         description={TRANSMIT_STRAT.description}
+                            //         select_options={TRANSMIT_STRAT.distinct_vals}
+                            //         value={state.transmit_strat.clone()}
+                            //         handle_onchange={param_value_changed.clone()}
+                            //     />
+                            //     <div
+                            //         hidden={ state.transmit_strat.clone() != ParamValue::Valid(TransmitStratOption::CUSTOM.val) }
+                            //         class={"ml-5 mt-2"}
+                            //     >
+                            //         <MyTransmitStratCustom
+                            //             id={TRANSMIT_STRAT_CUSTOM.id}
+                            //             label={TRANSMIT_STRAT_CUSTOM.label}
+                            //             description={TRANSMIT_STRAT_CUSTOM.description}
+                            //             items={TRANSMIT_STRAT_CUSTOM.bits}
+                            //             value={state.transmit_strat_custom.clone()}
+                            //             handle_onchange={param_value_changed.clone()}
+                            //         />
+                            //     </div>
+                            // </div>
+
+                            <MyBitmap
+                                id={CONFIG_FLAGS.id}
+                                label={CONFIG_FLAGS.label}
+                                description={CONFIG_FLAGS.description}
+                                items={CONFIG_FLAGS.bits}
+                                vval={
+                                    self.vvals.get_by_id(CONFIG_FLAGS.id)
+                                    .expect("id is always valid")
+                                    .expect("id always exists")
+                                    .clone()
+                                }
+                                handle_onchange = {
+                                    ctx.link().callback(move |(id, txt)| {
+                                        Msg::ParamValueChanged(id, txt)
+                                    })
+                                }
+                            />
+
                         </div>
                     </div>
                 </main>
@@ -251,7 +297,7 @@ pub fn app() -> Html {
 
     let greet_msg = use_state(|| String::new());
 
-    let force_update = use_force_update();
+    // let force_update = use_force_update();
 
     // **************************************************************
     // Callbacks
@@ -270,60 +316,60 @@ pub fn app() -> Html {
     // onclick_navbar
     
 
-    let param_value_changed: Callback<ValueUpdateData> = {
-        let force_update = force_update.clone();
-        let state = state.clone();
+    // let param_value_changed: Callback<ValueUpdateData> = {
+    //     let force_update = force_update.clone();
+    //     let state = state.clone();
 
-        Callback::from(move |value_update_data: ValueUpdateData| {
-            if value_update_data.param_id == MODE.id {
-                state.set(ParamValues {
-                    mode: value_update_data.new_param_value,
-                    ..state.deref().clone()
-                });
-            } else if value_update_data.param_id == UL_PERIOD.id {
-                state.set(ParamValues {
-                    ul_period: value_update_data.new_param_value,
-                    ..state.deref().clone()
-                });
-            } else if value_update_data.param_id == LORA_PERIOD.id {
-                state.set(ParamValues {
-                    lora_period: value_update_data.new_param_value,
-                    ..state.deref().clone()
-                });
-            } else if value_update_data.param_id == PERIODIC_POS_PERIOD.id {
-                state.set(ParamValues {
-                    periodic_pos_period: value_update_data.new_param_value,
-                    ..state.deref().clone()
-                });
-            } else if value_update_data.param_id == GEOLOC_SENSOR.id {
-                state.set(ParamValues {
-                    geoloc_sensor: value_update_data.new_param_value,
-                    ..state.deref().clone()
-                });
-            } else if value_update_data.param_id == GEOLOC_METHOD.id {
-                state.set(ParamValues {
-                    geoloc_method: value_update_data.new_param_value,
-                    ..state.deref().clone()
-                });
-            } else if value_update_data.param_id == TRANSMIT_STRAT.id {
-                state.set(ParamValues {
-                    transmit_strat: value_update_data.new_param_value,
-                    ..state.deref().clone()
-                });
-                force_update.force_update();
-            } else if value_update_data.param_id == TRANSMIT_STRAT_CUSTOM.id {
-                state.set(ParamValues {
-                    transmit_strat_custom: value_update_data.new_param_value,
-                    ..state.deref().clone()
-                });
-            } else if value_update_data.param_id == CONFIG_FLAGS.id {
-                state.set(ParamValues {
-                    config_flags: value_update_data.new_param_value,
-                    ..state.deref().clone()
-                });
-            }
-        })
-    };
+    //     Callback::from(move |value_update_data: ValueUpdateData| {
+    //         if value_update_data.param_id == MODE.id {
+    //             state.set(ParamValues {
+    //                 mode: value_update_data.new_param_value,
+    //                 ..state.deref().clone()
+    //             });
+    //         } else if value_update_data.param_id == UL_PERIOD.id {
+    //             state.set(ParamValues {
+    //                 ul_period: value_update_data.new_param_value,
+    //                 ..state.deref().clone()
+    //             });
+    //         } else if value_update_data.param_id == LORA_PERIOD.id {
+    //             state.set(ParamValues {
+    //                 lora_period: value_update_data.new_param_value,
+    //                 ..state.deref().clone()
+    //             });
+    //         } else if value_update_data.param_id == PERIODIC_POS_PERIOD.id {
+    //             state.set(ParamValues {
+    //                 periodic_pos_period: value_update_data.new_param_value,
+    //                 ..state.deref().clone()
+    //             });
+    //         } else if value_update_data.param_id == GEOLOC_SENSOR.id {
+    //             state.set(ParamValues {
+    //                 geoloc_sensor: value_update_data.new_param_value,
+    //                 ..state.deref().clone()
+    //             });
+    //         } else if value_update_data.param_id == GEOLOC_METHOD.id {
+    //             state.set(ParamValues {
+    //                 geoloc_method: value_update_data.new_param_value,
+    //                 ..state.deref().clone()
+    //             });
+    //         } else if value_update_data.param_id == TRANSMIT_STRAT.id {
+    //             state.set(ParamValues {
+    //                 transmit_strat: value_update_data.new_param_value,
+    //                 ..state.deref().clone()
+    //             });
+    //             force_update.force_update();
+    //         } else if value_update_data.param_id == TRANSMIT_STRAT_CUSTOM.id {
+    //             state.set(ParamValues {
+    //                 transmit_strat_custom: value_update_data.new_param_value,
+    //                 ..state.deref().clone()
+    //             });
+    //         } else if value_update_data.param_id == CONFIG_FLAGS.id {
+    //             state.set(ParamValues {
+    //                 config_flags: value_update_data.new_param_value,
+    //                 ..state.deref().clone()
+    //             });
+    //         }
+    //     })
+    // };
 
     let on_submit = {
         let greet_msg = greet_msg.clone();
@@ -735,14 +781,14 @@ pub fn app() -> Html {
                         //     </div>
                         // </div>
 
-                        <MyBitmap
-                            id={CONFIG_FLAGS.id}
-                            label={CONFIG_FLAGS.label}
-                            description={CONFIG_FLAGS.description}
-                            items={CONFIG_FLAGS.bits}
-                            value={state.config_flags.clone()}
-                            handle_onchange={param_value_changed.clone()}
-                        />
+                        // <MyBitmap
+                        //     id={CONFIG_FLAGS.id}
+                        //     label={CONFIG_FLAGS.label}
+                        //     description={CONFIG_FLAGS.description}
+                        //     items={CONFIG_FLAGS.bits}
+                        //     value={state.config_flags.clone()}
+                        //     handle_onchange={param_value_changed.clone()}
+                        // />
 
                         <button
                             id="btn-submit"

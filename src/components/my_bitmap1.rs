@@ -5,11 +5,8 @@ use yew::prelude::*;
 
 use crate::components::my_label::MyLabel;
 
-use crate::prm::{
-    typ::BitmapBit,
-    val::PrmVVal,
-};
-
+use crate::params::param_values::{ParamValue, ValueUpdateData};
+use crate::prm::typ::BitmapBit;
 
 #[derive(Properties, PartialEq)]
 pub struct Props {
@@ -17,16 +14,14 @@ pub struct Props {
     pub label: &'static str,
     pub description: &'static str,
     pub items: &'static [BitmapBit],
-
-    pub vval: PrmVVal,
-    pub handle_onchange: Callback<(u8, String)>,
+    pub value: ParamValue,
+    pub handle_onchange: Callback<ValueUpdateData>,
 }
 
 #[function_component(MyBitmap)]
 pub fn my_bitmap(props: &Props) -> Html {
-
-    let bitmap = match props.vval {
-        PrmVVal::Valid(v) => v,
+    let bitmap = match props.value {
+        ParamValue::Valid(v) => v,
         _ => 0, // TODO: select the right default value!
     };
 
@@ -46,14 +41,13 @@ pub fn my_bitmap(props: &Props) -> Html {
             };
 
             log!("value:", new_bitmap.to_string());
-            handle_onchange.emit((
-                id,
-                new_bitmap.to_string(),
-            ));
+            handle_onchange.emit(ValueUpdateData {
+                new_param_value: ParamValue::Valid(new_bitmap),
+                param_id: id,
+            });
         })
     };
 
-    let vval = props.vval.clone();
     let aria_id = format!("{}-aria", &props.id);
     let dropdown_id = format!("{}-dropdown", props.id);
 
@@ -61,16 +55,10 @@ pub fn my_bitmap(props: &Props) -> Html {
         <div>
 
             <MyLabel
-                input_element_id = { props.id }
-                label = { props.label }
-                description = { props.description}
-                is_valid = {
-                    match &vval {
-                        PrmVVal::Valid(_) => true,
-                        PrmVVal::Invalid(_) => false,
-                        PrmVVal::InvalidTxt(_) => false,
-                    }
-                }
+                input_element_id={props.id}
+                label={props.label}
+                description={props.description}
+                is_valid=true
             />
 
             // This button looks like an input field
@@ -124,16 +112,6 @@ pub fn my_bitmap(props: &Props) -> Html {
             </div>
 
             <span id={aria_id} class="hidden">{&props.description}</span>
-
-            // <span id={aria_id} class = "hidden">
-            {
-            match &vval {
-                PrmVVal::Valid(_) => html!(),
-                PrmVVal::Invalid((_, err)) => html!( <span class = { "my-error-msg" }>{ err.clone() }</span> ),
-                PrmVVal::InvalidTxt((_, err)) => html!( <span class = { "my-error-msg" }>{ err.clone() }</span> ),
-            }
-            }
-            // </span>
 
         </div>
     }
