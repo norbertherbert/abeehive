@@ -1,151 +1,98 @@
-use yew::prelude::*;
 use wasm_bindgen::JsCast;
 use web_sys::HtmlInputElement;
-use regex::Regex;
+use yew::prelude::*;
 
-use crate::components::my_label::MyLabel;
-use crate::params::{
-    ParamType,
-    param_id::ParamId,
-    param_values::{ParamValue, ValueUpdateData},
+use crate::components::{
+    RadixDisp,
+    my_label::MyLabel
 };
-
+use crate::prm::{
+    typ::PrmVal, 
+    val::PrmVVal,
+};
 
 #[derive(Properties, PartialEq)]
 pub struct Props {
-    pub id: ParamId,
+    pub id: u8,
     pub label: &'static str,
     pub description: &'static str,
-    pub value: ParamValue,
-    pub disabled_value: ParamType,
-    pub default_value: ParamType,
-    pub valid_range: (ParamType, ParamType),
-    pub handle_onchange: Callback<ValueUpdateData>,
-}
-
-const REGEX_STR: &str = "^[0-9]+$";
-// const REGEX_STR: &str = "^[A-Fa-f0-9]{8}$";
-const RADIX_NUM: u32 = 10;
-// const RADIX_NUM: u32 = 16;
-pub fn format_num(value_num: ParamType) -> String {
-    format!("{}", value_num)
-    // format!("{:08x}", value_num)
-}
-
-pub fn validate_num(valid_range: (ParamType, ParamType), value_num: ParamType) -> ParamValue {
-    if value_num < valid_range.0 || valid_range.1 < value_num {
-        ParamValue::Invalid(format_num(value_num))
-    } else {
-        ParamValue::Valid(value_num)
-    }
-}
-
-pub fn validate_str(valid_range: (ParamType, ParamType), value_str: &str) -> ParamValue {
-
-    if value_str=="" {
-        return ParamValue::None;
-    } 
-
-    let re = Regex::new(REGEX_STR).unwrap();
-    if !re.is_match(value_str) {
-        return ParamValue::Invalid(value_str.to_string());
-    } 
-
-    let Ok(value_num) = ParamType::from_str_radix(value_str, RADIX_NUM) else {
-        return ParamValue::Invalid(value_str.to_string());
-    };
-
-    validate_num(valid_range, value_num)
-
+    pub disabled_value: PrmVal,
+    pub default_value: PrmVal,
+    pub radix_disp: RadixDisp,
+    pub vval: PrmVVal,
+    pub handle_onchange: Callback<(u8, String)>,
 }
 
 #[function_component(MyOptionalInput)]
 pub fn my_optional_input(props: &Props) -> Html {
 
-    
-    let checkbox_noderef = use_node_ref();
-    let text_input_noderef = use_node_ref();
+    // let checkbox_noderef = use_node_ref();
+    // let text_input_noderef = use_node_ref();
 
     let on_toggle = {
-
         let disabled_value = props.disabled_value;
         let default_value = props.default_value;
         let handle_onchange = props.handle_onchange.clone();
         let id = props.id;
-
         Callback::from(move |event: Event| {
-
             let checked = event
                 .target()
                 .unwrap()
                 .unchecked_into::<HtmlInputElement>()
                 .checked();
-
-            // let text_input = text_input_noderef
-            //     .cast::<web_sys::HtmlInputElement>()
-            //     .unwrap();
-
             if checked {
-
-                // text_input.set_value(&default_value.to_string());
-                // text_input.set_disabled(false);
-                // text_input.set_class_name(&enabled_classes);
-                // let _ = text_input.focus();
-
-                handle_onchange.emit(ValueUpdateData{new_param_value: ParamValue::Valid(default_value), param_id: id});
-
+                handle_onchange.emit((
+                    id,
+                    default_value.to_string()
+                ));
             } else {
-
-                // text_input.set_value(&disabled_value.to_string());
-                // text_input.set_disabled(true);
-                // text_input.set_class_name(&disabled_classes);
-                
-                handle_onchange.emit(ValueUpdateData{new_param_value: ParamValue::Valid(disabled_value), param_id: id});
-
+                handle_onchange.emit((
+                    id,
+                    disabled_value.to_string(),
+                ));
             }
-
         })
     };
 
     let onchange = {
-    
-        let valid_range = props.valid_range;
         let handle_onchange = props.handle_onchange.clone();
         let id = props.id;
-
         Callback::from(move |event: Event| {
-
-            let value_string = event
+            let txt = event
                 .target()
                 .unwrap()
                 .unchecked_into::<HtmlInputElement>()
                 .value();
 
-            let new_param_value = validate_str(valid_range, &value_string);
-
-            handle_onchange.emit(ValueUpdateData{new_param_value, param_id: id});
-
+            handle_onchange.emit((id, txt));
         })
     };
 
-    let param_value = props.value.clone();
+
+    let vval = props.vval.clone();
     let aria_id = format!("{}-aria", &props.id);
     let checkbox_id = format!("{}-checkbox", &props.id);
 
-    let is_disabled = props.value == ParamValue::Valid(props.disabled_value);
+    let is_disabled = match vval {
+        PrmVVal::Valid(current_valid_value) => {
+            current_valid_value == props.disabled_value
+        } 
+        _ => false
+    };
 
     html! {
         <div>
 
             <MyLabel
-                input_element_id={props.id}
-                label={props.label}
-                description={props.description}
-                is_valid= { 
-                    match &param_value { 
-                        ParamValue::Valid(_) => true,
-                        _ => false,
-                    } 
+                input_element_id = { props.id }
+                label = { props.label }
+                description = { props.description}
+                is_valid = {
+                    match &vval {
+                        PrmVVal::Valid(_) => true,
+                        PrmVVal::Invalid(_) => false,
+                        PrmVVal::InvalidTxt(_) => false,
+                    }
                 }
             />
 
@@ -156,61 +103,78 @@ pub fn my_optional_input(props: &Props) -> Html {
                 <div class="absolute inset-y-0 start-0 flex items-center ps-2.5">
                     <label class="inline-flex items-center cursor-pointer">
                         <input
-                            type="checkbox" 
-                            id={checkbox_id}
-                            ref={checkbox_noderef}
-                            class="sr-only peer"
-                            checked={ !is_disabled } 
-                            onchange={on_toggle}
+                            type = "checkbox"
+                            id = {checkbox_id}
+                            // ref = {checkbox_noderef}
+                            class = "sr-only peer"
+                            checked = { !is_disabled }
+                            onchange = {on_toggle}
                         />
-                        <div 
-                            class="relative w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
+                        <div
+                            class = "relative w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
                         ></div>
                     </label>
                 </div>
 
                 // Input field
-                <input 
-                    type="text"
-                    autocomplete="off"
-                    id={props.id.to_string()}
-                    ref={text_input_noderef}
-                    class={ 
+                <input
+                    type = "text"
+                    autocomplete = "off"
+                    id = {props.id.to_string()}
+                    // ref = {text_input_noderef}
+                    class = {
                         match is_disabled {
                             true => {
                                 classes!("ps-14", "my-disabled-optional-input")
                             },
                             false => {
-                                match &param_value {
-                                    ParamValue::Valid(_) => classes!("ps-14", "my-valid-optional-input"),
-                                    _ => classes!("ps-14", "my-invalid-optional-input"),
+                                match &vval {
+                                    PrmVVal::Valid(_) => classes!("ps-14", "my-valid-optional-input"),
+                                    PrmVVal::Invalid(_) => classes!("ps-14", "my-invalid-optional-input"),
+                                    PrmVVal::InvalidTxt(_) => classes!("ps-14", "my-invalid-optional-input"),
                                 }
                             },
                         }
-                    } 
-                    value={
+                    }
+                    value = {
                         match is_disabled {
                             true => {
                                 props.disabled_value.to_string().clone()
                             },
                             false => {
-                                match &param_value {
-                                    ParamValue::Valid(v) => v.to_string().clone(),
-                                    ParamValue::Invalid(v) => v.to_string().clone(),
-                                    ParamValue::None => "".to_string(),
+                                match &vval {
+                                    PrmVVal::Valid(val) => match props.radix_disp {
+                                        RadixDisp::Dec => format!("{}", val),
+                                        RadixDisp::Hex => format!("0x{:08x}", val),
+                                    },
+                                    PrmVVal::Invalid((val, _)) => match props.radix_disp {
+                                        RadixDisp::Dec => format!("{}", val),
+                                        RadixDisp::Hex => format!("0x{:08x}", val),
+                                    },
+                                    PrmVVal::InvalidTxt((txt, _)) => txt.clone(),
                                 }
                             },
                         }
                     }
-                    disabled={ is_disabled } 
-                    aria-describedby={aria_id.clone()}
-                    onchange={onchange}
+                    disabled = { is_disabled }
+                    aria-describedby = { aria_id.clone() }
+                    onchange = { onchange }
                 />
 
                 // Aria
                 <span id={aria_id} class="hidden">{&props.description}</span>
 
             </div>
+
+            // <span id={aria_id} class = "hidden">
+            {
+                match &vval {
+                    PrmVVal::Valid(_) => html!(),
+                    PrmVVal::Invalid((_, err)) => html!( <span class = { "my-error-msg" }>{ err.clone() }</span> ),
+                    PrmVVal::InvalidTxt((_, err)) => html!( <span class = { "my-error-msg" }>{ err.clone() }</span> ),
+                }
+            }
+            // </span>
 
         </div>
     }

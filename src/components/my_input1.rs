@@ -18,13 +18,13 @@ pub struct Props {
     pub handle_onchange: Callback<ValueUpdateData>,
 }
 
-// const REGEX_STR: &str = "^[0-9]+$";
-const REGEX_STR: &str = "^[A-Fa-f0-9]{8}$";
-// const RADIX_NUM: u32 = 10;
-const RADIX_NUM: u32 = 16;
+const REGEX_STR: &str = "^[0-9]+$";
+// const REGEX_STR: &str = "^[A-Fa-f0-9]{8}$";
+const RADIX_NUM: u32 = 10;
+// const RADIX_NUM: u32 = 16;
 pub fn format_num(value_num: PrmVal) -> String {
-    // format!("{}", value_num)
-    format!("{:08x}", value_num)
+    format!("{}", value_num)
+    // format!("{:08x}", value_num)
 }
 
 pub fn validate_num(valid_range: (PrmVal, PrmVal), value_num: PrmVal) -> ParamValue {
@@ -52,8 +52,8 @@ pub fn validate_str(valid_range: (PrmVal, PrmVal), value_str: &str) -> ParamValu
     validate_num(valid_range, value_num)
 }
 
-#[function_component(MyHexInput)]
-pub fn my_hex_input(props: &Props) -> Html {
+#[function_component(MyInput)]
+pub fn my_input(props: &Props) -> Html {
     let onchange = {
         let valid_range = props.valid_range;
         let handle_onchange = props.handle_onchange.clone();
@@ -75,12 +75,38 @@ pub fn my_hex_input(props: &Props) -> Html {
         })
     };
 
+    // {
+    //     let valid_range = props.valid_range;
+    //     let handle_onchange = props.handle_onchange.clone();
+    //     let id = props.id;
+    //     let param_value = props.value.clone();
+
+    //     use_effect_with(param_value.clone(), move |_| {
+
+    //         let calculated_param_value = match param_value.clone() {
+    //             ParamValue::Valid(value_num) => {
+    //                 validate_num(valid_range, value_num)
+    //             },
+    //             ParamValue::Invalid(value_string) => {
+    //                 validate_str(valid_range, &value_string)
+    //             },
+    //             ParamValue::None => {
+    //                 ParamValue::None
+    //             },
+    //         };
+
+    //         if param_value != calculated_param_value {
+    //             handle_onchange.emit(ValueUpdateData{new_param_value: calculated_param_value, param_id: id});
+    //         }
+
+    //     })
+    // }
+
     let param_value = props.value.clone();
     let aria_id = format!("{}-aria", &props.id);
 
     html! {
         <div>
-
             <MyLabel
                 input_element_id={props.id}
                 label={props.label}

@@ -1,22 +1,14 @@
-use super::param_id::ParamId;
+use super::param_bitmaps::{ConfigFlagsBit, TransmitStratCustomBit};
 use super::param_comp_type_props::{
+    ParamFieldBitmap,
     ParamFieldInput,
     // ParamFieldHexInput,
     ParamFieldOptionalInput,
     ParamFieldSelect,
-    ParamFieldBitmap,
 };
 use super::param_options::{
-    ModeOption,
-    GeolocSensorOption,
-    GeolocMethodOption,
-    TransmitStratOption,
+    GeolocMethodOption, GeolocSensorOption, ModeOption, TransmitStratOption,
 };
-use super::param_bitmaps::{
-    TransmitStratCustomBit,
-    ConfigFlagsBit,
-};
-
 
 pub struct ConfParams {
     pub mode: ParamFieldSelect,
@@ -30,9 +22,9 @@ pub struct ConfParams {
     pub config_flags: ParamFieldBitmap,
 }
 
-pub const CONF_PARAMS: ConfParams =  ConfParams{ 
-    mode: ParamFieldSelect{
-        id: ParamId::Mode,
+pub const CONF_PARAMS: ConfParams = ConfParams {
+    mode: ParamFieldSelect {
+        id: 249,
         label: "Operation Mode",
         description: "Mode Help Text",
         default_value: ModeOption::MOTION_TRACKING.value,
@@ -40,7 +32,7 @@ pub const CONF_PARAMS: ConfParams =  ConfParams{
     },
 
     ul_period: ParamFieldInput {
-        id: ParamId::UlPeriod,
+        id: 0,
         label: "Location update period",
         description: "Location update period Help Text",
         default_value: 120,
@@ -48,7 +40,7 @@ pub const CONF_PARAMS: ConfParams =  ConfParams{
     },
 
     lora_period: ParamFieldInput {
-        id: ParamId::LoraPeriod,
+        id: 1,
         label: "Heartbeat period",
         description: "Heartbeat period Help Text",
         default_value: 300,
@@ -56,7 +48,7 @@ pub const CONF_PARAMS: ConfParams =  ConfParams{
     },
 
     periodic_pos_period: ParamFieldOptionalInput {
-        id: ParamId::PeriodicPosPeriod,
+        id: 3,
         label: "Periodic Position Report Period",
         description: "Periodic Position Report Period Help Text",
         default_value: 3600,
@@ -64,40 +56,40 @@ pub const CONF_PARAMS: ConfParams =  ConfParams{
         valid_range: (1, 10000),
     },
 
-    geoloc_sensor: ParamFieldSelect{
-        id: ParamId::GeolocSensor,
+    geoloc_sensor: ParamFieldSelect {
+        id: 5,
         label: "Primary Geoloc Technology",
         description: "Primary Geoloc Technology Help Text",
         default_value: GeolocSensorOption::GPS.value,
         options: GeolocSensorOption::VARIANTS,
     },
 
-    geoloc_method: ParamFieldSelect{
-        id: ParamId::GeolocMethod,
+    geoloc_method: ParamFieldSelect {
+        id: 6,
         label: "Secondary Geoloc Technology",
         description: "Secondary Geoloc Technology Help Text",
         default_value: GeolocSensorOption::WIFI_GPS.value,
         options: GeolocMethodOption::VARIANTS,
     },
 
-    transmit_strat: ParamFieldSelect{
-        id: ParamId::TransmitStrat,
+    transmit_strat: ParamFieldSelect {
+        id: 14,
         label: "Transmit Strategy",
         description: "Transmit Strategy Help Text",
         default_value: TransmitStratOption::DOUBLE_RANDOM.value,
         options: TransmitStratOption::VARIANTS,
     },
 
-    transmit_strat_custom: ParamFieldBitmap{
-        id: ParamId::TransmitStratCustom,
+    transmit_strat_custom: ParamFieldBitmap {
+        id: 30,
         label: "Custom Transmit Strategy Settings",
         description: "Custom Transmit Strategy Help Text",
         default_value: 12289,
         bits: TransmitStratCustomBit::VARIANTS,
     },
 
-    config_flags: ParamFieldBitmap{
-        id: ParamId::ConfigFlags,
+    config_flags: ParamFieldBitmap {
+        id: 13,
         label: "Configuration Flags",
         description: "Configuration Flags Help Text",
         default_value: 17252411,

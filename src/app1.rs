@@ -1,4 +1,3 @@
-use abeehive::prm::val::PrmVVals;
 // use std::fmt;
 // use yewdux::prelude::*;
 use gloo::console::log;
@@ -11,17 +10,19 @@ use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
 
 // use abeehive::js::flowbite::initFlowbite;
-use abeehive::components::RadixDisp;
-// use abeehive::components::my_hex_input::MyHexInput;
+use abeehive::components::my_hex_input::MyHexInput;
 use abeehive::components::my_input::MyInput;
 use abeehive::components::my_optional_input::MyOptionalInput;
 use abeehive::components::my_select::MySelect;
 use abeehive::components::my_bitmap::MyBitmap;
-// use abeehive::components::my_transmit_strat_custom::MyTransmitStratCustom;
-// use abeehive::params::param_values::ParamValue;
+use abeehive::components::my_transmit_strat_custom::MyTransmitStratCustom;
+use abeehive::params::param_values::ParamValue;
 use abeehive::params::param_values::{ParamValues, ValueUpdateData};
 
-use abeehive::prm::dat::*;
+use abeehive::prm::{ 
+    // val::PrmVVals, 
+    dat::* 
+};
 
 use abeehive::components::modal::Modal;
 use abeehive::components::navbar::{Navbar, NavbarAction};
@@ -54,178 +55,6 @@ struct SaveConfigToUsbArgs {
     port: String,
 }
 
-
-#[derive(Debug, PartialEq)]
-pub enum Msg {
-    ParamValueChanged(u8, String),
-    // Submit,
-    // Open,
-    // SaveAs,
-    // GetConfigUsbModalToggle,
-    // SaveConfigUsbModalToggle,
-    // GetSerialPortsForGet,
-    // GetSerialPortsForSave,
-    // SelectedUsbPortChanged(String),
-    // GetConfigUsb,
-    // SaveConfigUsb
-}
-
-#[derive(Default, Debug)]
-pub struct BeeQueenApp {
-    vvals: PrmVVals,
-    // get_serialport_modal_is_visible: bool,
-    // save_serialport_modal_is_visible: bool,
-    // serial_ports: Vec<String>,
-    // selected_serial_port: String,
-    // greet_msg: String,
-}
-
-impl Component for BeeQueenApp {
-    type Message = Msg;
-    type Properties = ();
-  
-    fn create(_ctx: &Context<Self>) -> Self {
-        BeeQueenApp::default()
-    }
-    
-    fn view(&self, ctx: &Context<Self>) -> Html {
-        html!(
-            <>
-                <main class="pt-14">
-                    <div class="m-7">
-                        <div class="grid gap-5 mb-5 md:grid-cols-2">
-
-                            <MySelect
-                                id={MODE.id}
-                                label={MODE.label}
-                                description={MODE.description}
-                                select_options={MODE.distinct_vals}
-
-                                vval={
-                                    self.vvals.get_by_id(MODE.id)
-                                    .expect("id is always valid")
-                                    .expect("id always exists")
-                                    .clone()
-                                }
-                                handle_onchange = {
-                                    ctx.link().callback(move |(id, txt)| {
-                                        Msg::ParamValueChanged(id, txt)
-                                    })
-                                }
-                            />
-
-                            <MyInput
-                                id = { UL_PERIOD.id }
-                                label = { UL_PERIOD.label }
-                                description = { UL_PERIOD.description }
-                                radix_disp = { RadixDisp::Dec }
-                                vval={
-                                    self.vvals.get_by_id(UL_PERIOD.id)
-                                    .expect("id is always valid")
-                                    .expect("id always exists")
-                                    .clone()
-                                }
-                                handle_onchange = {
-                                    ctx.link().callback(move |(id, txt)| {
-                                        Msg::ParamValueChanged(id, txt)
-                                    })
-                                }
-                            />
-
-                            <MyInput
-                                id = { LORA_PERIOD.id }
-                                label = { LORA_PERIOD.label }
-                                description = { LORA_PERIOD.description }
-                                radix_disp = { RadixDisp::Hex }
-                                vval={
-                                    self.vvals.get_by_id(LORA_PERIOD.id)
-                                    .expect("id is always valid")
-                                    .expect("id always exists")
-                                    .clone()
-                                }
-                                handle_onchange = {
-                                    ctx.link().callback(move |(id, txt)| {
-                                        Msg::ParamValueChanged(id, txt)
-                                    })
-                                }
-                            />
-
-                            <MyOptionalInput
-                                id = { PERIODIC_POS_PERIOD.id }
-                                label = { PERIODIC_POS_PERIOD.label }
-                                description = {PERIODIC_POS_PERIOD.description }
-                                disabled_value = { PERIODIC_POS_PERIOD.disabled_val }
-                                default_value = { PERIODIC_POS_PERIOD.default_val }
-                                radix_disp = { RadixDisp::Dec }
-                                vval={
-                                    self.vvals.get_by_id(PERIODIC_POS_PERIOD.id)
-                                    .expect("id is always valid")
-                                    .expect("id always exists")
-                                    .clone()
-                                }
-                                handle_onchange = {
-                                    ctx.link().callback(move |(id, txt)| {
-                                        Msg::ParamValueChanged(id, txt)
-                                    })
-                                }
-                            />
-
-                            <MySelect
-                                id={GEOLOC_SENSOR.id}
-                                label={GEOLOC_SENSOR.label}
-                                description={GEOLOC_SENSOR.description}
-                                select_options={GEOLOC_SENSOR.distinct_vals}
-                                vval={
-                                    self.vvals.get_by_id(GEOLOC_SENSOR.id)
-                                    .expect("id is always valid")
-                                    .expect("id always exists")
-                                    .clone()
-                                }
-                                handle_onchange = {
-                                    ctx.link().callback(move |(id, txt)| {
-                                        Msg::ParamValueChanged(id, txt)
-                                    })
-                                }
-                            />
-
-                            <MySelect
-                                id={GEOLOC_METHOD.id}
-                                label={GEOLOC_METHOD.label}
-                                description={GEOLOC_METHOD.description}
-                                select_options={GEOLOC_METHOD.distinct_vals}
-                                vval={
-                                    self.vvals.get_by_id(GEOLOC_METHOD.id)
-                                    .expect("id is always valid")
-                                    .expect("id always exists")
-                                    .clone()
-                                }
-                                handle_onchange = {
-                                    ctx.link().callback(move |(id, txt)| {
-                                        Msg::ParamValueChanged(id, txt)
-                                    })
-                                }
-                            />
-
-                        </div>
-                    </div>
-                </main>
-            </>
-        )
-    }
-
-    fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
-        match msg {
-            Msg::ParamValueChanged(id, val) => {
-                self.vvals.set_txt_by_id(id, &val).expect("id is always valid");
-                true
-            },
-            // _ => false
-        }
-    }
-
-}
-
-
 #[function_component(App)]
 pub fn app() -> Html {
     // States variables
@@ -253,7 +82,6 @@ pub fn app() -> Html {
 
     let force_update = use_force_update();
 
-    // **************************************************************
     // Callbacks
 
     // param_value_changed: Callback<ValueUpdateData>
@@ -269,6 +97,11 @@ pub fn app() -> Html {
     // onclick_save_config_usb
     // onclick_navbar
     
+    // let prm_val_changed: Callback<(u8, String)> = {
+    //     Callback::from(move |(id, txt)| {
+
+    //     })
+    // };
 
     let param_value_changed: Callback<ValueUpdateData> = {
         let force_update = force_update.clone();
@@ -655,85 +488,85 @@ pub fn app() -> Html {
                 <div class="m-7">
                     <div class="grid gap-5 mb-5 md:grid-cols-2">
 
-                        // <MySelect
-                        //     id={MODE.id}
-                        //     label={MODE.label}
-                        //     description={MODE.description}
-                        //     select_options={MODE.distinct_vals}
-                        //     value={state.mode.clone()}
-                        //     handle_onchange={param_value_changed.clone()}
-                        // />
+                        <MySelect
+                            id={MODE.id}
+                            label={MODE.label}
+                            description={MODE.description}
+                            select_options={MODE.distinct_vals}
+                            value={state.mode.clone()}
+                            handle_onchange={param_value_changed.clone()}
+                        />
 
-                        // <MyInput
-                        //     id={UL_PERIOD.id}
-                        //     label={UL_PERIOD.label}
-                        //     description={UL_PERIOD.description}
-                        //     value={state.ul_period.clone()}
-                        //     valid_range={UL_PERIOD.valid_range}
-                        //     handle_onchange={param_value_changed.clone()}
-                        // />
+                        <MyInput
+                            id={UL_PERIOD.id}
+                            label={UL_PERIOD.label}
+                            description={UL_PERIOD.description}
+                            value={state.ul_period.clone()}
+                            valid_range={UL_PERIOD.valid_range}
+                            handle_onchange={param_value_changed.clone()}
+                        />
 
-                        // <MyHexInput
-                        //     id={LORA_PERIOD.id}
-                        //     label={LORA_PERIOD.label}
-                        //     description={LORA_PERIOD.description}
-                        //     value={state.lora_period.clone()}
-                        //     valid_range={LORA_PERIOD.range}
-                        //     handle_onchange={param_value_changed.clone()}
-                        // />
+                        <MyHexInput
+                            id={LORA_PERIOD.id}
+                            label={LORA_PERIOD.label}
+                            description={LORA_PERIOD.description}
+                            value={state.lora_period.clone()}
+                            valid_range={LORA_PERIOD.valid_range}
+                            handle_onchange={param_value_changed.clone()}
+                        />
 
-                        // <MyOptionalInput
-                        //     id={PERIODIC_POS_PERIOD.id}
-                        //     label={PERIODIC_POS_PERIOD.label}
-                        //     description={PERIODIC_POS_PERIOD.description}
-                        //     value={state.periodic_pos_period.clone()}
-                        //     disabled_value={PERIODIC_POS_PERIOD.disabled_val}
-                        //     default_value={PERIODIC_POS_PERIOD.default_val}
-                        //     valid_range={PERIODIC_POS_PERIOD.range}
-                        //     handle_onchange={param_value_changed.clone()}
-                        // />
+                        <MyOptionalInput
+                            id={PERIODIC_POS_PERIOD.id}
+                            label={PERIODIC_POS_PERIOD.label}
+                            description={PERIODIC_POS_PERIOD.description}
+                            value={state.periodic_pos_period.clone()}
+                            disabled_value={PERIODIC_POS_PERIOD.disabled_val}
+                            default_value={PERIODIC_POS_PERIOD.default_val}
+                            valid_range={PERIODIC_POS_PERIOD.valid_range}
+                            handle_onchange={param_value_changed.clone()}
+                        />
 
-                        // <MySelect
-                        //     id={GEOLOC_SENSOR.id}
-                        //     label={GEOLOC_SENSOR.label}
-                        //     description={GEOLOC_SENSOR.description}
-                        //     select_options={GEOLOC_SENSOR.distinct_vals}
-                        //     value={state.geoloc_sensor.clone()}
-                        //     handle_onchange={param_value_changed.clone()}
-                        // />
+                        <MySelect
+                            id={GEOLOC_SENSOR.id}
+                            label={GEOLOC_SENSOR.label}
+                            description={GEOLOC_SENSOR.description}
+                            select_options={GEOLOC_SENSOR.distinct_vals}
+                            value={state.geoloc_sensor.clone()}
+                            handle_onchange={param_value_changed.clone()}
+                        />
 
-                        // <MySelect
-                        //     id={GEOLOC_METHOD.id}
-                        //     label={GEOLOC_METHOD.label}
-                        //     description={GEOLOC_METHOD.description}
-                        //     select_options={GEOLOC_METHOD.distinct_vals}
-                        //     value={state.geoloc_method.clone()}
-                        //     handle_onchange={param_value_changed.clone()}
-                        // />
+                        <MySelect
+                            id={GEOLOC_METHOD.id}
+                            label={GEOLOC_METHOD.label}
+                            description={GEOLOC_METHOD.description}
+                            select_options={GEOLOC_METHOD.distinct_vals}
+                            value={state.geoloc_method.clone()}
+                            handle_onchange={param_value_changed.clone()}
+                        />
 
-                        // <div>
-                        //     <MySelect
-                        //         id={TRANSMIT_STRAT.id}
-                        //         label={TRANSMIT_STRAT.label}
-                        //         description={TRANSMIT_STRAT.description}
-                        //         select_options={TRANSMIT_STRAT.distinct_vals}
-                        //         value={state.transmit_strat.clone()}
-                        //         handle_onchange={param_value_changed.clone()}
-                        //     />
-                        //     <div
-                        //         hidden={ state.transmit_strat.clone() != ParamValue::Valid(TransmitStratOption::CUSTOM.val) }
-                        //         class={"ml-5 mt-2"}
-                        //     >
-                        //         <MyTransmitStratCustom
-                        //             id={TRANSMIT_STRAT_CUSTOM.id}
-                        //             label={TRANSMIT_STRAT_CUSTOM.label}
-                        //             description={TRANSMIT_STRAT_CUSTOM.description}
-                        //             items={TRANSMIT_STRAT_CUSTOM.bits}
-                        //             value={state.transmit_strat_custom.clone()}
-                        //             handle_onchange={param_value_changed.clone()}
-                        //         />
-                        //     </div>
-                        // </div>
+                        <div>
+                            <MySelect
+                                id={TRANSMIT_STRAT.id}
+                                label={TRANSMIT_STRAT.label}
+                                description={TRANSMIT_STRAT.description}
+                                select_options={TRANSMIT_STRAT.distinct_vals}
+                                value={state.transmit_strat.clone()}
+                                handle_onchange={param_value_changed.clone()}
+                            />
+                            <div
+                                hidden={ state.transmit_strat.clone() != ParamValue::Valid(TransmitStratOption::CUSTOM.val) }
+                                class={"ml-5 mt-2"}
+                            >
+                                <MyTransmitStratCustom
+                                    id={TRANSMIT_STRAT_CUSTOM.id}
+                                    label={TRANSMIT_STRAT_CUSTOM.label}
+                                    description={TRANSMIT_STRAT_CUSTOM.description}
+                                    items={TRANSMIT_STRAT_CUSTOM.bits}
+                                    value={state.transmit_strat_custom.clone()}
+                                    handle_onchange={param_value_changed.clone()}
+                                />
+                            </div>
+                        </div>
 
                         <MyBitmap
                             id={CONFIG_FLAGS.id}

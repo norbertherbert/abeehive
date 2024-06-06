@@ -1,6 +1,5 @@
 use std::fmt;
 
-
 #[repr(u8)]
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum ParamId {
@@ -16,21 +15,19 @@ pub enum ParamId {
 }
 impl fmt::Display for ParamId {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-
         let id_text = match self {
-            Self::Mode => { "mode" },
-            Self::UlPeriod => { "ul_period" },
-            Self::LoraPeriod => { "lora_period" },
-            Self::PeriodicPosPeriod => { "periodic_pos_period" },
-            Self::GeolocSensor => { "geoloc_sensor" },
-            Self::GeolocMethod => { "geoloc_method" },
-            Self::TransmitStrat => { "transmit_strat" },
-            Self::TransmitStratCustom => { "transmit_strat_custom" },
-            Self::ConfigFlags => { "config_flags" },
+            Self::Mode => "mode",
+            Self::UlPeriod => "ul_period",
+            Self::LoraPeriod => "lora_period",
+            Self::PeriodicPosPeriod => "periodic_pos_period",
+            Self::GeolocSensor => "geoloc_sensor",
+            Self::GeolocMethod => "geoloc_method",
+            Self::TransmitStrat => "transmit_strat",
+            Self::TransmitStratCustom => "transmit_strat_custom",
+            Self::ConfigFlags => "config_flags",
         };
 
         write!(f, "{}", id_text)
-
     }
 }
 impl ParamId {
@@ -49,5 +46,3 @@ impl ParamId {
         }
     }
 }
-
-

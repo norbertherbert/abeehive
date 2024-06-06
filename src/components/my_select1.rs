@@ -1,33 +1,27 @@
 use yew::prelude::*;
+// use yewdux::prelude::*;
 use wasm_bindgen::JsCast;
 use web_sys::HtmlInputElement;
 // use std::fmt;
 
 use crate::components::my_label::MyLabel;
-use crate::params::{
-    ParamType,
-    param_id::ParamId,
-    param_options1::ParamOption,
-    // param_comp_type_props::ParamOptionVariant,
-    param_values::ValueUpdateData,
-};
+
+use crate::params::param_values::{ParamValue, ValueUpdateData};
+use crate::prm::typ::{PrmVal, DistinctVal};
 
 #[derive(Properties, PartialEq)]
-pub struct Props<T> 
-    where T: 'static + PartialEq,
-{
-    pub id: ParamId,
+pub struct Props {
+    pub id: u8,
     pub label: &'static str,
     pub description: &'static str,
-    pub select_options: &'static [T],
-    pub value: ParamType,
+    pub select_options: &'static [DistinctVal],
+    pub value: ParamValue,
     pub handle_onchange: Callback<ValueUpdateData>,
 }
 
-#[function_component(MySelect1)]
-pub fn my_select1<T>(props: &Props<T>) -> Html 
-    where T: 'static + PartialEq + Clone + std::fmt::Display + ParamOption,
-{
+#[function_component(MySelect)]
+pub fn my_select(props: &Props) -> Html {
+    // let (param_values_state, _) = use_store::<ParamValues>();
 
     let handle_onchange = props.handle_onchange.clone();
     let id = props.id;
@@ -38,11 +32,21 @@ pub fn my_select1<T>(props: &Props<T>) -> Html
             .unwrap()
             .unchecked_into::<HtmlInputElement>()
             .value();
-        let value: ParamType = value.parse().unwrap(); // TODO!
-        handle_onchange.emit(ValueUpdateData{new_value: value, param_id: id});
+
+        let value: PrmVal = value.parse().unwrap(); // TODO!
+        let new_param_value = ParamValue::Valid(value);
+
+        handle_onchange.emit(ValueUpdateData {
+            new_param_value,
+            param_id: id,
+        });
     });
 
     let aria_id = format!("{}-aria", &props.id);
+    let value = match props.value {
+        ParamValue::Valid(v) => v,
+        _ => props.select_options[0].val, // TODO: select the right default value!
+    };
 
     html! {
         <div>
@@ -54,17 +58,19 @@ pub fn my_select1<T>(props: &Props<T>) -> Html
                 is_valid=true
             />
 
-            <select 
-                id={props.id.to_string()} 
-                value={props.value.clone().to_string()}
-                onchange={onchange} 
-                aria-describedby={aria_id.clone()} 
+            <select
+                id={props.id.to_string()}
+
+                value={value.to_string()}
+
+                onchange={onchange}
+                aria-describedby={aria_id.clone()}
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             >
 
-                { 
+                {
                     props.select_options.iter().map(|item| {
-                        html!{ <option value={item.as_value().to_string()} selected={item.as_value() == props.value} >{item.to_string()}</option> }
+                        html!{ <option value={item.val.to_string()} selected={item.val == value} >{item.txt}</option> }
                     }).collect::<Html>()
                 }
 
