@@ -44,7 +44,7 @@ pub fn list_usb_ports() -> Vec<String> {
     ports
 }
 
-pub fn get_config_usb(serial_port: &str) -> Result<String, std::io::Error> {
+pub fn get_config_usb(serial_port: &str) -> Result<Vec<(u8,i32)>, std::io::Error> {
     let mut port = serialport::new(serial_port, 115_200)
         .timeout(Duration::from_millis(10))
         .open()
@@ -53,7 +53,8 @@ pub fn get_config_usb(serial_port: &str) -> Result<String, std::io::Error> {
     let response = execute_cli_cmd(&mut port, "")?;
     // println!("{}", response);
 
-    let mut config_string = String::new();
+    // let mut config_string = String::new();
+    let mut prm_id_val_vec: Vec<(u8, i32)> = Vec::new();
 
     if let Some(response_last_line) = response
         .split_terminator(&['\n', '\r'])
@@ -90,13 +91,15 @@ pub fn get_config_usb(serial_port: &str) -> Result<String, std::io::Error> {
 
                     for line in lines {
                         let mut words = line.split_whitespace();
-                        let _num = words.next().unwrap();
-                        words.next();
                         let id = words.next().unwrap();
                         words.next();
-                        let value = words.next().unwrap();
+                        let _name = words.next().unwrap();
+                        words.next();
+                        let val = words.next().unwrap();
 
-                        config_string.push_str(&format!("{} = {}\n", id, value));
+                        prm_id_val_vec.push((id.parse().unwrap(), val.parse().unwrap()));
+                        // config_string.push_str(&format!("{} = {}\n", name, value));
+
                         // println!("{} = {}", id, value);
                     }
                 }
@@ -107,16 +110,11 @@ pub fn get_config_usb(serial_port: &str) -> Result<String, std::io::Error> {
         // println!("{}", response);
     };
 
-    Ok(config_string)
+    // Ok(config_string)
+    Ok(prm_id_val_vec)
 }
 
-pub fn save_config_usb(cli_cmds: Vec<String>, serial_port: String) -> Result<(), std::io::Error> {
-    // let mut file_content = String::new();
-    // for item in cli_cmds {
-    //     file_content = file_content + &item + "\n";
-    // }
-    // println!("Port: {}", port);
-    // println!("File Content:\n{}", &file_content);
+pub fn save_config_usb(prm_id_val_vec: Vec<(u8, i32)>, serial_port: String) -> Result<(), std::io::Error> {
 
     let mut port = serialport::new(serial_port, 115_200)
         .timeout(Duration::from_millis(10))
@@ -149,9 +147,10 @@ pub fn save_config_usb(cli_cmds: Vec<String>, serial_port: String) -> Result<(),
                     let response = execute_cli_cmd(&mut port, CMD_LOG_OFF)?;
                     println!("{}\n{}", CMD_LOG_OFF, response);
 
-                    for cmd in cli_cmds {
-                        execute_cli_cmd(&mut port, &cmd)?;
-                        println!("{}\n{}", &cmd, response);
+                    for (id, val) in prm_id_val_vec {
+                        let cli_cmd = format!("config set {} {}", id, val);
+                        execute_cli_cmd(&mut port, &cli_cmd)?;
+                        println!("{}\n{}", &cli_cmd, response);
                     }
 
                     execute_cli_cmd(&mut port, CMD_CONFIG_SAVE)?;

@@ -29,10 +29,10 @@ pub fn my_label(props: &Props) -> Html {
                         }
                     }
                 >
-                    {&props.label}
-                    <span class="ml-1 text-xs italic">
-                        {"- "}{props.input_element_id.to_string()}
-                    </span>
+                    { format!("{} - {}", props.input_element_id, &props.label)}
+                    // <span class="ml-1 text-xs italic">
+                    //     {"- "}{props.input_element_id.to_string()}
+                    // </span>
                 </label>
 
                 // ? icon

@@ -18,9 +18,24 @@
     @apply bg-red-50  border border-red-500  text-red-900 placeholder-red-700 text-sm rounded-lg focus:ring-red-500  focus:border-red-500  block w-full p-2.5 dark:bg-gray-700 dark:border-red-500  dark:placeholder-red-500  dark:text-red-500 dark:focus:ring-blue-500 dark:focus:border-blue-500;
 };
 
+.my-valid-button {
+    @apply flex justify-between items-center bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-56 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500
+}
+
+.my-invalid-button {
+    @apply flex justify-between items-center bg-gray-50 border border-red-500 text-red-900 text-sm rounded-lg focus:ring-1 focus:ring-red-500 focus:border-red-500 w-56 p-2.5 dark:bg-gray-700 dark:border-red-600 dark:placeholder-red-500 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500
+}
+
 .my-disabled-input {
     @apply bg-gray-50 border border-gray-300 text-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white  dark:focus:ring-blue-500 dark:focus:border-blue-500;
 };
+
+.my-valid-checkbox-label {
+    @apply w-full ms-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300
+}
+.my-invalid-checkbox-label {
+    @apply w-full ms-2 text-sm font-medium text-red-700 rounded dark:text-red-500
+}
 
 .my-valid-optional-input {
     @apply ps-14 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white  dark:focus:ring-blue-500 dark:focus:border-blue-500;

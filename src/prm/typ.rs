@@ -41,7 +41,8 @@ fn interim_vval_from_txt(txt: &str) -> PrmVVal {
 #[derive(PartialEq)]
 pub struct BitmapBit { 
     pub bit: u8, 
-    pub txt: &'static str 
+    pub txt: &'static str,
+    pub ena: bool,
 }
 
 #[derive(PartialEq)]
@@ -65,7 +66,7 @@ pub trait PrmDat {
 
 pub enum PrmDatEnum {
     PrmDatDec(PrmDatDec),
-    PrmDatHex(PrmDatHex),
+    // PrmDatHex(PrmDatHex),
     PrmDatOptional(PrmDatOptional),
     PrmDatDistinct(PrmDatDistinct),
     PrmDatBitmap(PrmDatBitmap),
@@ -108,35 +109,35 @@ impl PrmDat for PrmDatDec {
     }
 }
 
-/// Meta Data for a Parameter Type that can represent a HEXADECIMAL VALUE
+// /// Meta Data for a Parameter Type that can represent a HEXADECIMAL VALUE
 
-pub struct PrmDatHex {
-    pub id: u8,
-    pub name: &'static str,
-    pub label: &'static str,
-    pub description: &'static str,
-    pub default_val: PrmVal,
+// pub struct PrmDatHex {
+//     pub id: u8,
+//     pub name: &'static str,
+//     pub label: &'static str,
+//     pub description: &'static str,
+//     pub default_val: PrmVal,
 
-    pub range: (PrmVal, PrmVal)
-}
-impl PrmDat for PrmDatHex {
-    fn id(&self) -> u8 { self.id }
-    fn name(&self) -> &str { self.name }
-    fn vval_from_val(&self, val: PrmVal) -> PrmVVal {
-        if self.range.0 <= val && val <= self.range.1 {
-            PrmVVal::Valid(val)
-        } else {
-            PrmVVal::Invalid((val, "invalid value".to_owned()))
-        }
-    }
-    fn vval_from_txt(&self, txt: &str) -> PrmVVal {
-        match interim_vval_from_txt(txt) {
-            PrmVVal::Valid(val) => Self::vval_from_val(self, val),
-            PrmVVal::Invalid(v) => PrmVVal::Invalid(v),
-            PrmVVal::InvalidTxt(v) => PrmVVal::InvalidTxt(v),
-        }
-    }
-}
+//     pub range: (PrmVal, PrmVal)
+// }
+// impl PrmDat for PrmDatHex {
+//     fn id(&self) -> u8 { self.id }
+//     fn name(&self) -> &str { self.name }
+//     fn vval_from_val(&self, val: PrmVal) -> PrmVVal {
+//         if self.range.0 <= val && val <= self.range.1 {
+//             PrmVVal::Valid(val)
+//         } else {
+//             PrmVVal::Invalid((val, "invalid value".to_owned()))
+//         }
+//     }
+//     fn vval_from_txt(&self, txt: &str) -> PrmVVal {
+//         match interim_vval_from_txt(txt) {
+//             PrmVVal::Valid(val) => Self::vval_from_val(self, val),
+//             PrmVVal::Invalid(v) => PrmVVal::Invalid(v),
+//             PrmVVal::InvalidTxt(v) => PrmVVal::InvalidTxt(v),
+//         }
+//     }
+// }
 
 
 /// Meta Data for a Parameter Type that can represent an OPTIONAL VALUE
@@ -235,14 +236,21 @@ impl PrmDat for PrmDatBitmap {
     fn id(&self) -> u8 { self.id }
     fn name(&self) -> &str { self.name }
     fn vval_from_val(&self, val: PrmVal) -> PrmVVal {
+        
         let mut valid_bitmap: PrmVal = 0;
         for b in self.bits {
-            valid_bitmap |= 1 << b.bit
+            if b.ena {
+                valid_bitmap |= 1 << b.bit
+            }
         }
+
         if (val & valid_bitmap) == val {
             PrmVVal::Valid(val)
         } else {
-            PrmVVal::Invalid((val, "invalid value".to_owned()))
+            PrmVVal::Invalid((
+                val, 
+                format!("invalid bit set in bitmap, the valid bitmask is: 0b{:025b}", valid_bitmap)
+            ))
         }
     }
     fn vval_from_txt(&self, txt: &str) -> PrmVVal {

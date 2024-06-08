@@ -27,6 +27,7 @@ pub fn my_bitmap(props: &Props) -> Html {
 
     let bitmap = match props.vval {
         PrmVVal::Valid(v) => v,
+        PrmVVal::Invalid((v, _)) => v,
         _ => 0, // TODO: select the right default value!
     };
 
@@ -79,7 +80,13 @@ pub fn my_bitmap(props: &Props) -> Html {
                 id={props.id.to_string()}
                 aria-describedby={aria_id.clone()}
                 data-dropdown-toggle={dropdown_id.clone()}
-                class="flex justify-between items-center bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 block w-56 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                class = {
+                    match &vval {
+                        PrmVVal::Valid(_) => "my-valid-button",
+                        PrmVVal::Invalid(_) => "my-invalid-button",
+                        PrmVVal::InvalidTxt(_) => "my-invalid-button",
+                    }
+                }
             >
                 {"Bitmap ..."}
                 <svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
@@ -95,28 +102,46 @@ pub fn my_bitmap(props: &Props) -> Html {
                 <ul class="h-48 p-0 overflow-y-auto text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownSearchButton">
 
                     {
-                        props.items.iter().map(|item| {
+                        props.items.iter()
+                        .filter_map(|item| {
 
-                            html!{
+                            let checked = (bitmap >> item.bit) & 1 == 1;
+
+                            if !item.ena && !checked {
+                                return None
+                            }
+
+                            Some(html!{
 
                                 <li>
                                     <div class="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
                                         <input
-                                            id={format!("{}-checkbox-{}", props.id, item.bit)}
-                                            type="checkbox"
-                                            checked = { (bitmap >> item.bit) & 1 == 1 }
-                                            value={item.bit.to_string()}
-                                            onchange={on_checkbox_change.clone()}
-                                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
+                                            id = { format!("{}-checkbox-{}", props.id, item.bit) }
+                                            type = "checkbox"
+                                            checked = { checked }
+                                            value = { item.bit.to_string() }
+                                            onchange = { on_checkbox_change.clone() }
+                                            class = "w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
                                         />
-                                        <label for={format!("{}-checkbox-{}", props.id, item.bit)}
-                                             class="w-full ms-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">
-                                            {item.txt}
+                                        <label 
+                                            for = { format!("{}-checkbox-{}", props.id, item.bit) }
+                                            class = {
+                                                if item.ena {
+                                                    // "w-full ms-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300"
+                                                    { "my-valid-checkbox-label"}
+                                                } else {
+                                                    // "w-full ms-2 text-sm font-medium  text-red-700 rounded dark:text-red-500;"
+                                                    { "my-invalid-checkbox-label"}
+                                                }
+                                            }
+                                        >
+                                            { format!("{} - {}", item.bit, item.txt) }
                                         </label>
                                     </div>
                                 </li>
 
-                            }
+                            })
+
                         }).collect::<Html>()
                     }
 

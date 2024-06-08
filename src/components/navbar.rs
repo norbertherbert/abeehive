@@ -1,5 +1,6 @@
 use yew::prelude::*;
 
+#[derive(Debug, PartialEq)]
 pub enum NavbarAction {
     GetFromFile,
     SaveToFile,

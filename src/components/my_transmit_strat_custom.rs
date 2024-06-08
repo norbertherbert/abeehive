@@ -5,8 +5,10 @@ use yew::prelude::*;
 
 use crate::components::my_label::MyLabel;
 
-use crate::params::param_values::{ParamValue, ValueUpdateData};
-use crate::prm::typ::{PrmVal, BitmapBit};
+use crate::prm::{
+    typ::{ PrmVal, BitmapBit },
+    val::PrmVVal,
+};
 
 #[derive(Properties, PartialEq)]
 pub struct Props {
@@ -14,14 +16,17 @@ pub struct Props {
     pub label: &'static str,
     pub description: &'static str,
     pub items: &'static [BitmapBit],
-    pub value: ParamValue,
-    pub handle_onchange: Callback<ValueUpdateData>,
+
+    pub vval: PrmVVal,
+    pub handle_onchange: Callback<(u8, String)>,
 }
 
 #[function_component(MyTransmitStratCustom)]
 pub fn my_transmit_strat_custom(props: &Props) -> Html {
-    let bitmap = match props.value {
-        ParamValue::Valid(v) => v,
+    
+    let bitmap = match props.vval {
+        PrmVVal::Valid(v) => v,
+        PrmVVal::Invalid((v, _)) => v,
         _ => 0, // TODO: select the right default value!
     };
 
@@ -49,10 +54,10 @@ pub fn my_transmit_strat_custom(props: &Props) -> Html {
             };
 
             log!("value:", new_bitmap.to_string());
-            handle_onchange.emit(ValueUpdateData {
-                new_param_value: ParamValue::Valid(new_bitmap),
-                param_id: id,
-            });
+            handle_onchange.emit((
+                id,
+                new_bitmap.to_string(),
+            ));
         })
     };
 
@@ -69,10 +74,10 @@ pub fn my_transmit_strat_custom(props: &Props) -> Html {
             };
 
             log!("value:", new_bitmap.to_string());
-            handle_onchange.emit(ValueUpdateData {
-                new_param_value: ParamValue::Valid(new_bitmap),
-                param_id: id,
-            });
+            handle_onchange.emit((
+                id,
+                new_bitmap.to_string(),
+            ));
         })
     };
 
@@ -89,29 +94,6 @@ pub fn my_transmit_strat_custom(props: &Props) -> Html {
     let dropdown_id1 = format!("{}-dropdown1", props.id);
     let dropdown_id2 = format!("{}-dropdown2", props.id);
 
-    // let two_checkboxes = {
-    //     let item0_bitnumber = props.items[0].bit_number;
-    //     let item0_description = props.items[0].description;
-    //     let item1_bitnumber = props.items[1].bit_number;
-    //     let item1_description = props.items[1].description;
-    //     html! {<>
-
-    //         <input
-    //             id={format!("{}-checkbox-{}", props.id, item0_bitnumber)}
-    //             type="checkbox"
-    //             checked = { (*bitmap_state >> item0_bitnumber) & 1 == 1 }
-    //             value={item0_bitnumber.to_string()}
-    //             onchange={on_checkbox_change.clone()}
-    //             class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-    //         />
-    //         <label for={format!("{}-checkbox-{}", props.id, item0_bitnumber)}
-    //                 class="w-full ms-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">
-    //             {item0_description}
-    //         </label>
-
-    //     </>}
-    // };
-
     html! {
         <div>
 
@@ -124,6 +106,9 @@ pub fn my_transmit_strat_custom(props: &Props) -> Html {
             <input id={props.id.to_string()} hidden=true />
 
             <div class={"ml-5"}>
+
+
+                // 2 checkboxes for bit 0 and bit 1
 
                 <div class={"mb-3"}>
 
@@ -163,10 +148,9 @@ pub fn my_transmit_strat_custom(props: &Props) -> Html {
                 </div>
 
 
-
-
-
                 <div>
+
+                    // 1st TX Daata Rates
 
                     <div class={"mb-3"}>
 
@@ -231,6 +215,7 @@ pub fn my_transmit_strat_custom(props: &Props) -> Html {
 
                     </div>
 
+                    // 1st TX DR Distribution
 
                     <div class={"mb-3"}>
 
@@ -256,6 +241,8 @@ pub fn my_transmit_strat_custom(props: &Props) -> Html {
 
                 </div>
 
+
+                // 2nd TX Data Rates
 
                 <div hidden={ bitmap & 0b10 != 0b10 } >
 
@@ -319,6 +306,8 @@ pub fn my_transmit_strat_custom(props: &Props) -> Html {
                         </div>
                         <span id={aria_button_id2} class="hidden">{&props.description}</span>
                     </div>
+
+                    // 2nd TX DR Distribution
 
                     <div class={"mb-3"}>
 

@@ -85,7 +85,7 @@ pub fn my_select(props: &Props) -> Html {
                         props.select_options.iter().map(|item| {
                             html!{ 
                                 <option value = { item.val.to_string() } selected = { item.val.to_string() == value } >
-                                    { item.txt }
+                                    { format!("{} - {}", item.val, item.txt) }
                                 </option> 
                             }
                         }).collect::<Html>()
@@ -94,7 +94,14 @@ pub fn my_select(props: &Props) -> Html {
                     {
                         match vval {
                             PrmVVal::Valid(_) => html!(),
-                            _ => {
+                            PrmVVal::Invalid((val, _)) => {
+                                html! (
+                                    <option value = { "" } selected = true>
+                                        { format!("{} - Please select a valid value!", val) }
+                                    </option>
+                                )
+                            },
+                            PrmVVal::InvalidTxt((_, _)) => {
                                 html! (
                                     <option value = { "" } selected = true>
                                         { "Please select a valid value!" }

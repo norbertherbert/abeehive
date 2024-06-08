@@ -104,11 +104,11 @@ impl PrmVVals {
         )
     }
 
-    pub fn iter(&mut self) -> std::collections::btree_map::Iter<u8, PrmVVal> {
+    pub fn iter(&self) -> std::collections::btree_map::Iter<u8, PrmVVal> {
         self.vvals_data.iter()
     }
 
-    pub fn to_cfg_string(&mut self) -> String {
+    pub fn to_cfg_string(&self) -> String {
         let mut cfg: String = "".to_owned();
         for (id, vval) in self.iter() {
             let Some(param_data) = id_to_data_map().get(id) else {
@@ -133,7 +133,7 @@ impl PrmVVals {
         cfg
     }
 
-    pub fn to_cfg_vec(&mut self) -> Vec<(u8, PrmVal)> {
+    pub fn to_cfg_vec(&self) -> Vec<(u8, PrmVal)> {
 
             let mut cfg_vec: Vec<(u8, PrmVal)> = Vec::new(); 
             for (id, vval) in self.iter() {
@@ -148,11 +148,11 @@ impl PrmVVals {
 
     }
 
-    pub fn from_cfg_str(file: &str) -> Result<Self>{
+    pub fn from_cfg_str(cfg_string: &str) -> Result<Self>{
     
         let mut vvals = Self::new();
     
-        for line in file.lines() {
+        for line in cfg_string.lines() {
     
             // Remove comments, marked by #
             let line = line

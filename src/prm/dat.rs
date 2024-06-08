@@ -290,103 +290,128 @@ impl TransmitStratCustomBit {
     pub const NO_ADR_IN_STATIC: BitmapBit = BitmapBit {
         bit: 0,
         txt: "No ADR in static mode",
+        ena: true,
     };
     pub const DOUBLE_TRANSMISSION: BitmapBit = BitmapBit {
         bit: 1,
         txt: "Double transmission enabled",
+        ena: true,
     };
 
     pub const DR_DIST_1ST_TRANSMISSION_BIT0: BitmapBit = BitmapBit {
         bit: 2,
         txt: "1st tr: data rate distribution (Bit 0)",
+        ena: true,
     };
     pub const DR_DIST_1ST_TRANSMISSION_BIT1: BitmapBit = BitmapBit {
         bit: 3,
         txt: "1st tr: data rate distribution (Bit 1)",
+        ena: true,
     };
     pub const DR_DIST_1ST_TRANSMISSION_BIT2: BitmapBit = BitmapBit {
         bit: 4,
         txt: "1st tr: data rate distribution (Bit 2)",
+        ena: true,
     };
 
     pub const DR_DIST_2ND_TRANSMISSION_BIT0: BitmapBit = BitmapBit {
         bit: 5,
         txt: "2nd tr: data rate distribution (Bit 0)",
+        ena: true,
     };
     pub const DR_DIST_2ND_TRANSMISSION_BIT1: BitmapBit = BitmapBit {
         bit: 6,
         txt: "2nd tr: data rate distribution (Bit 1)",
+        ena: true,
     };
     pub const DR_DIST_2ND_TRANSMISSION_BIT2: BitmapBit = BitmapBit {
         bit: 7,
         txt: "2nd tr: data rate distribution (Bit 2)",
+        ena: true,
     };
 
     pub const FIRST_TRANSM_DR0_ENABLED: BitmapBit = BitmapBit {
         bit: 8,
         txt: "TX1 DR0/SF12-125kHz",
+        ena: true,
     };
     pub const FIRST_TRANSM_DR1_ENABLED: BitmapBit = BitmapBit {
         bit: 9,
         txt: "TX1 DR1/SF11-125kHz",
+        ena: true,
     };
     pub const FIRST_TRANSM_DR2_ENABLED: BitmapBit = BitmapBit {
         bit: 10,
         txt: "TX1 DR2/SF10-125kHz",
+        ena: true,
     };
     pub const FIRST_TRANSM_DR3_ENABLED: BitmapBit = BitmapBit {
         bit: 11,
         txt: "TX1 DR3/SF9-125kHz",
+        ena: true,
     };
     pub const FIRST_TRANSM_DR4_ENABLED: BitmapBit = BitmapBit {
         bit: 12,
         txt: "TX1 DR4/SF8-125kHz",
+        ena: true,
     };
     pub const FIRST_TRANSM_DR5_ENABLED: BitmapBit = BitmapBit {
         bit: 13,
         txt: "TX1 DR5/SF7-125kHz",
+        ena: true,
     };
     pub const FIRST_TRANSM_DR6_ENABLED: BitmapBit = BitmapBit {
         bit: 14,
         txt: "TX1 DR6/SF7-250kHz",
+        ena: true,
     };
     pub const FIRST_TRANSM_DR7_ENABLED: BitmapBit = BitmapBit {
         bit: 15,
         txt: "TX1 DR7/FSK-50kbps",
+        ena: true,
     };
 
     pub const SECOND_TRANSM_DR0_ENABLED: BitmapBit = BitmapBit {
         bit: 16,
         txt: "TX2 DR0/SF12-125kHz",
+        ena: true,
     };
     pub const SECOND_TRANSM_DR1_ENABLED: BitmapBit = BitmapBit {
         bit: 17,
         txt: "TX2 DR1/SF11-125kHz",
+        ena: true,
     };
     pub const SECOND_TRANSM_DR2_ENABLED: BitmapBit = BitmapBit {
         bit: 18,
         txt: "TX2 DR2/SF10-125kHz",
+        ena: true,
     };
     pub const SECOND_TRANSM_DR3_ENABLED: BitmapBit = BitmapBit {
         bit: 19,
         txt: "TX2 DR3/SF9-125kHz",
+        ena: true,
     };
     pub const SECOND_TRANSM_DR4_ENABLED: BitmapBit = BitmapBit {
         bit: 20,
         txt: "TX2 DR4/SF8-125kHz",
+        ena: true,
     };
     pub const SECOND_TRANSM_DR5_ENABLED: BitmapBit = BitmapBit {
         bit: 21,
         txt: "TX2 DR5/SF7-125kHz",
+        ena: true,
     };
     pub const SECOND_TRANSM_DR6_ENABLED: BitmapBit = BitmapBit {
         bit: 22,
         txt: "TX2 DR6/SF7-250kHz",
+        ena: true,
     };
     pub const SECOND_TRANSM_DR7_ENABLED: BitmapBit = BitmapBit {
         bit: 23,
         txt: "TX2 DR7/FSK-50kbps",
+        ena: true,
     };
+    // TODO: complete until bit 31
 }
 
 // ***********************
@@ -432,101 +457,126 @@ impl ConfigFlagsBit {
     pub const FRAME_PENDING_ENABLED: BitmapBit = BitmapBit {
         bit: 0,
         txt: "Frame pending mechanism is enabled",
+        ena: true,
     };
     pub const LONG_BUTTON_PRESS_FOR_OFF: BitmapBit = BitmapBit {
         bit: 1,
         txt: "Long button press activates OFF mode",
+        ena: true,
     };
     pub const DEPRECATED_2: BitmapBit = BitmapBit{
-        bit: 2, txt: 
-        "Deprecated_2"
+        bit: 2, 
+        txt: "Deprecated",
+        ena: false,
     };
     pub const CONF_DL_ACK: BitmapBit = BitmapBit {
         bit: 3,
         txt: "Config downlinks are acknowledged",
+        ena: true,
     };
     pub const WIFI_SCAN_ENC: BitmapBit = BitmapBit {
         bit: 4,
         txt: "WiFi scan payload is encrypted",
+        ena: true,
     };
     pub const BLE_ACTIVE_AT_START: BitmapBit = BitmapBit {
         bit: 5,
         txt: "BLE connectivity interface is active at start",
+        ena: true,
     };
     pub const WIFI_SCAN_ON_GEOLOC_START: BitmapBit = BitmapBit {
         bit: 6,
         txt: "Wi-Fi scan when the GNSS geoloc procdedure starts",
+        ena: true,
     };
     pub const LED_BLINKS_ON_GPS_FIX: BitmapBit = BitmapBit {
         bit: 7,
         txt: "LED blinks when a GPS fix is received",
+        ena: true,
     };
     pub const MOTION_START_EVENT_ENABLED: BitmapBit = BitmapBit {
         bit: 8,
         txt: "Motion Start event messages are enabled",
+        ena: true,
     };
     pub const MOTION_END_EVENT_ENABLED: BitmapBit = BitmapBit {
         bit: 9,
         txt: "Motion End event messages are enabled",
+        ena: true,
     };
     pub const JOIN_REQ_ON_LEAVING_OFF: BitmapBit = BitmapBit {
         bit: 10,
         txt: "A new Join Request is sent upon leaving OFF mode",
+        ena: true,
     };
     pub const ASYMM_BLE_PAIRING_REJECTED: BitmapBit = BitmapBit {
         bit: 11,
         txt: "Asymmetric BLE pairing is rejected",
+        ena: true,
     };
     pub const LONG_WIFI_PAYLOAD: BitmapBit = BitmapBit {
         bit: 12,
         txt: "Long Wi-Fi payload with up to 12 BSSID is enabled",
+        ena: true,
     };
     pub const COLLECTION_OF_LONG_REPORT: BitmapBit = BitmapBit {
         bit: 13,
         txt: "Collection of Long Report enabled",
+        ena: true,
     };
     pub const AUTOSTART_ON_LEAVING_SHIPPING_STATE: BitmapBit = BitmapBit {
         bit: 14,
         txt: "Autostart of the tracker when leaving shipping state",
+        ena: true,
     };
     pub const OFF_MODE_FORBIDDEN: BitmapBit = BitmapBit {
         bit: 15,
         txt: "OFF mode is forbidden",
+        ena: true,
     };
     pub const BEEPS_IN_SOS_MODE: BitmapBit = BitmapBit {
         bit: 16,
         txt: "Beeps are played during SOS mode",
+        ena: true,
     };
     pub const ADR_ON_TOO_LONG_PAYLOAD: BitmapBit = BitmapBit {
         bit: 17,
         txt: "ADR is enabled in case of too long payloads",
+        ena: true,
     };
     pub const EXTENDED_POSITION_PAYLOAD: BitmapBit = BitmapBit {
         bit: 18,
         txt: "Extended position payload enabled",
+        ena: true,
     };
     pub const RESERVED_19: BitmapBit = BitmapBit {
         bit: 19, 
-        txt: "Reserved_19"
+        txt: "Reserved",
+        ena: false,
     };
     pub const CLI_OVER_BLE_ENABLED: BitmapBit = BitmapBit {
         bit: 20,
         txt: "CLI over BLE is enabled",
+        ena: true,
     };
     pub const BLE_PASSKEY_ENABLED: BitmapBit = BitmapBit {
         bit: 21,
         txt: "BLE passkey authentication is enabled",
+        ena: true,
     };
     pub const GNSS_FIX_AFTER_WIFI_SCAN_WHEN_STATIC: BitmapBit = BitmapBit {
         bit: 22,
         txt: "GNSS fix after WiFi scan when static",
+        ena: true,
     };
     pub const WIFI_BEACONING_ENABLED: BitmapBit = BitmapBit {
         bit: 23,
         txt: "Wi-Fi beaconing enabled",
+        ena: true,
     };
     pub const CONTINUOUS_GNSS_OPERATION: BitmapBit = BitmapBit {
         bit: 24,
         txt: "Continuous GNSS operation enabled",
+        ena: true,
     };
 }
