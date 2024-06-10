@@ -2,16 +2,23 @@ use crate::prm::typ::{
     BitmapBit, DistinctVal, PrmDatBitmap, PrmDatDec, PrmDatDistinct, PrmDatOptional,
 };
 
+
+// *************************************************
+// ***                                           ***
+// ***   Parameters for main operational modes   ***
+// ***                                           ***
+// *************************************************
+
 // ***********************
-// *** MODE
+// *** 249 - MODE
 // ***********************
 
 pub static MODE: PrmDatDistinct = PrmDatDistinct {
     id: 0xf9,
     name: "mode",
     label: "Operation Mode",
-    description: "Mode Help Text",
-    default_val: ModeOption::STANDBY.val,
+    description: "The operational mode of the tracker.",
+    default_val: ModeOption::MOTION_TRACKING.val,
     distinct_vals: &[
         ModeOption::STANDBY,
         ModeOption::MOTION_TRACKING,
@@ -46,55 +53,120 @@ impl ModeOption {
     pub const OFF: DistinctVal = DistinctVal { val: 5, txt: "Off" };
 }
 
+
 // ***********************
-// UL_PERIOD
+// *** 101 - DEFAULT_PROFILE
+// ***********************
+
+pub static DEFAULT_PROFILE: PrmDatDistinct = PrmDatDistinct {
+    id: 0x65,
+    name: "default_profile",
+    label: "Default profile",
+    description: "Profile applicable to configure several parameters at once, used when application starts, after a reset or when the tracker is turned on",
+    default_val: DefaultProfileOption::NONE.val,
+    distinct_vals: &[
+        DefaultProfileOption::NONE,
+        DefaultProfileOption::SLEEP,
+        DefaultProfileOption::ECONOMIC,
+        DefaultProfileOption::INTENSIVE,
+    ],
+};
+pub struct DefaultProfileOption;
+impl DefaultProfileOption {
+    pub const NONE: DistinctVal = DistinctVal {
+        val: 0,
+        txt: "None",
+    };
+    pub const SLEEP: DistinctVal = DistinctVal {
+        val: 1,
+        txt: "Sleep",
+    };
+    pub const ECONOMIC: DistinctVal = DistinctVal {
+        val: 2,
+        txt: "Economic",
+    };
+    pub const INTENSIVE: DistinctVal = DistinctVal {
+        val: 3,
+        txt: "Intensive",
+    };
+}
+
+
+// ****************************************
+// *** 246 - PROFILE - SPECIAL
+// ****************************************
+
+pub static PROFILE: PrmDatDistinct = PrmDatDistinct {
+    id: 0xF6,
+    name: "profile",
+    label: "Dynamic profile",
+    description: "Sets the dynamic profile of the tracker.",
+    default_val: ProfileOption::NONE.val,
+    distinct_vals: &[
+        ProfileOption::NONE,
+        ProfileOption::SLEEP,
+        ProfileOption::ECONOMIC,
+        ProfileOption::INTENSIVE,
+    ],
+};
+pub struct ProfileOption;
+impl ProfileOption {
+    pub const NONE: DistinctVal = DistinctVal {
+        val: 0,
+        txt: "None",
+    };
+    pub const SLEEP: DistinctVal = DistinctVal {
+        val: 1,
+        txt: "Sleep",
+    };
+    pub const ECONOMIC: DistinctVal = DistinctVal {
+        val: 2,
+        txt: "Economic",
+    };
+    pub const INTENSIVE: DistinctVal = DistinctVal {
+        val: 3,
+        txt: "Intensive",
+    };
+}
+
+
+// ***********************
+// 0 - UL_PERIOD
 // ***********************
 
 pub static UL_PERIOD: PrmDatDec = PrmDatDec {
     id: 0x00,
     name: "ul_period",
     label: "Location update period",
-    description: "Location update period Help Text",
-    default_val: 120,
-    range: (15, 10000),
+    description: "Periodicity of position or activity messages in motion, start/end, activity or permanent operating mode.",
+    default_val: 300,
+    range: (15, 86400),
 };
 
+
 // ***********************
-// LORA_PERIOD
+// 1 - LORA_PERIOD
 // ***********************
 
 pub static LORA_PERIOD: PrmDatDec = PrmDatDec {
     id: 0x01,
     name: "lora_period",
     label: "Heartbeat period",
-    description: "Heartbeat period Help Text",
-    default_val: 300,
-    range: (300, 10000),
+    description: "Periodicity of LoRa heartbeat messages.",
+    default_val: 600,
+    range: (300, 86400),
 };
 
-// ***********************
-// PERIODIC_POS_PERIOD
-// ***********************
-
-pub static PERIODIC_POS_PERIOD: PrmDatOptional = PrmDatOptional {
-    id: 0x03,
-    name: "periodic_pos_period",
-    label: "Periodic Position Report Period",
-    description: "Periodic Position Report Period Help Text",
-    default_val: 3600,
-    disabled_val: 0,
-    range: (1, 10000),
-};
 
 // ***********************
-// GEOLOC_SENSOR
+// 5 - GEOLOC_SENSOR
 // ***********************
 
 pub static GEOLOC_SENSOR: PrmDatDistinct = PrmDatDistinct {
     id: 0x05,
     name: "geoloc_sensor",
     label: "Primary Geoloc Technology",
-    description: "Primary Geoloc Technology Help Text",
+    description: "Geolocation sensor profile used in main operating mode and SOS.",
     default_val: GeolocSensorOption::GPS.val,
     distinct_vals: &[
         GeolocSensorOption::WIFI,
@@ -153,8 +225,45 @@ impl GeolocSensorOption {
     };
 }
 
+
 // ***********************
-// GEOLOC_METHOD
+// 117 - SOS_PERIOD
+// ***********************
+
+pub static SOS_PERIOD: PrmDatDec = PrmDatDec {
+    id: 0x75,
+    name: "sos_period",
+    label: "SOS Period",
+    description: "Period of SOS messages.",
+    default_val: 120,
+    range: (15, 300),
+};
+
+
+
+// *************************************************
+// ***                                           ***
+// ***   Parameters for side operational modes   ***
+// ***                                           ***
+// *************************************************
+
+// ***********************
+// 3 - PERIODIC_POS_PERIOD
+// ***********************
+
+pub static PERIODIC_POS_PERIOD: PrmDatOptional = PrmDatOptional {
+    id: 0x03,
+    name: "periodic_pos_period",
+    label: "Periodic Position Report Period",
+    description: "Periodic Position Report Period.",
+    default_val: 14400,
+    disabled_val: 0,
+    range: (900 , 604800),
+};
+
+
+// ***********************
+// 6 - GEOLOC_METHOD
 // ***********************
 
 pub static GEOLOC_METHOD: PrmDatDistinct = PrmDatDistinct {
@@ -180,7 +289,9 @@ impl GeolocMethodOption {
         val: 0,
         txt: "WIFI",
     };
-    pub const GPS: DistinctVal = DistinctVal { val: 1, txt: "GPS" };
+    pub const GPS: DistinctVal = DistinctVal { 
+        val: 1, 
+        txt: "GPS" };
     pub const LPGPS: DistinctVal = DistinctVal {
         val: 2,
         txt: "LPGPS",
@@ -204,8 +315,412 @@ impl GeolocMethodOption {
     };
 }
 
+
 // ***********************
-// TRANSMIT_STRAT
+// 22 - PERIODIC_ACTIVITY_PERIOD
+// ***********************
+
+pub static PERIODIC_ACTIVITY_PERIOD: PrmDatOptional = PrmDatOptional {
+    id: 0x16,
+    name: "periodic_activity_period",
+    label: "Periodic activity report period.",
+    description: "Periodic activity report period. The value is rounded up to the closest multiple of 6.",
+    default_val: 0,
+    disabled_val: 0,
+    range: (1800 , 86400),
+};
+
+
+// *************************************************
+// ***                                           ***
+// ***   Parameters for collections              ***
+// ***                                           ***
+// *************************************************
+
+
+
+// ***********************
+// 33 - COLLECTION_SCAN_TYPE
+// ***********************
+
+pub static COLLECTION_SCAN_TYPE: PrmDatDistinct = PrmDatDistinct {
+    id: 0x21,
+    name: "collection_scan_type",
+    label: "Collection scan type",
+    description: "Collection scan type used",
+    default_val: CollScanTypeOption::NONE.val,
+    distinct_vals: &[
+        CollScanTypeOption::NONE,
+        CollScanTypeOption::BLE,
+        CollScanTypeOption::WIFI,
+    ],
+};
+pub struct CollScanTypeOption;
+impl CollScanTypeOption {
+    pub const NONE: DistinctVal = DistinctVal {
+        val: 0,
+        txt: "No collection scan",
+    };
+    pub const BLE: DistinctVal = DistinctVal {
+        val: 1,
+        txt: "BLE collection scan",
+    };
+    pub const WIFI: DistinctVal = DistinctVal {
+        val: 2,
+        txt: "Wi-Fi collection scan",
+    };
+
+}
+
+
+// ***********************
+// 34 - COLLECTION_NB_ENTRY
+// ***********************
+
+pub static COLLECTION_NB_ENTRY: PrmDatDec = PrmDatDec {
+    id: 0x22,
+    name: "collection_nb_entry",
+    label: "Maximum number of collected elements.",
+    description: "Maximum number of elements to report in collection payloads after a scan.",
+    default_val: 20,
+    range: (1, 20),
+};
+
+
+// ***********************
+// 35 - COLLECTION_BLE_FILTER_TYPE
+// ***********************
+
+pub static COLLECTION_BLE_FILTER_TYPE: PrmDatDistinct = PrmDatDistinct {
+    id: 0x23,
+    name: "collection_ble_filter_type",
+    label: "Collection BLE filter type",
+    description: "Beacon type to scan and report when Collection Scan Type is BLE.",
+    default_val: BleFilterTypeOption::NONE.val,
+    distinct_vals: &[
+        BleFilterTypeOption::NONE,
+        BleFilterTypeOption::EDYSTONE_UID,
+        BleFilterTypeOption::EDYSTONE_URL,
+        BleFilterTypeOption::ALL_EDYSTONE,
+        BleFilterTypeOption::I_BEACON_UID,
+        BleFilterTypeOption::ALT_BEACON,
+        // CollBleFilterTypeOption::RESERVED,
+    ],
+};
+pub struct BleFilterTypeOption;
+impl BleFilterTypeOption {
+    pub const NONE: DistinctVal = DistinctVal {
+        val: 0,
+        txt: "No filter",
+    };
+    pub const EDYSTONE_UID: DistinctVal = DistinctVal {
+        val: 1,
+        txt: "Eddystone UID only",
+    };
+    pub const EDYSTONE_URL: DistinctVal = DistinctVal {
+        val: 2,
+        txt: "Eddystone URL only",
+    };
+    pub const ALL_EDYSTONE: DistinctVal = DistinctVal {
+        val: 3,
+        txt: "All Eddystone",
+    };
+    pub const I_BEACON_UID: DistinctVal = DistinctVal {
+        val: 4,
+        txt: "iBeacon UID only",
+    };
+    pub const ALT_BEACON: DistinctVal = DistinctVal {
+        val: 5,
+        txt: "altBeacon only",
+    };
+    // pub const RESERVED: DistinctVal = DistinctVal {
+    //     val: 6,
+    //     txt: "Reserved, internal use only",
+    // };
+
+}
+
+
+// ***********************
+// 36 - COLLECTION_BLE_FILTER_MAIN_1
+// ***********************
+
+pub static COLLECTION_BLE_FILTER_MAIN_1: PrmDatOptional = PrmDatOptional {
+    id: 0x24,
+    name: "collection_ble_filter_main_1",
+    label: "Main BLE filter for Collection messages - 1st byte.",
+    description: "Main BLE filter for Collection messages - 1st byte.",
+    default_val: 0,
+    disabled_val: 0,
+    range: (i32::MIN, i32::MAX),
+};
+
+
+// ***********************
+// 37 - COLLECTION_BLE_FILTER_MAIN_2
+// ***********************
+
+pub static COLLECTION_BLE_FILTER_MAIN_2: PrmDatOptional = PrmDatOptional {
+    id: 0x25,
+    name: "collection_ble_filter_main_2",
+    label: "Main BLE filter for Collection messages - 2nd byte.",
+    description: "Main BLE filter for Collection messages - 2nd byte.",
+    default_val: 0,
+    disabled_val: 0,
+    range: (i32::MIN, i32::MAX),
+};
+
+
+// ***********************
+// 38 - COLLECTION_BLE_FILTER_SEC_VALUE
+// ***********************
+
+pub static COLLECTION_BLE_FILTER_SEC_VALUE: PrmDatOptional = PrmDatOptional {
+    id: 0x26,
+    name: "collection_ble_filter_sec_value",
+    label: "Secondary BLE filter VALUE for Collection messages.",
+    description: "Secondary BLE filter VALUE for Collection messages.",
+    default_val: 0,
+    disabled_val: 0,
+    range: (i32::MIN, i32::MAX),
+};
+
+
+// ***********************
+// 39 - COLLECTION_BLE_FILTER_SEC_MASK
+// ***********************
+
+pub static COLLECTION_BLE_FILTER_SEC_MASK: PrmDatOptional = PrmDatOptional {
+    id: 0x27,
+    name: "collection_ble_filter_sec_mask",
+    label: "Secondary BLE filter MASK for Collection messages.",
+    description: "Secondary BLE filter MASK for Collection messages.",
+    default_val: 0,
+    disabled_val: 0,
+    range: (i32::MIN, i32::MAX),
+};
+
+
+
+
+// ******************************************************************
+// ***                                                            ***
+// ***   Parameters for GPS and low power GPS geolocation modes   ***
+// ***                                                            ***
+// ******************************************************************
+
+
+// ***********************
+// 42 - GNSS_CONSTELLATION
+// ***********************
+
+pub static GNSS_CONSTELLATION: PrmDatDistinct = PrmDatDistinct {
+    id: 0x2A,
+    name: "gnss_constellation",
+    label: "Secondary Geoloc Technology",
+    description: "Secondary Geoloc Technology Help Text",
+    default_val: GeolocSensorOption::GPS.val,
+    distinct_vals: &[
+        GnssConstellation::GPS,
+        GnssConstellation::GLONASS,
+        GnssConstellation::GPS_GLONASS,
+        GnssConstellation::GPS_GALILEO,
+        GnssConstellation::GPS_GLONASS_GALILEO,
+        GnssConstellation::BEIDOU,
+        GnssConstellation::GPS_BEIDOU,
+    ],
+};
+pub struct GnssConstellation;
+impl GnssConstellation {
+    pub const GPS: DistinctVal = DistinctVal {
+        val: 0,
+        txt: "GPS",
+    };
+    pub const GLONASS: DistinctVal = DistinctVal { 
+        val: 1, 
+        txt: "GLONASS" 
+    };
+    pub const GPS_GLONASS: DistinctVal = DistinctVal {
+        val: 2,
+        txt: "GPS and GLONASS",
+    };
+    pub const GPS_GALILEO: DistinctVal = DistinctVal {
+        val: 3,
+        txt: "GPS and Galileo",
+    };
+    pub const GPS_GLONASS_GALILEO: DistinctVal = DistinctVal { 
+        val: 4, 
+        txt: "GPS, GLONASS and Galileo" 
+    };
+    pub const BEIDOU: DistinctVal = DistinctVal {
+        val: 5,
+        txt: "Beidou",
+    };
+    pub const GPS_BEIDOU: DistinctVal = DistinctVal {
+        val: 6,
+        txt: "GPS and BEIDOU",
+    };
+}
+
+
+// ***********************
+// 9 - GPS_TIMEOUT
+// ***********************
+
+pub static GPS_TIMEOUT: PrmDatDec = PrmDatDec {
+    id: 0x09,
+    name: "gps_timeout",
+    label: "GPS Timeout",
+    description: "", // TODO!
+    default_val: 240,
+    range: (30, 300),
+};
+
+
+// ***********************
+// 11 - GPS_EHPE
+// ***********************
+
+pub static GPS_EHPE: PrmDatDec = PrmDatDec {
+    id: 0x0B,
+    name: "gps_ehpe",
+    label: "Acceptable GPS postion error in static mode",
+    description: "Acceptable GPS horizontal postion error in static mode.",
+    default_val: 20,
+    range: (0, 100),
+};
+
+
+// ***********************
+// 121 - GPS_EHPE_MOTION
+// ***********************
+
+pub static GPS_EHPE_MOTION: PrmDatDec = PrmDatDec {
+    id: 0x79,
+    name: "gps_ehpe_motion",
+    label: "Acceptable GPS postion error in motion",
+    description: "Acceptable GPS horizontal postion error in motion.",
+    default_val: 40,
+    range: (0, 100),
+};
+
+
+// ***********************
+// 12 - GPS_CONVERGENCE
+// ***********************
+
+pub static GPS_CONVERGENCE: PrmDatDec = PrmDatDec {
+    id: 0x0C,
+    name: "gps_convergence",
+    label: "GPS Convergence Time in static mode",
+    description: "Time to let to the GPS module to refine the calculated GPS position in static mode.",
+    default_val: 30,
+    range: (0, 300),
+};
+
+
+// ***********************
+// 0x7A - GPS_CONVERGENCE_MOTION
+// ***********************
+
+pub static GPS_CONVERGENCE_MOTION: PrmDatDec = PrmDatDec {
+    id: 0x7A,
+    name: "gps_convergence_motion",
+    label: "GPS Convergence Time in motion",
+    description: "Time to let to the GPS module to refine the calculated GPS position in motion.",
+    default_val: 20,
+    range: (0, 300),
+};
+
+
+// ***********************
+// 17 - GPS_STANDBY_TIMEOUT
+// ***********************
+
+pub static GPS_STANDBY_TIMEOUT: PrmDatOptional = PrmDatOptional {
+    id: 0x11,
+    name: "gps_standby_timeout",
+    label: "GPS Standby Timeout",
+    description: "Duration of the GPS standby mode before going OFF.",
+    default_val: 0,
+    disabled_val: 0,
+    range: (1, 2147483647),
+};
+
+
+// ***********************
+// 103 - GPS_T0_TIMEOUT
+// ***********************
+
+pub static GPS_T0_TIMEOUT: PrmDatOptional = PrmDatOptional {
+    id: 0x67,
+    name: "gps_t0_timeout",
+    label: "GPS Static T0 Timeout",
+    description: "Timeout to abort the GPS or LPGPS geolocation when not enough satellites with C/N > 15 are in view. Applicable if the tracker is static.",
+    default_val: 15,
+    disabled_val: 0,
+    range: (1, 300),
+};
+
+
+// ***********************
+// 123 - GPS_T0_TIMEOUT_MOTION
+// ***********************
+
+pub static GPS_T0_TIMEOUT_MOTION: PrmDatOptional = PrmDatOptional {
+    id: 0x7B,
+    name: "gps_t0_timeout_motion",
+    label: "GPS Dynamic T0 Timeout",
+    description: "Timeout to abort the GPS or LPGPS geolocation when not enough satellites with C/N > 15 are in view. Applicable if the tracker is in motion.",
+    default_val: 30,
+    disabled_val: 0,
+    range: (1, 300),
+};
+
+
+// ***********************
+// 104 - GPS_FIX_TIMEOUT
+// ***********************
+
+pub static GPS_FIX_TIMEOUT: PrmDatOptional = PrmDatOptional {
+    id: 0x68,
+    name: "gps_fix_timeout",
+    label: "GPS Fix Timeout",
+    description: "Timeout to abort the GPS geolocation (or to switch to LPGPS) if there is no GPS fix.",
+    default_val: 0,
+    disabled_val: 0,
+    range: (1, 300),
+};
+
+
+// ***********************
+// 10 - AGPS_TIMEOUT
+// ***********************
+
+// Timeout used for LPGPS geolocation mode before sending the geolocation message (GPS/LP-GPS position or timeout)
+
+pub static AGPS_TIMEOUT: PrmDatDec = PrmDatDec {
+    id: 0x0A,
+    name: "agps_timeout",
+    label: "LPGPS Timeout",
+    description: "Timeout of LPGPS geolocation before sending a position update message (GPS position / LP-GPS position / Timeout)",
+    default_val: 45,
+    range: (15, 250),
+};
+
+
+
+
+
+// *************************************************
+// ***                                           ***
+// ***   LoRa Parameters                         ***
+// ***                                           ***
+// *************************************************
+
+
+// ***********************
+// 14 - TRANSMIT_STRAT
 // ***********************
 
 pub static TRANSMIT_STRAT: PrmDatDistinct = PrmDatDistinct {
@@ -213,7 +728,7 @@ pub static TRANSMIT_STRAT: PrmDatDistinct = PrmDatDistinct {
     name: "transmit_strat",
     label: "Transmit Strategy",
     description: "Transmit Strategy Help Text",
-    default_val: 2,
+    default_val: TransmitStratOption::DOUBLE_RANDOM.val,
     distinct_vals: &[
         TransmitStratOption::SINGLE_FIXED,
         TransmitStratOption::SINGLE_RANDOM,
@@ -257,7 +772,7 @@ pub static TRANSMIT_STRAT_CUSTOM: PrmDatBitmap = PrmDatBitmap {
     name: "transmit_strat_custom",
     label: "Custom Transmit Strategy Settings",
     description: "Custom Transmit Strategy Help Text",
-    default_val: 12289,
+    default_val: 0,
     bits: &[
         TransmitStratCustomBit::NO_ADR_IN_STATIC,
         TransmitStratCustomBit::DOUBLE_TRANSMISSION,
@@ -414,8 +929,469 @@ impl TransmitStratCustomBit {
     // TODO: complete until bit 31
 }
 
+
 // ***********************
-// CONFIG_FLAGS
+// 120 - DEFAULT_DATARATE
+// ***********************
+
+pub static DEFAULT_DATARATE: PrmDatDistinct = PrmDatDistinct {
+    id: 0x78,
+    name: "default_datarate",
+    label: "Default Data Rate",
+    description: "Default Data Rate. If the selected DR is not supported by the Lora MAC the lowest supported one is used instead.",
+    default_val: DefaultDROption::PROVISIONED.val,
+    distinct_vals: &[
+        DefaultDROption::PROVISIONED,
+        DefaultDROption::DR0,
+        DefaultDROption::DR1,
+        DefaultDROption::DR2,
+        DefaultDROption::DR3,
+        DefaultDROption::DR4,
+        DefaultDROption::DR5,
+        DefaultDROption::DR6,
+        DefaultDROption::DR7,
+    ],
+};
+pub struct DefaultDROption;
+impl DefaultDROption {
+    pub const PROVISIONED: DistinctVal = DistinctVal {
+        val: -1,
+        txt: "Provisioned",
+    };
+    pub const DR0: DistinctVal = DistinctVal {
+        val: 0,
+        txt: "DR0/SF12-125kHz",
+    };
+    pub const DR1: DistinctVal = DistinctVal {
+        val: 1,
+        txt: "DR1/SF11-125kHz",
+    };
+    pub const DR2: DistinctVal = DistinctVal {
+        val: 2,
+        txt: "DR2/SF10-125kHz",
+    };
+    pub const DR3: DistinctVal = DistinctVal {
+        val: 3,
+        txt: "DR3/SF9-125kHz",
+    };
+    pub const DR4: DistinctVal = DistinctVal {
+        val: 4,
+        txt: "DR4/SF8-125kHz",
+    };
+    pub const DR5: DistinctVal = DistinctVal {
+        val: 5,
+        txt: "DR5/SF7-125kHz",
+    };
+    pub const DR6: DistinctVal = DistinctVal {
+        val: 6,
+        txt: "DR6/SF7-250kHz",
+    };
+    pub const DR7: DistinctVal = DistinctVal {
+        val: 7,
+        txt: "DR7/FSK-50kbps",
+    };
+}
+
+
+// ***********************
+// 18 CONFIRMED_UL_BITMAP
+// ***********************
+
+pub static CONFIRMED_UL_BITMAP: PrmDatBitmap = PrmDatBitmap {
+    id: 0x12,
+    name: "confirmed_ul_bitmap",
+    label: "Confirmed Uplink Bitmap",
+    description: "Bitmap enabling the LoRaWAN confirmation of specific types of uplink messages.",
+    default_val: 0,
+    bits: &[
+        ConfirmedUplinkBit::FRAME_PENDING,
+
+        ConfirmedUplinkBit::INVALID_1,
+        ConfirmedUplinkBit::INVALID_2,
+
+        ConfirmedUplinkBit::POSITION,
+        ConfirmedUplinkBit::STATUS,
+        ConfirmedUplinkBit::HEARTBEAT,
+
+        ConfirmedUplinkBit::INVALID_6,
+
+        ConfirmedUplinkBit::ACT_CONF_SHOCK_BLEMAC,
+
+        ConfirmedUplinkBit::INVALID_8,
+
+        ConfirmedUplinkBit::SHUTDOWN,
+        ConfirmedUplinkBit::EVENT,
+        ConfirmedUplinkBit::COLLECTION_SCAN,
+
+        ConfirmedUplinkBit::INVALID_12,
+        ConfirmedUplinkBit::INVALID_13,
+
+        ConfirmedUplinkBit::EXTENDED_POSITION,
+        ConfirmedUplinkBit::DEBUG,
+    ],
+};
+pub struct ConfirmedUplinkBit;
+impl ConfirmedUplinkBit {
+    pub const FRAME_PENDING: BitmapBit = BitmapBit {
+        bit: 0,
+        txt: "Frame Pending Message",
+        ena: true,
+    };
+
+    // 1, 2, 
+    pub const INVALID_1: BitmapBit = BitmapBit {
+        bit: 1,
+        txt: "Invalid 1",
+        ena: false,
+    };
+    pub const INVALID_2: BitmapBit = BitmapBit {
+        bit: 2,
+        txt: "Invalid 2",
+        ena: false,
+    };
+
+    pub const POSITION: BitmapBit = BitmapBit {
+        bit: 3,
+        txt: "Position Message",
+        ena: true,
+    };
+    pub const STATUS: BitmapBit = BitmapBit {
+        bit: 4,
+        txt: "Status Message",
+        ena: true,
+    };
+    pub const HEARTBEAT: BitmapBit = BitmapBit {
+        bit: 5,
+        txt: "Heartbeat Message",
+        ena: true,
+    };
+
+    // 6,
+    pub const INVALID_6: BitmapBit = BitmapBit {
+        bit: 6,
+        txt: "Invalid 6",
+        ena: false,
+    };
+
+    pub const ACT_CONF_SHOCK_BLEMAC: BitmapBit = BitmapBit {
+        bit: 7,
+        txt: "Activity, Config, Shock detec or BLE MAC Addr",
+        ena: true,
+    };
+
+    // 8,
+    pub const INVALID_8: BitmapBit = BitmapBit {
+        bit: 8,
+        txt: "Invalid 8",
+        ena: false,
+    };
+
+    pub const SHUTDOWN: BitmapBit = BitmapBit {
+        bit: 9,
+        txt: "Shutdown message",
+        ena: true,
+    };
+    pub const EVENT: BitmapBit = BitmapBit {
+        bit: 10,
+        txt: "Event message",
+        ena: true,
+    };
+    pub const COLLECTION_SCAN: BitmapBit = BitmapBit {
+        bit: 11,
+        txt: "Collection Scan message",
+        ena: true,
+    };
+
+    // 12, 13,
+    pub const INVALID_12: BitmapBit = BitmapBit {
+        bit: 12,
+        txt: "Invalid 12",
+        ena: false,
+    };
+    pub const INVALID_13: BitmapBit = BitmapBit {
+        bit: 13,
+        txt: "Invalid 12",
+        ena: false,
+    };
+
+    pub const EXTENDED_POSITION: BitmapBit = BitmapBit {
+        bit: 14,
+        txt: "Extended Position message",
+        ena: true,
+    };
+    pub const DEBUG: BitmapBit = BitmapBit {
+        bit: 15,
+        txt: "Debug for internal use",
+        ena: false,
+    };
+
+}
+
+
+// ***********************
+// 19 - CONFIRMED_UL_RETRY
+// ***********************
+
+pub static CONFIRMED_UL_RETRY: PrmDatDec = PrmDatDec {
+    id: 0x13,
+    name: "confirmed_ul_retry",
+    label: "Confirmed Uplink Retry",
+    description: "The number of retries for each confirmed uplink when the confirmation is not received.",
+    default_val: 3,
+    range: (0, 8),
+};
+
+
+// ***********************
+// 31 - NETWORK_TIMEOUT_CHECK
+// ***********************
+
+pub static NETWORK_TIMEOUT_CHECK: PrmDatOptional = PrmDatOptional {
+    id: 0x1F,
+    name: "network_timeout_check",
+    label: "Network Timeout Check",
+    description: "Time without received downlink before asking a link check request.",
+    default_val: 432000,
+    disabled_val: 0,
+    range: (86400, 5184000),
+};
+
+
+// ***********************
+// 32 - NETWORK_TIMEOUT_CHECK
+// ***********************
+
+pub static NETWORK_TIMEOUT_RESET: PrmDatOptional = PrmDatOptional {
+    id: 0x20,
+    name: "network_timeout_reset",
+    label: "Network Timeout Reset",
+    description: "Time after network_timeout_check without received downlink before the tracker resets.",
+    default_val: 172800,
+    disabled_val: 0,
+    range: (21600, 2592000),
+};
+
+
+// *************************************************
+// ***                                           ***
+// ***   BLE scan and communication parameters   ***
+// ***                                           ***
+// *************************************************
+
+
+// ***
+// *** BLE position scan parameters ***
+// ***
+
+
+// ***********************
+// 15 - BLE_BEACON_COUNT
+// ***********************
+
+pub static BLE_BEACON_COUNT: PrmDatDec = PrmDatDec {
+    id: 0x0F,
+    name: "ble_beacon_cnt",
+    label: "BLE Beacon Count",
+    description: "The maximum number of BLE beacons to provide in payload.",
+    default_val: 4,
+    range: (1, 4),
+};
+
+
+// ***********************
+// 16 - BLE_BEACON_TIMEOUT
+// ***********************
+
+pub static BLE_BEACON_TIMEOUT: PrmDatDec = PrmDatDec {
+    id: 0x10,
+    name: "ble_beacon_timeout",
+    label: "BLE Scan Duration",
+    description: "BLE Scan Duration.",
+    default_val: 4,
+    range: (1, 21),
+};
+
+
+// ***********************
+// 26 - BLE_RSSI_FILTER
+// ***********************
+
+pub static BLE_RSSI_FILTER: PrmDatDec = PrmDatDec {
+    id: 0x1A,
+    name: "ble_rssi_filter",
+    label: "BLE RSSI Filter",
+    description: "RSSI value to filter BLE beacons with BLE geolocation modes (only applicable for BLE-GPS & BLE-LPGPS).",
+    default_val: -85,
+    range: (-100, -40),
+};
+
+
+// ***********************
+// 77 POSITION_BLE_FILTER_TYPE
+// ***********************
+
+pub static POSITION_BLE_FILTER_TYPE: PrmDatDistinct = PrmDatDistinct {
+    id: 0x4D,
+    name: "position_ble_filter_type",
+    label: "BLE Filter Type for Position Messages",
+    description: "Beacon type to scan and report when position Scan Type is BLE.",
+    default_val: 0,
+    distinct_vals: &[
+        BleFilterTypeOption::NONE,
+        BleFilterTypeOption::EDYSTONE_UID,
+        BleFilterTypeOption::EDYSTONE_URL,
+        BleFilterTypeOption::ALL_EDYSTONE,
+        BleFilterTypeOption::I_BEACON_UID,
+        BleFilterTypeOption::ALT_BEACON,
+        // CollBleFilterTypeOption::RESERVED,
+    ],
+};
+
+
+// ***********************
+// 78 - POSITION_BLE_FILTER_MAIN_1
+// ***********************
+
+pub static POSITION_BLE_FILTER_MAIN_1: PrmDatOptional = PrmDatOptional {
+    id: 0x4E,
+    name: "position_ble_filter_main_1",
+    label: "Main BLE filter for Position messages - 1st byte.",
+    description: "Main BLE filter for Position messages - 1st byte.",
+    default_val: 0,
+    disabled_val: 0,
+    range: (i32::MIN, i32::MAX),
+};
+
+
+// ***********************
+// 79 - POSITION_BLE_FILTER_MAIN_2
+// ***********************
+
+pub static POSITION_BLE_FILTER_MAIN_2: PrmDatOptional = PrmDatOptional {
+    id: 0x4F,
+    name: "position_ble_filter_main_2",
+    label: "Main BLE filter for Position messages - 2nd byte.",
+    description: "Main BLE filter for Position messages - 2nd byte.",
+    default_val: 0,
+    disabled_val: 0,
+    range: (i32::MIN, i32::MAX),
+};
+
+
+// ***********************
+// 80 - POSITION_BLE_FILTER_SEC_VALUE
+// ***********************
+
+pub static POSITION_BLE_FILTER_SEC_VALUE: PrmDatOptional = PrmDatOptional {
+    id: 0x50,
+    name: "position_ble_filter_sec_value",
+    label: "Secondary BLE filter VALUE for Position messages.",
+    description: "econdary BLE filter VALUE for Position messages.",
+    default_val: 0,
+    disabled_val: 0,
+    range: (i32::MIN, i32::MAX),
+};
+
+
+// ***********************
+// 81 - POSITION_BLE_FILTER_SEC_MASK
+// ***********************
+
+pub static POSITION_BLE_FILTER_SEC_MASK: PrmDatOptional = PrmDatOptional {
+    id: 0x51,
+    name: "position_ble_filter_sec_mask",
+    label: "Secondary BLE filter MASK for Position messages.",
+    description: "Secondary BLE filter MASK for Position messages.",
+    default_val: 0,
+    disabled_val: 0,
+    range: (i32::MIN, i32::MAX),
+};
+
+
+// ***********************
+// 82 - POSITION_BLE_REPORT_TYPE
+// ***********************
+
+pub static POSITION_BLE_REPORT_TYPE: PrmDatDistinct = PrmDatDistinct {
+    id: 0x52,
+    name: "position_ble_report_type",
+    label: "BLE report type for Position messages.",
+    description: "BLE report type for Position messages.",
+    default_val: PosBleReportTypeOptions::MAC_ADDR.val,
+    distinct_vals: &[
+        PosBleReportTypeOptions::MAC_ADDR,
+        PosBleReportTypeOptions::SHORT_ID,
+        PosBleReportTypeOptions::LONG_ID,
+        PosBleReportTypeOptions::SHORT_ID_MAJOR_MINOR,
+    ],
+};
+pub struct PosBleReportTypeOptions;
+impl PosBleReportTypeOptions {
+    pub const MAC_ADDR: DistinctVal = DistinctVal {
+        val: 0,
+        txt: "MAC Address",
+    };
+    pub const SHORT_ID: DistinctVal = DistinctVal {
+        val: 1,
+        txt: "Short ID",
+    };
+    pub const LONG_ID: DistinctVal = DistinctVal {
+        val: 2,
+        txt: "Long ID",
+    };
+    pub const SHORT_ID_MAJOR_MINOR: DistinctVal = DistinctVal {
+        val: 3,
+        txt: "Short ID with iBeacon Major/Minor",
+    };
+}
+
+
+// ***
+// *** BLE communication parameters ***
+// ***
+
+
+// ***********************
+// 111 - BLE_CNX_ADV_DURATION
+// ***********************
+
+pub static BLE_CNX_ADV_DURATION: PrmDatDec = PrmDatDec {
+    id: 0x6F,
+    name: "ble_cnx_adv_duration",
+    label: "BLE advertisement duration",
+    description: "BLE advertisement duration",
+    default_val: 600,
+    range: (30, 18000),
+};
+
+
+// ****************************************
+// 248 - BLE_BOND_INFO - SPECIAL
+// ****************************************
+
+// ble_bond_info	0xF8		0,1	0: Delete BLE bond
+// 1: Indicates that the BLE bond is present on the tracker.
+// Only value 0 can be set for this parameter.
+
+
+// ****************************************
+// 245 - BLE_CLI_ACTIVE - SPECIAL
+// ****************************************
+
+// ble_cli_active(6)	0xF5		0,1	0: Disable the CLI traces over BLE interface with tracker connected to Abeeway tracking app.
+// 1: Enables the CLI traces over BLE interface with tracker connected to Abeeway tracking app.
+
+
+
+// *************************************************
+// ***                                           ***
+// ***   Miscellaneous parameters                ***
+// ***                                           ***
+// *************************************************
+
+
+// ***********************
+// 13 - CONFIG_FLAGS
 // ***********************
 
 pub static CONFIG_FLAGS: PrmDatBitmap = PrmDatBitmap {
@@ -423,7 +1399,7 @@ pub static CONFIG_FLAGS: PrmDatBitmap = PrmDatBitmap {
     name: "config_flags",
     label: "Configuration Flags",
     description: "Configuration Flags Help Text",
-    default_val: 17252411,
+    default_val: 213055,
     bits: &[
         ConfigFlagsBit::FRAME_PENDING_ENABLED,
         ConfigFlagsBit::LONG_BUTTON_PRESS_FOR_OFF,
@@ -580,3 +1556,963 @@ impl ConfigFlagsBit {
         ena: true,
     };
 }
+
+
+// ***********************
+// 40 - BATTERY_CAPACITY - TODO: CUSTOMIZATION REQUIRED!
+// ***********************
+
+// battery_capacity(11)	0x28	mAh	-1, 0, 1 - 65535	Battery setting:
+//  	 	 	 	-1: Use provisioned value.
+//  	 	 	 	0: Rechargeable battery.
+//  	 	 	 	1-65535: Capacity of the primary battery
+
+// pub static BATTERY_CAPACITY: PrmDatDistinct = PrmDatDistinct {
+//     id: 0x28,
+//     name: "battery_capacity",
+//     label: "Battery capacity calculation setting.",
+//     description: "Battery capacity calculation setting.",
+//     default_val: PosBleReportTypeOptions::PROVISIONED.val,
+//     distinct_vals: &[
+//         PosBleReportTypeOptions::PROVISIONED,
+//         PosBleReportTypeOptions::RECHARGEABLE,
+//         PosBleReportTypeOptions::PRIMARY,
+//     ],
+// };
+// pub struct PosBleReportTypeOptions;
+// impl PosBleReportTypeOptions {
+//     pub const PROVISIONED: DistinctVal = DistinctVal {
+//         val: -1,
+//         txt: "Use provisioned value.",
+//     };
+//     pub const RECHARGEABLE: DistinctVal = DistinctVal {
+//         val: 0,
+//         txt: "Rechargeable battery",
+//     };
+//     pub const PRIMARY: DistinctVal = DistinctVal {
+//         val: 1,
+//         txt: "Primary battery with given caapacity",
+//     };
+// }
+
+
+// ***********************
+// 41 - REED_SWITCH_CONFIGURATION
+// ***********************
+
+pub static REED_SWITCH_CONFIGURATION: PrmDatDistinct = PrmDatDistinct {
+    id: 0x29,
+    name: "reed_switch_configuration",
+    label: "Reed Switch Configuration.",
+    description: "Reed Switch Configuration.",
+    default_val: ReedSwitchConf::REED_SWITCH_DISABLED.val,
+    distinct_vals: &[
+        ReedSwitchConf::REED_SWITCH_DISABLED,
+        ReedSwitchConf::RESET_DEVICE,
+        ReedSwitchConf::BEHAVE_AS_BUTTON,
+        ReedSwitchConf::BLE_ADVERTIZE,
+    ],
+};
+pub struct ReedSwitchConf;
+impl ReedSwitchConf {
+
+    pub const REED_SWITCH_DISABLED: DistinctVal = DistinctVal {
+        val: 0,
+        txt: "Reed Switch is disabled.",
+    };
+    pub const RESET_DEVICE: DistinctVal = DistinctVal {
+        val: 1,
+        txt: "A special Reed Switch sequence causes Reset.",
+    };
+    pub const BEHAVE_AS_BUTTON: DistinctVal = DistinctVal {
+        val: 2,
+        txt: "Reed Switch behaves as the button",
+    };
+    pub const BLE_ADVERTIZE: DistinctVal = DistinctVal {
+        val: 3,
+        txt: "Start BLE advertising on Reed Switch sequence.",
+    };
+}
+
+
+// ***********************
+// 83 - BUTTON_MAPPING - TODO: CUSTOMIZATION REQUIRED!
+// ***********************
+
+// button_mapping	0x77	none	0 – 0x00086666	Configure the button action
+//  	 	 	 	Bit0-3: Button long press action
+//  	 	 	 	Bit4-7: Button short press action
+//  	 	 	 	Bit8-11: 2 short button presses action
+//  	 	 	 	Bit12-15: 3 or more short button presses action
+//  	 	 	 	Bit16-19: Button long press duration in seconds, range is [1:8](13)
+//  	 	 	 	Possible actions are listed below, coded on 4 bits:
+//  	 	 	 	0. No action
+//  	 	 	 	1. Battery level is shown with the LEDs.
+//  	 	 	 	2. Start/Stop SOS.
+//  	 	 	 	3. Alert.
+//  	 	 	 	4. No action.
+//  	 	 	 	5. Angle detection manual trigger.
+//  	 	 	 	6. Special sequence activation.
+
+
+// ***********************
+// 83 - BUZZER_VOLUME
+// ***********************
+
+pub static BUZZER_VOLUME: PrmDatDec = PrmDatDec {
+    id: 0x53,
+    name: "buzzer_volume",
+    label: "Buzzer Volume",
+    description: "Buzzer Volume",
+    default_val: 10,
+    range: (0, 100),
+};
+
+
+// ***********************
+// 102 - PASSWORD
+// ***********************
+
+pub static PASSWORD: PrmDatDec = PrmDatDec {
+    id: 0x66,
+    name: "password",
+    label: "CLI Password",
+    description: "The password used to access CLI interface with tracker connected to USB port.",
+    default_val: 123,
+    range: (100, 999999),
+};
+
+
+// ****************************************
+// 247 - CONSUMPTION - SPECIAL
+// ****************************************
+// consumption(14)	0xF7	mAh	0, 1 –0xFFFFFFFF	0: the current consumption of the tracker is reset. A non-zero value can be used to set the current consumption of the tracker.
+
+
+// ***********************
+// 2 - PW_STAT_PERIOD
+// ***********************
+
+pub static PW_STAT_PERIOD: PrmDatDec = PrmDatDec {
+    id: 0x02,
+    name: "pw_stat_period",
+    label: "Power statistics period",
+    description: "Power statistics period",
+    default_val: 0,
+    range: (300, 604800),
+};
+
+
+// ****************************************
+// 253 - BLE_VERSION - SPECIAL - READ ONLY
+// ****************************************
+// ble_version	0xFD	NA	NA	BLE Firmware version. It is read only parameter.
+
+
+// ****************************************
+// 254 - MCU_VERSION - SPECIAL - READ ONLY
+// ****************************************
+// firmware_version	0xFE	NA	NA	MCU Firmware version. It is read only parameter.
+
+
+
+
+// *************************************************
+// ***                                           ***
+// ***   Accellerometer parameters               ***
+// ***                                           ***
+// *************************************************
+
+
+// ***********************
+// 20 - MOTION_SENSITIVITY - TODO: CUSTOMIZATION REQUIRED!
+// ***********************
+
+// motion_sensitivity	0x14	none	1 – 0x000FFFFF	Accelerometer configuration. Functioning has been modified in MCU/Application FW 2.4. Bit fields  composed by 3 octets(1)(2):
+//  	 	 	 	Octet 0 (LSB). Configure the sensitivity
+//  	 	 	 	1-30: The threshold is coded as follow: motion_sensitivity * 0.063g
+//  	 	 	 	31-99: Same mode than above with the value 30. The threshold is capped to 30 * 0.063 = 1,89g
+//  	 	 	 	100: Default mode (was 0 in firmware version 2.2-x and below).
+//  	 	 	 	101-200: Default mode (sensitivity ranging from 1% to 100% as in firmware version 2.2-x and below).
+//  	 	 	 	Octet 1. Configure the Output Data Rate (ODR)
+//  	 	 	 	0 : 12.5Hz
+//  	 	 	 	1 : 25Hz
+//  	 	 	 	2 : 50Hz
+//  	 	 	 	3 : 100Hz
+//  	 	 	 	4 : 200Hz
+//  	 	 	 	Octet 2. Full scale  selection
+//  	 	 	 	0: 2G
+//  	 	 	 	1: 4G
+//  	 	 	 	2: 8G
+//  	 	 	 	3: 16G
+
+
+
+
+// ***********************
+// 21 - SHOCK_DETECTION
+// ***********************
+
+pub static SHOCK_DETECTION: PrmDatOptional = PrmDatOptional {
+    id: 0x15,
+    name: "shock_detection",
+    label: "Shock Detection Sensitivity.",
+    description: "Shock Detection Sensitivity.",
+    disabled_val: 0,
+    default_val: 0,
+    range: (0, 255),
+};
+
+
+// ***********************
+// 118 - MOTION_DEBOUNCE
+// ***********************
+
+pub static MOTION_DEBOUNCE: PrmDatDec = PrmDatDec {
+    id: 0x76,
+    name: "motion_debounce",
+    label: "Number of location updates sent upon motion start/end.",
+    description: "Minimum duration of a movement to be detected if motion_sensitivity parameter is set between 1 and 30. [Unit: 20ms])",
+    default_val: 1,
+    range: (0, 255),
+};
+
+
+// ***********************
+// 8 - MOTION_NB_POS
+// ***********************
+
+pub static MOTION_NB_POS: PrmDatDec = PrmDatDec {
+    id: 0x08,
+    name: "motion_nb_pos",
+    label: "Number of location updates sent upon motion start/end.",
+    description: "Number of location updates sent upon motion start/end.",
+    default_val: 1,
+    range: (0, 20),
+};
+
+// ***********************
+// 23 - MOTION_DURATION
+// ***********************
+
+pub static MOTION_DURATION: PrmDatDec = PrmDatDec {
+    id: 0x17,
+    name: "motion_duration",
+    label: "Period of time to detect end of motion.",
+    description: "Period of time required to detect the end of a motion.",
+    default_val: 180,
+    range: (20, 3600),
+};
+
+
+// ****************************************
+// 250 - ACC_X_AXIS - SPECIAL - READ ONLY
+// ****************************************
+
+// acc_x_axis	0xFA	mG	-216 – 216-1	Value measured on X axis of the accelerometer. It is read only parameter.
+
+
+// ****************************************
+// 250 - ACC_X_AXIS - SPECIAL - READ ONLY
+// ****************************************
+
+// acc_y_axis	0xFB	mG	-216 – 216-1	Value measured on Y axis of the accelerometer. It is read only parameter.
+
+
+// ****************************************
+// 250 - ACC_X_AXIS - SPECIAL - READ ONLY
+// ****************************************
+
+// acc_z_axis	0xFC	mG	-216 – 216-1	Value measured on Z axis of the accelerometer. It is read only parameter.
+
+
+
+// *************************************************
+// ***                                           ***
+// ***   Temperature monitoring parameters      ***
+// ***                                           ***
+// *************************************************
+
+
+// ***********************
+// 27 - TEMPERATURE_HIGH
+// ***********************
+
+pub static TEMPERATURE_HIGH: PrmDatOptional = PrmDatOptional {
+    id: 0x1B,
+    name: "temperature_high",
+    label: "Temperature High Threshold.",
+    description: "The high threshold of Temperature. [Unit: °C]",
+    default_val: 255,
+    disabled_val: 255,
+    range: (-44, 85),
+};
+
+
+// ***********************
+// 28 - TEMPERATURE_LOW
+// ***********************
+
+pub static TEMPERATURE_LOW: PrmDatOptional = PrmDatOptional {
+    id: 0x1C,
+    name: "temperature_low",
+    label: "Temperature Low Threshold.",
+    description: "The low threshold of Temperature. [Unit: °C]",
+    default_val: 255,
+    disabled_val: 255,
+    range: (-44, 85),
+};
+
+
+// ***********************
+// 29 - TEMPERATURE_ACTION
+// ***********************
+
+pub static TEMPERATURE_ACTION: PrmDatDistinct = PrmDatDistinct {
+    id: 0x1D,
+    name: "reed_switch_configuration",
+    label: "Reed Switch Configuration.",
+    description: "Reed Switch Configuration.",
+    default_val: TemperatureActionOptions::NO_ACTION.val,
+    distinct_vals: &[
+        TemperatureActionOptions::NO_ACTION,
+        TemperatureActionOptions::GEOLOC_DISABLED_ON_HIGH,
+        TemperatureActionOptions::GEOLOC_DISABLED_ON_LOW,
+        TemperatureActionOptions::GEOLOC_DISABLED_ON_HIGH_LOW,
+    ],
+};
+pub struct TemperatureActionOptions;
+impl TemperatureActionOptions {
+    pub const NO_ACTION: DistinctVal = DistinctVal {
+        val: 0,
+        txt: "No Actionn.",
+    };
+    pub const GEOLOC_DISABLED_ON_HIGH: DistinctVal = DistinctVal {
+        val: 1,
+        txt: "Geolocation disabled if temperature_high is reached.",
+    };
+    pub const GEOLOC_DISABLED_ON_LOW: DistinctVal = DistinctVal {
+        val: 2,
+        txt: "Geolocation disabled if temperature_low is reached.",
+    };
+    pub const GEOLOC_DISABLED_ON_HIGH_LOW: DistinctVal = DistinctVal {
+        val: 3,
+        txt: "Geolocation disabled if temperature_low or temperature_high is reached.",
+    };
+
+}
+
+
+
+// *************************************************
+// ***                                           ***
+// ***   Orientation Detection parameters        ***
+// ***                                           ***
+// *************************************************
+
+
+// ***********************
+// 84 - ANGLE_DETECT_MODE
+// ***********************
+
+pub static ANGLE_DETECT_MODE: PrmDatDistinct = PrmDatDistinct {
+    id: 0x54,
+    name: "angle_detect_mode",
+    label: "Angle Detection Mode.",
+    description: "Angle Detection Mode.",
+    default_val: AngleDetectModeOptions::DISABLED.val,
+    distinct_vals: &[
+        AngleDetectModeOptions::DISABLED,
+        AngleDetectModeOptions::CRITICAL_ANGLE,
+        AngleDetectModeOptions::CRITICAL_ANGLE_AND_DEVIATION,
+        AngleDetectModeOptions::CRITICAL_ANGLE_ON_SHOCK,
+    ],
+};
+pub struct AngleDetectModeOptions;
+impl AngleDetectModeOptions {
+    pub const DISABLED: DistinctVal = DistinctVal {
+        val: 0,
+        txt: "Disabled",
+    };
+    pub const CRITICAL_ANGLE: DistinctVal = DistinctVal {
+        val: 1,
+        txt: "Critical angle detection.",
+    };
+    pub const CRITICAL_ANGLE_AND_DEVIATION: DistinctVal = DistinctVal {
+        val: 2,
+        txt: "Critical angle detection + Angle deviation detection.",
+    };
+    pub const CRITICAL_ANGLE_ON_SHOCK: DistinctVal = DistinctVal {
+        val: 3,
+        txt: "Critical angle detection triggered on shock detection.",
+    };
+
+}
+
+
+// ***********************
+// 85 - ANGLE_REF_ACK
+// ***********************
+
+pub static ANGLE_REF_ACK: PrmDatDistinct = PrmDatDistinct {
+    id: 0x55,
+    name: "angle_ref_acq",
+    label: "Acquisition mode of Reference Angle.",
+    description: "Acquisition mode of Reference Angle.",
+    default_val: AngleRefAckOptions::MANUAL.val,
+    distinct_vals: &[
+        AngleRefAckOptions::MANUAL,
+        AngleRefAckOptions::CONFIGURED,
+        AngleRefAckOptions::AUTOMATIC,
+        AngleRefAckOptions::ASSISTED,
+    ],
+};
+pub struct AngleRefAckOptions;
+impl AngleRefAckOptions {
+    pub const MANUAL: DistinctVal = DistinctVal {
+        val: 0,
+        txt: "Manual",
+    };
+    pub const CONFIGURED: DistinctVal = DistinctVal {
+        val: 1,
+        txt: "Configured",
+    };
+    pub const AUTOMATIC: DistinctVal = DistinctVal {
+        val: 2,
+        txt: "Automatic",
+    };
+    pub const ASSISTED: DistinctVal = DistinctVal {
+        val: 3,
+        txt: "Assisted",
+    };
+
+}
+
+
+// ***********************
+// 86 - ANGLE_REF_ACC_X
+// ***********************
+
+pub static ANGLE_REF_ACC_X: PrmDatOptional = PrmDatOptional {
+    id: 0x56,
+    name: "angle_ref_acc_x",
+    label: "X component of reference orientation vector.",
+    description: "X component of reference orientation vector. [Unit: mg]",
+    default_val: 0,
+    disabled_val: 0xFFFF, 
+    range: (-1000, 1000),
+};
+
+
+// ***********************
+// 87 - ANGLE_REF_ACC_Y
+// ***********************
+
+pub static ANGLE_REF_ACC_Y: PrmDatOptional = PrmDatOptional {
+    id: 0x57,
+    name: "angle_ref_acc_y",
+    label: "Y component of reference orientation vector.",
+    description: "Y component of reference orientation vector. [Unit: mg]",
+    default_val: 0,
+    disabled_val: 0xFFFF, 
+    range: (-1000, 1000),
+};
+
+
+// ***********************
+// 88 - ANGLE_REF_ACC_Z
+// ***********************
+
+pub static ANGLE_REF_ACC_Z: PrmDatOptional = PrmDatOptional {
+    id: 0x58,
+    name: "angle_ref_acc_z",
+    label: "Z component of reference orientation vector.",
+    description: "Z component of reference orientation vector. [Unit: mg]",
+    default_val: 0,
+    disabled_val: 0xFFFF, 
+    range: (-1000, 1000),
+};
+
+
+// ***********************
+// 89 - CRITICAL_ANGLE
+// ***********************
+
+pub static CRITICAL_ANGLE: PrmDatDec = PrmDatDec {
+    id: 0x59,
+    name: "angle_critical",
+    label: "Critical Angle",
+    description: "Critical angle. [Unit: degrees]",
+    default_val: 30,
+    range: (5, 175),
+};
+
+
+// ***********************
+// 90 - ANGLE_CRITICAL_HYST
+// ***********************
+
+pub static ANGLE_CRITICAL_HYST: PrmDatDec = PrmDatDec {
+    id: 0x5A,
+    name: "angle_critical_hyst",
+    label: "Critical Angle Hysteresis",
+    description: "Critical angle hysteresis. [Unit: degrees]",
+    default_val: 5,
+    range: (0, 180),
+};
+
+
+// ***********************
+// 91 - ANGLE_REPORT_MODE
+// ***********************
+
+pub static ANGLE_REPORT_MODE: PrmDatBitmap = PrmDatBitmap {
+    id: 0x5B,
+    name: "angle_report_mode",
+    label: "Angle Detection events to report.",
+    description: "Angle Detection events to report.",
+    default_val: 1,
+    bits: &[
+        AngleRefAckBit::NORMAL_CRITICAL,
+        AngleRefAckBit::CRITICAL_NORMAL,
+        AngleRefAckBit::LEARNING_NORMAL,
+        AngleRefAckBit::NORMAL_LEARNING,
+        AngleRefAckBit::CRITICAL_LEARNING,
+    ],
+};
+pub struct AngleRefAckBit;
+impl AngleRefAckBit {
+    pub const NORMAL_CRITICAL: BitmapBit = BitmapBit {
+        bit: 0,
+        txt: "normal → critical",
+        ena: true,
+    };
+    pub const CRITICAL_NORMAL: BitmapBit = BitmapBit {
+        bit: 1,
+        txt: "critical → normal",
+        ena: true,
+    };
+    pub const LEARNING_NORMAL: BitmapBit = BitmapBit {
+        bit: 2,
+        txt: "learning → normal",
+        ena: true,
+    };
+    pub const NORMAL_LEARNING: BitmapBit = BitmapBit {
+        bit: 3,
+        txt: "normal → learning",
+        ena: true,
+    };
+    pub const CRITICAL_LEARNING: BitmapBit = BitmapBit {
+        bit: 4,
+        txt: "critical → learning",
+        ena: true,
+    };
+}
+
+
+// ***********************
+// 92 - ANGLE_REPORT_PERIOD
+// ***********************
+
+pub static ANGLE_REPORT_PERIOD: PrmDatDec = PrmDatDec {
+    id: 0x5C,
+    name: "angle_report_period",
+    label: "Angle Report Period.",
+    description: "The period between repeated event messages. 0 means that reports will be transmitted right after position messages. [Unit: s]",
+    default_val: 300,
+    range: (60, 36000),
+};
+
+
+// ***********************
+// 93 - ANGLE_REPORT_REPEAT
+// ***********************
+
+pub static ANGLE_REPORT_REPEAT: PrmDatDec = PrmDatDec {
+    id: 0x5D,
+    name: "angle_report_repeat",
+    label: "Numbeer of Angle Report repetitions.",
+    description: "Numbeer of Angle Report repetitions. 0 indicates that only one event message is sent (no repetition).",
+    default_val: 0,
+    range: (0, 7),
+};
+
+
+// ***********************
+// 94 - ANGLE_RISING_TIME
+// ***********************
+
+pub static ANGLE_RISING_TIME: PrmDatDec = PrmDatDec {
+    id: 0x5E,
+    name: "angle_rising_time",
+    label: "Rising time phase duration.",
+    description: "Rising time phase duration. [Unit: s]",
+    default_val: 5,
+    range: (0, 3600),
+};
+
+
+// ***********************
+// 95 - ANGLE_FALLING_TIME
+// ***********************
+
+pub static ANGLE_FALLING_TIME: PrmDatDec = PrmDatDec {
+    id: 0x5F,
+    name: "angle_falling_time",
+    label: "Falling time phase duration.",
+    description: "Falling time phase duration. [Unit: s]",
+    default_val: 5,
+    range: (0, 3600),
+};
+
+
+// ***********************
+// 96 - ANGLE_LEARNING_TIME
+// ***********************
+
+pub static ANGLE_LEARNING_TIME: PrmDatDec = PrmDatDec {
+    id: 0x60,
+    name: "angle_learning_time",
+    label: "Learning time phase duration.",
+    description: "Learning time phase duration. [Unit: s]",
+    default_val: 5,
+    range: (0, 3600),
+};
+
+
+// ***********************
+// 97 - ANGLE_ACC_ACCURACY
+// ***********************
+
+pub static ANGLE_ACC_ACCURACY: PrmDatDec = PrmDatDec {
+    id: 0x61,
+    name: "angle_acc_accuracy",
+    label: "Accuracy of the measured acceleration.",
+    description: "Accuracy of the measured acceleration. [Unit: mg]",
+    default_val: 100,
+    range: (0, 1000),
+};
+
+
+// ***********************
+// 98 - ANGLE_DEVIATION_DELTA
+// ***********************
+
+pub static ANGLE_DEVIATION_DELTA: PrmDatDec = PrmDatDec {
+    id: 0x62,
+    name: "angle_deviation_delta",
+    label: "Reported Angle Deviation Delta",
+    description: "At least this value of deviation from the previous reported orientation is needed to trigger an event message. Applicable only with angle deviation methods.  [Unit: degrees]",
+    default_val: 0,
+    range: (0, 175),
+};
+
+
+// ***********************
+// 99 - ANGLE_DEVIATION_MIN_INTERVAL
+// ***********************
+
+pub static ANGLE_DEVIATION_MIN_INTERVAL: PrmDatDec = PrmDatDec {
+    id: 0x63,
+    name: "angle_deviation_min_interval",
+    label: "Min Angle Deviation Report Interval.",
+    description: "No event message is sent before this delay from previous angle deviation event is elapsed. Any deviation before this delay is ignored. Applicable only with angle deviation methods. [Unit: s]",
+    default_val: 10,
+    range: (0, 1800),
+};
+
+
+// ***********************
+// 100 - ANGLE_DEVIATION_MAX_INTERVAL
+// ***********************
+
+pub static ANGLE_DEVIATION_MAX_INTERVAL: PrmDatDec = PrmDatDec {
+    id: 0x64,
+    name: "angle_deviation_max_interval",
+    label: "Min Angle Deviation Report Interval.",
+    description: "No event message is sent after this delay from previous angle deviation event is elapsed. Any deviation after this delay is ignored. Applicable only with angle deviation methods. [Unit: s]",
+    default_val: 0,
+    range: (0, 86400),
+};
+
+
+
+// *************************************************
+// ***                                           ***
+// ***   BLE geozoning parameters                ***
+// ***                                           ***
+// *************************************************
+
+
+// ***********************
+// 24 - GEOFENCING_SCAN_PERIOD
+// ***********************
+
+pub static GEOFENCING_SCAN_PERIOD: PrmDatOptional = PrmDatOptional {
+    id: 0x18,
+    name: "geofencing_scan_period",
+    label: "Geofencing Scan Period",
+    description: "Geofencing Scan Period [Unit: s]",
+    disabled_val: 0,
+    default_val: 0,
+    range: (1, 300),
+};
+
+
+// ***********************
+// 25 - GEOFENCING_COLLECT_PERIOD
+// ***********************
+
+pub static GEOFENCING_COLLECT_PERIOD: PrmDatDec = PrmDatDec {
+    id: 0x19,
+    name: "geofencing_scan_period",
+    label: "Geofencing Scan Period",
+    description: "Geofencing Scan Period [Unit: s]",
+    default_val: 60,
+    range: (15, 3600),
+};
+
+
+// ***********************
+// 105 - GEOFENCING_SCAN_DURATION
+// ***********************
+
+pub static GEOFENCING_SCAN_DURATION: PrmDatDec = PrmDatDec {
+    id: 0x69,
+    name: "geofencing_scan_duration",
+    label: "Geofencing Scan Duration",
+    description: "Geofencing Scan Duration [Unit: ms]",
+    default_val: 370,
+    range: (370, 3000),
+};
+
+
+// *************************************************
+// ***                                           ***
+// ***   BLE beaconing parameters                ***
+// ***                                           ***
+// *************************************************
+
+
+// ***********************
+// 106 - BEACONING_TYPE
+// ***********************
+
+pub static BEACONING_TYPE: PrmDatDistinct = PrmDatDistinct {
+    id: 0x6A,
+    name: "beaconing_type",
+    label: "Beaconing Type",
+    description: "Beaconing advertisement type.",
+    default_val: BeaconingTypeOptions::DISABLED.val,
+    distinct_vals: &[
+        BeaconingTypeOptions::DISABLED,
+        // BeaconingTypeOptions::NOT_USED_1,
+        BeaconingTypeOptions::QUUPPA,
+        BeaconingTypeOptions::QUUPPA,
+        BeaconingTypeOptions::EDDYSTONE_UID,
+        BeaconingTypeOptions::IBEACON,
+        BeaconingTypeOptions::ALT_BEACON,
+    ],
+};
+pub struct BeaconingTypeOptions;
+impl BeaconingTypeOptions {
+    pub const DISABLED: DistinctVal = DistinctVal {
+        val: 0,
+        txt: "Beaconing is Disabled",
+    };
+    // pub const NOT_USED_1: DistinctVal = DistinctVal {
+    //     val: 1,
+    //     txt: "Not used 1",
+    // };
+    pub const QUUPPA: DistinctVal = DistinctVal {
+        val: 2,
+        txt: "Quuppa",
+    };
+    pub const EDDYSTONE_UID: DistinctVal = DistinctVal {
+        val: 3,
+        txt: "Eddystone UID",
+    };
+    pub const IBEACON: DistinctVal = DistinctVal {
+        val: 4,
+        txt: "iBeacon",
+    };
+    pub const ALT_BEACON: DistinctVal = DistinctVal {
+        val: 5,
+        txt: "altBeacon",
+    };
+}
+
+
+// ***********************
+// 107 - BEACONING_TX_POWER
+// ***********************
+
+pub static BEACONING_TX_POWER: PrmDatDistinct = PrmDatDistinct {
+    id: 0x6B,
+    name: "beaconing_tx_power",
+    label: "Beaconing TX Power",
+    description: "Beaconing TX Power.",
+    default_val: BeaconingTxPowerOptions::N0.val,
+    distinct_vals: &[
+        BeaconingTxPowerOptions::P4,
+        BeaconingTxPowerOptions::P3,
+        BeaconingTxPowerOptions::N0,
+        BeaconingTxPowerOptions::N4,
+        BeaconingTxPowerOptions::N8,
+        BeaconingTxPowerOptions::N12,
+        BeaconingTxPowerOptions::N16,
+        BeaconingTxPowerOptions::N20,
+        BeaconingTxPowerOptions::N40,
+    ],
+};
+pub struct BeaconingTxPowerOptions;
+impl BeaconingTxPowerOptions {
+    pub const P4: DistinctVal = DistinctVal {
+        val: 0,
+        txt: "+4 dBm",
+    };
+    pub const P3: DistinctVal = DistinctVal {
+        val: 1,
+        txt: "+3 dBm",
+    };
+    pub const N0: DistinctVal = DistinctVal {
+        val: 2,
+        txt: "0 dBm",
+    };
+    pub const N4: DistinctVal = DistinctVal {
+        val: 3,
+        txt: "-4 dBm",
+    };
+    pub const N8: DistinctVal = DistinctVal {
+        val: 4,
+        txt: "-8 dBm",
+    };
+    pub const N12: DistinctVal = DistinctVal {
+        val: 5,
+        txt: "-12 dBm",
+    };
+    pub const N16: DistinctVal = DistinctVal {
+        val: 6,
+        txt: "-16 dBm",
+    };
+    pub const N20: DistinctVal = DistinctVal {
+        val: 7,
+        txt: "-20 dBm",
+    };
+    pub const N40: DistinctVal = DistinctVal {
+        val: 8,
+        txt: "-40 dBm",
+    };
+}
+
+
+// ***********************
+// 108 - BEACONING_STATIC_INTERVAL
+// ***********************
+
+pub static BEACONING_STATIC_INTERVAL: PrmDatOptional = PrmDatOptional {
+    id: 0x6C,
+    name: "beaconing_static_interval",
+    label: "Beaconing Interval in static state",
+    description: "Beaconing Interval in static state. [Unit: ms]",
+    default_val: 0,
+    disabled_val: 0, 
+    range: (100, 10000),
+};
+
+
+// ***********************
+// 109 - BEACONING_MOTION_INTERVAL
+// ***********************
+
+pub static BEACONING_MOTION_INTERVAL: PrmDatOptional = PrmDatOptional {
+    id: 0x6D,
+    name: "beaconing_motion_interval",
+    label: "Beaconing Interval in motion",
+    description: "Beaconing Interval in motion. [Unit: ms]",
+    default_val: 0,
+    disabled_val: 0, 
+    range: (100, 10000),
+};
+
+
+// ***********************
+// 110 - BEACONING_MOTION_DURATION
+// ***********************
+
+pub static BEACONING_MOTION_DURATION: PrmDatDec = PrmDatDec {
+    id: 0x6E,
+    name: "beaconing_motion_duration",
+    label: "Minimum Motion Duration for detecting motion in beaconing mode.",
+    description: "Minimum Motion Duration for detecting motion in beaconing mode. [Unit: s]",
+    default_val: 0,
+    range: (4, 255),
+};
+
+
+// ***********************
+// 112 - BEACONING_ID_0
+// ***********************
+
+pub static BEACONING_ID_0: PrmDatDec = PrmDatDec {
+    id: 0x70,
+    name: "beaconing_id_0",
+    label: "Beaconing ID 0",
+    description: "Beacon ID 0",
+    default_val: 0,
+    range: (i32::MIN, i32::MAX),
+};
+
+// ***********************
+// 113 - BEACONING_ID_1
+// ***********************
+
+pub static BEACONING_ID_1: PrmDatDec = PrmDatDec {
+    id: 0x71,
+    name: "beaconing_id_1",
+    label: "Beaconing ID 1",
+    description: "Beacon ID 1",
+    default_val: 0,
+    range: (i32::MIN, i32::MAX),
+};
+
+// ***********************
+// 114 - BEACONING_ID_2
+// ***********************
+
+pub static BEACONING_ID_2: PrmDatDec = PrmDatDec {
+    id: 0x72,
+    name: "beaconing_id_2",
+    label: "Beaconing ID 2",
+    description: "Beacon ID 2",
+    default_val: 0,
+    range: (i32::MIN, i32::MAX),
+};
+
+// ***********************
+// 115 - BEACONING_ID_3
+// ***********************
+
+pub static BEACONING_ID_3: PrmDatDec = PrmDatDec {
+    id: 0x73,
+    name: "beaconing_id_3",
+    label: "Beaconing ID 3",
+    description: "Beacon ID 3",
+    default_val: 0,
+    range: (i32::MIN, i32::MAX),
+};
+
+// ***********************
+// 116 - BEACONING_ID_4
+// ***********************
+
+pub static BEACONING_ID_4: PrmDatDec = PrmDatDec {
+    id: 0x74,
+    name: "beaconing_id_4",
+    label: "Beaconing ID 4",
+    description: "Beacon ID 4",
+    default_val: 0,
+    range: (i32::MIN, i32::MAX),
+};
+
+
