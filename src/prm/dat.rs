@@ -1185,10 +1185,10 @@ pub static NETWORK_TIMEOUT_RESET: PrmDatOptional = PrmDatOptional {
 
 
 // ***********************
-// 15 - BLE_BEACON_COUNT
+// 15 - BLE_BEACON_CNT
 // ***********************
 
-pub static BLE_BEACON_COUNT: PrmDatDec = PrmDatDec {
+pub static BLE_BEACON_CNT: PrmDatDec = PrmDatDec {
     id: 0x0F,
     name: "ble_beacon_cnt",
     label: "BLE Beacon Count",
@@ -1951,10 +1951,10 @@ impl AngleDetectModeOptions {
 
 
 // ***********************
-// 85 - ANGLE_REF_ACK
+// 85 - ANGLE_REF_ACQ
 // ***********************
 
-pub static ANGLE_REF_ACK: PrmDatDistinct = PrmDatDistinct {
+pub static ANGLE_REF_ACQ: PrmDatDistinct = PrmDatDistinct {
     id: 0x55,
     name: "angle_ref_acq",
     label: "Acquisition mode of Reference Angle.",
@@ -2035,10 +2035,10 @@ pub static ANGLE_REF_ACC_Z: PrmDatOptional = PrmDatOptional {
 
 
 // ***********************
-// 89 - CRITICAL_ANGLE
+// 89 - ANGLE_CRITICAL
 // ***********************
 
-pub static CRITICAL_ANGLE: PrmDatDec = PrmDatDec {
+pub static ANGLE_CRITICAL: PrmDatDec = PrmDatDec {
     id: 0x59,
     name: "angle_critical",
     label: "Critical Angle",
@@ -2451,65 +2451,65 @@ pub static BEACONING_MOTION_DURATION: PrmDatDec = PrmDatDec {
 
 
 // ***********************
-// 112 - BEACONING_ID_0
+// 112 - BEACON_ID_0
 // ***********************
 
-pub static BEACONING_ID_0: PrmDatDec = PrmDatDec {
+pub static BEACON_ID_0: PrmDatDec = PrmDatDec {
     id: 0x70,
-    name: "beaconing_id_0",
-    label: "Beaconing ID 0",
+    name: "beacon_id_0",
+    label: "Beacon ID 0",
     description: "Beacon ID 0",
     default_val: 0,
     range: (i32::MIN, i32::MAX),
 };
 
 // ***********************
-// 113 - BEACONING_ID_1
+// 113 - BEACON_ID_1
 // ***********************
 
-pub static BEACONING_ID_1: PrmDatDec = PrmDatDec {
+pub static BEACON_ID_1: PrmDatDec = PrmDatDec {
     id: 0x71,
-    name: "beaconing_id_1",
-    label: "Beaconing ID 1",
+    name: "beacon_id_1",
+    label: "Beacon ID 1",
     description: "Beacon ID 1",
     default_val: 0,
     range: (i32::MIN, i32::MAX),
 };
 
 // ***********************
-// 114 - BEACONING_ID_2
+// 114 - BEACON_ID_2
 // ***********************
 
-pub static BEACONING_ID_2: PrmDatDec = PrmDatDec {
+pub static BEACON_ID_2: PrmDatDec = PrmDatDec {
     id: 0x72,
-    name: "beaconing_id_2",
-    label: "Beaconing ID 2",
+    name: "beacon_id_2",
+    label: "Beacon ID 2",
     description: "Beacon ID 2",
     default_val: 0,
     range: (i32::MIN, i32::MAX),
 };
 
 // ***********************
-// 115 - BEACONING_ID_3
+// 115 - BEACON_ID_3
 // ***********************
 
-pub static BEACONING_ID_3: PrmDatDec = PrmDatDec {
+pub static BEACON_ID_3: PrmDatDec = PrmDatDec {
     id: 0x73,
-    name: "beaconing_id_3",
-    label: "Beaconing ID 3",
+    name: "beacon_id_3",
+    label: "Beacon ID 3",
     description: "Beacon ID 3",
     default_val: 0,
     range: (i32::MIN, i32::MAX),
 };
 
 // ***********************
-// 116 - BEACONING_ID_4
+// 116 - BEACON_ID_4
 // ***********************
 
-pub static BEACONING_ID_4: PrmDatDec = PrmDatDec {
+pub static BEACON_ID_4: PrmDatDec = PrmDatDec {
     id: 0x74,
-    name: "beaconing_id_4",
-    label: "Beaconing ID 4",
+    name: "beacon_id_4",
+    label: "Beacon ID 4",
     description: "Beacon ID 4",
     default_val: 0,
     range: (i32::MIN, i32::MAX),
