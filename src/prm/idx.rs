@@ -42,7 +42,7 @@ pub fn name_to_data_map() -> &'static BTreeMap<&'static str, &'static (dyn PrmDa
         map.insert(GPS_STANDBY_TIMEOUT.name, &GPS_STANDBY_TIMEOUT);
         map.insert(CONFIRMED_UL_BITMAP.name, &CONFIRMED_UL_BITMAP);
         map.insert(CONFIRMED_UL_RETRY.name, &CONFIRMED_UL_RETRY);
-        // map.insert(MOTION_SENSITIVITY.name, &MOTION_SENSITIVITY);
+        map.insert(MOTION_SENSITIVITY.name, &MOTION_SENSITIVITY);
         map.insert(SHOCK_DETECTION.name, &SHOCK_DETECTION);
         map.insert(PERIODIC_ACTIVITY_PERIOD.name, &PERIODIC_ACTIVITY_PERIOD);
         map.insert(MOTION_DURATION.name, &MOTION_DURATION);
@@ -62,7 +62,7 @@ pub fn name_to_data_map() -> &'static BTreeMap<&'static str, &'static (dyn PrmDa
         map.insert(COLLECTION_BLE_FILTER_MAIN_2.name, &COLLECTION_BLE_FILTER_MAIN_2);
         map.insert(COLLECTION_BLE_FILTER_SEC_VALUE.name, &COLLECTION_BLE_FILTER_SEC_VALUE);
         map.insert(COLLECTION_BLE_FILTER_SEC_MASK.name, &COLLECTION_BLE_FILTER_SEC_MASK);
-        // map.insert(BATTERY_CAPACITY.name, &BATTERY_CAPACITY);
+        map.insert(BATTERY_CAPACITY.name, &BATTERY_CAPACITY);
         map.insert(REED_SWITCH_CONFIGURATION.name, &REED_SWITCH_CONFIGURATION);
         map.insert(GNSS_CONSTELLATION.name, &GNSS_CONSTELLATION);
         // map.insert(PROX_SCAN_PWR_MIN.name, &PROX_SCAN_PWR_MIN);
@@ -141,7 +141,7 @@ pub fn name_to_data_map() -> &'static BTreeMap<&'static str, &'static (dyn PrmDa
         map.insert(BEACON_ID_4.name, &BEACON_ID_4);
         map.insert(SOS_PERIOD.name, &SOS_PERIOD);
         map.insert(MOTION_DEBOUNCE.name, &MOTION_DEBOUNCE);
-        // map.insert(BUTTON_MAPPING.name, &BUTTON_MAPPING);
+        map.insert(BUTTON_MAPPING.name, &BUTTON_MAPPING);
         map.insert(DEFAULT_DATARATE.name, &DEFAULT_DATARATE);
         map.insert(GPS_EHPE_MOTION.name, &GPS_EHPE_MOTION);
         map.insert(GPS_CONVERGENCE_MOTION.name, &GPS_CONVERGENCE_MOTION);
@@ -197,7 +197,7 @@ pub fn id_to_data_map() -> &'static BTreeMap<u8, &'static (dyn PrmDat + Sync + S
         map.insert(GPS_STANDBY_TIMEOUT.id, &GPS_STANDBY_TIMEOUT);
         map.insert(CONFIRMED_UL_BITMAP.id, &CONFIRMED_UL_BITMAP);
         map.insert(CONFIRMED_UL_RETRY.id, &CONFIRMED_UL_RETRY);
-        // map.insert(MOTION_SENSITIVITY.id, &MOTION_SENSITIVITY);
+        map.insert(MOTION_SENSITIVITY.id, &MOTION_SENSITIVITY);
         map.insert(SHOCK_DETECTION.id, &SHOCK_DETECTION);
         map.insert(PERIODIC_ACTIVITY_PERIOD.id, &PERIODIC_ACTIVITY_PERIOD);
         map.insert(MOTION_DURATION.id, &MOTION_DURATION);
@@ -217,7 +217,7 @@ pub fn id_to_data_map() -> &'static BTreeMap<u8, &'static (dyn PrmDat + Sync + S
         map.insert(COLLECTION_BLE_FILTER_MAIN_2.id, &COLLECTION_BLE_FILTER_MAIN_2);
         map.insert(COLLECTION_BLE_FILTER_SEC_VALUE.id, &COLLECTION_BLE_FILTER_SEC_VALUE);
         map.insert(COLLECTION_BLE_FILTER_SEC_MASK.id, &COLLECTION_BLE_FILTER_SEC_MASK);
-        // map.insert(BATTERY_CAPACITY.id, &BATTERY_CAPACITY);
+        map.insert(BATTERY_CAPACITY.id, &BATTERY_CAPACITY);
         map.insert(REED_SWITCH_CONFIGURATION.id, &REED_SWITCH_CONFIGURATION);
         map.insert(GNSS_CONSTELLATION.id, &GNSS_CONSTELLATION);
         // map.insert(PROX_SCAN_PWR_MIN.id, &PROX_SCAN_PWR_MIN);
@@ -296,7 +296,7 @@ pub fn id_to_data_map() -> &'static BTreeMap<u8, &'static (dyn PrmDat + Sync + S
         map.insert(BEACON_ID_4.id, &BEACON_ID_4);
         map.insert(SOS_PERIOD.id, &SOS_PERIOD);
         map.insert(MOTION_DEBOUNCE.id, &MOTION_DEBOUNCE);
-        // map.insert(BUTTON_MAPPING.id, &BUTTON_MAPPING);
+        map.insert(BUTTON_MAPPING.id, &BUTTON_MAPPING);
         map.insert(DEFAULT_DATARATE.id, &DEFAULT_DATARATE);
         map.insert(GPS_EHPE_MOTION.id, &GPS_EHPE_MOTION);
         map.insert(GPS_CONVERGENCE_MOTION.id, &GPS_CONVERGENCE_MOTION);

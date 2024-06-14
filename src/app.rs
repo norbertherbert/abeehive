@@ -21,7 +21,11 @@ use abeehive::components::my_input::MyInput;
 use abeehive::components::my_optional_input::MyOptionalInput;
 use abeehive::components::my_select::MySelect;
 use abeehive::components::my_bitmap::MyBitmap;
-use abeehive::components::my_transmit_strat_custom::MyTransmitStratCustom;
+use abeehive::components::myc_transmit_strat_custom::MycTransmitStratCustom;
+use abeehive::components::myc_motion_sensitivity::MycMotionSensitivity;
+// use abeehive::components::myc_button_mapping::MycButtonMapping;
+// use abeehive::components::myc_battery_capacity::MycBatteryCapacity;
+
 use abeehive::components::modal::Modal;
 use abeehive::components::navbar::{Navbar, NavbarAction};
 use abeehive::components::select_usb_port::SelectUsbPort;
@@ -100,8 +104,9 @@ impl Component for BeeQueenApp {
         let beequeen_app = BeeQueenApp::default();
         
         // // an invalid values to test how the GUI acts in case of errors
-        // beequeen_app.vvals.set_val_by_id(MODE.id, 10).unwrap();
-        // beequeen_app.vvals.set_val_by_id(CONFIG_FLAGS.id, (0b_00000000_11110111_11111111_11111111 as u32) as i32).unwrap();
+        // beequeen_app.vvals.borrow_mut().set_val_by_id(MODE.id, 10).unwrap();
+        // beequeen_app.vvals.borrow_mut().set_val_by_id(CONFIG_FLAGS.id, (0b_00000000_11110111_11111111_11111111 as u32) as i32).unwrap();
+        beequeen_app.vvals.borrow_mut().set_val_by_id(MOTION_SENSITIVITY.id, 0xff0201).unwrap();
 
         beequeen_app
 
@@ -584,7 +589,7 @@ impl Component for BeeQueenApp {
                                     }
                                     class={"ml-5 mt-2"}
                                 >
-                                    <MyTransmitStratCustom
+                                    <MycTransmitStratCustom
                                         id={TRANSMIT_STRAT_CUSTOM.id}
                                         label={TRANSMIT_STRAT_CUSTOM.label}
                                         description={TRANSMIT_STRAT_CUSTOM.description}
@@ -622,6 +627,32 @@ impl Component for BeeQueenApp {
                                     })
                                 }
                             />
+
+
+
+                            
+                            <MycMotionSensitivity
+                                id = {MOTION_SENSITIVITY.id}
+                                label = {MOTION_SENSITIVITY.label}
+                                description = {MOTION_SENSITIVITY.description}
+                                default_val = {MOTION_SENSITIVITY.default_val}
+                                range_sensitivity = {MOTION_SENSITIVITY.range_sensitivity}
+                                distinct_vals_odr = {MOTION_SENSITIVITY.distinct_vals_odr}
+                                distinct_vals_fullscale = {MOTION_SENSITIVITY.distinct_vals_fullscale}
+
+                                vval={
+                                    self.vvals.borrow().get_by_id(MOTION_SENSITIVITY.id)
+                                    .expect("id is always valid")
+                                    .expect("id always exists")
+                                    .clone()
+                                }
+                                handle_onchange = {
+                                    ctx.link().callback(move |(id, txt)| {
+                                        Msg::ParamValueChanged(id, txt)
+                                    })
+                                }
+                            />
+
 
 
                             <button

@@ -2,6 +2,8 @@ use crate::prm::typ::{
     BitmapBit, DistinctVal, PrmDatBitmap, PrmDatDec, PrmDatDistinct, PrmDatOptional,
 };
 
+use super::typ::{PrmDatBatteryCapacity, PrmDatButtonMapping, PrmDatMotionSensitivity};
+
 
 // *************************************************
 // ***                                           ***
@@ -727,7 +729,7 @@ pub static TRANSMIT_STRAT: PrmDatDistinct = PrmDatDistinct {
     id: 0x0e,
     name: "transmit_strat",
     label: "Transmit Strategy",
-    description: "Transmit Strategy Help Text",
+    description: "LoRaWAN Transmit Strategy.",
     default_val: TransmitStratOption::DOUBLE_RANDOM.val,
     distinct_vals: &[
         TransmitStratOption::SINGLE_FIXED,
@@ -1398,7 +1400,7 @@ pub static CONFIG_FLAGS: PrmDatBitmap = PrmDatBitmap {
     id: 0x0d,
     name: "config_flags",
     label: "Configuration Flags",
-    description: "Configuration Flags Help Text",
+    description: "Device Configuration Flags",
     default_val: 213055,
     bits: &[
         ConfigFlagsBit::FRAME_PENDING_ENABLED,
@@ -1567,33 +1569,35 @@ impl ConfigFlagsBit {
 //  	 	 	 	0: Rechargeable battery.
 //  	 	 	 	1-65535: Capacity of the primary battery
 
-// pub static BATTERY_CAPACITY: PrmDatDistinct = PrmDatDistinct {
-//     id: 0x28,
-//     name: "battery_capacity",
-//     label: "Battery capacity calculation setting.",
-//     description: "Battery capacity calculation setting.",
-//     default_val: PosBleReportTypeOptions::PROVISIONED.val,
-//     distinct_vals: &[
-//         PosBleReportTypeOptions::PROVISIONED,
-//         PosBleReportTypeOptions::RECHARGEABLE,
-//         PosBleReportTypeOptions::PRIMARY,
-//     ],
-// };
-// pub struct PosBleReportTypeOptions;
-// impl PosBleReportTypeOptions {
-//     pub const PROVISIONED: DistinctVal = DistinctVal {
-//         val: -1,
-//         txt: "Use provisioned value.",
-//     };
-//     pub const RECHARGEABLE: DistinctVal = DistinctVal {
-//         val: 0,
-//         txt: "Rechargeable battery",
-//     };
-//     pub const PRIMARY: DistinctVal = DistinctVal {
-//         val: 1,
-//         txt: "Primary battery with given caapacity",
-//     };
-// }
+pub static BATTERY_CAPACITY: PrmDatBatteryCapacity = PrmDatBatteryCapacity {
+    id: 0x28,
+    name: "battery_capacity",
+    label: "Battery capacity calculation setting.",
+    description: "Battery capacity calculation setting.",
+    range: (1, 65535),
+    default_val: BatteryCapacityCalcOptions::PROVISIONED.val,
+    distinct_vals: &BatteryCapacityCalcOptions::ALL_OPTIONS,
+};
+pub struct BatteryCapacityCalcOptions;
+impl BatteryCapacityCalcOptions {
+    pub const PROVISIONED: DistinctVal = DistinctVal {
+        val: -1,
+        txt: "Use provisioned value.",
+    };
+    pub const RECHARGEABLE: DistinctVal = DistinctVal {
+        val: 0,
+        txt: "Rechargeable battery",
+    };
+    pub const PRIMARY: DistinctVal = DistinctVal {
+        val: 1,
+        txt: "Primary battery with given caapacity",
+    };
+    pub const ALL_OPTIONS: &'static [DistinctVal] = &[
+        Self::PROVISIONED,
+        Self::RECHARGEABLE,
+        Self::PRIMARY,
+    ]; 
+}
 
 
 // ***********************
@@ -1605,16 +1609,16 @@ pub static REED_SWITCH_CONFIGURATION: PrmDatDistinct = PrmDatDistinct {
     name: "reed_switch_configuration",
     label: "Reed Switch Configuration.",
     description: "Reed Switch Configuration.",
-    default_val: ReedSwitchConf::REED_SWITCH_DISABLED.val,
+    default_val: ReedSwitchConfOptions::REED_SWITCH_DISABLED.val,
     distinct_vals: &[
-        ReedSwitchConf::REED_SWITCH_DISABLED,
-        ReedSwitchConf::RESET_DEVICE,
-        ReedSwitchConf::BEHAVE_AS_BUTTON,
-        ReedSwitchConf::BLE_ADVERTIZE,
+        ReedSwitchConfOptions::REED_SWITCH_DISABLED,
+        ReedSwitchConfOptions::RESET_DEVICE,
+        ReedSwitchConfOptions::BEHAVE_AS_BUTTON,
+        ReedSwitchConfOptions::BLE_ADVERTIZE,
     ],
 };
-pub struct ReedSwitchConf;
-impl ReedSwitchConf {
+pub struct ReedSwitchConfOptions;
+impl ReedSwitchConfOptions {
 
     pub const REED_SWITCH_DISABLED: DistinctVal = DistinctVal {
         val: 0,
@@ -1653,6 +1657,56 @@ impl ReedSwitchConf {
 //  	 	 	 	4. No action.
 //  	 	 	 	5. Angle detection manual trigger.
 //  	 	 	 	6. Special sequence activation.
+
+pub static BUTTON_MAPPING: PrmDatButtonMapping = PrmDatButtonMapping {
+    id: 0x77,
+    name: "button_mapping",
+    label: "Button Mapping.",
+    description: "Button Mapping.",
+    default_val: 74768,
+    long_press_duration_range: (1, 8),
+    action_distinct_vals: ButtonMappingOptions::ALL_OPTIONS,
+};
+pub struct ButtonMappingOptions;
+impl ButtonMappingOptions {
+    pub const NONE: DistinctVal = DistinctVal {
+        val: 0,
+        txt: "No action.",
+    };
+    pub const SHOW_BATTERY_LEVEL_BY_LED: DistinctVal = DistinctVal {
+        val: 1,
+        txt: "Show battery level by LED.",
+    };
+    pub const START_STOP_SOS: DistinctVal = DistinctVal {
+        val: 2,
+        txt: "Start/Stop SOS.",
+    };
+    pub const SEND_POSITION_ALERT: DistinctVal = DistinctVal {
+        val: 3,
+        txt: "Send a Position alert.",
+    };
+    // pub const DEPRECATED_4: DistinctVal = DistinctVal {
+    //     val: 4,
+    //     txt: "Deprrecated 4.",
+    // };
+    pub const SEND_ANGLE_DETECTION_REPORT: DistinctVal = DistinctVal {
+        val: 5,
+        txt: "Send an Angle Detection report.",
+    };
+    pub const ACTIVATE_SPECIAL_SEQUENCE: DistinctVal = DistinctVal {
+        val: 6,
+        txt: "Activate the functions of Special Button Sequences.",
+    };
+    pub const ALL_OPTIONS: &'static [DistinctVal] = &[
+        Self::NONE,
+        Self::SHOW_BATTERY_LEVEL_BY_LED,
+        Self::START_STOP_SOS,
+        Self::SEND_POSITION_ALERT,
+        // Self::DEPRECATED_4,
+        Self::SEND_ANGLE_DETECTION_REPORT,
+        Self::ACTIVATE_SPECIAL_SEQUENCE,
+    ];
+}
 
 
 // ***********************
@@ -1728,25 +1782,92 @@ pub static PW_STAT_PERIOD: PrmDatDec = PrmDatDec {
 // 20 - MOTION_SENSITIVITY - TODO: CUSTOMIZATION REQUIRED!
 // ***********************
 
-// motion_sensitivity	0x14	none	1 – 0x000FFFFF	Accelerometer configuration. Functioning has been modified in MCU/Application FW 2.4. Bit fields  composed by 3 octets(1)(2):
-//  	 	 	 	Octet 0 (LSB). Configure the sensitivity
-//  	 	 	 	1-30: The threshold is coded as follow: motion_sensitivity * 0.063g
-//  	 	 	 	31-99: Same mode than above with the value 30. The threshold is capped to 30 * 0.063 = 1,89g
-//  	 	 	 	100: Default mode (was 0 in firmware version 2.2-x and below).
-//  	 	 	 	101-200: Default mode (sensitivity ranging from 1% to 100% as in firmware version 2.2-x and below).
-//  	 	 	 	Octet 1. Configure the Output Data Rate (ODR)
-//  	 	 	 	0 : 12.5Hz
-//  	 	 	 	1 : 25Hz
-//  	 	 	 	2 : 50Hz
-//  	 	 	 	3 : 100Hz
-//  	 	 	 	4 : 200Hz
-//  	 	 	 	Octet 2. Full scale  selection
-//  	 	 	 	0: 2G
-//  	 	 	 	1: 4G
-//  	 	 	 	2: 8G
-//  	 	 	 	3: 16G
+// motion_sensitivity 0x14 0x01–0x000FFFFF	
+// Accelerometer configuration. Bit fields composed by 3 octets:
+        // Octet 0 (LSB). Configure the sensitivity
+        //     1-30: The threshold is coded as follow: motion_sensitivity * 0.063g
+        //     31-99: Same mode than above with the value 30. The threshold is capped to 30 * 0.063 = 1,89g
+        //     100: Default mode (was 0 in firmware version 2.2-x and below).
+        //     101-200: Default mode (sensitivity ranging from 1% to 100% as in firmware version 2.2-x and below).
+        // Octet 1. Configure the Output Data Rate (ODR)
+        //     0 : 12.5Hz
+        //     1 : 25Hz
+        //     2 : 50Hz
+        //     3 : 100Hz
+        //     4 : 200Hz
+        // Octet 2. Full scale  selection
+        //     0: 2G
+        //     1: 4G
+        //     2: 8G
+        //     3: 16G
 
+pub static MOTION_SENSITIVITY: PrmDatMotionSensitivity = PrmDatMotionSensitivity {
+    id: 0x14,
+    name: "motion_sensitivity",
+    label: "Motion Sensitivity",
+    description: "Motion Sensitivity [Unit: mg]",
+    default_val: 131073,
+    range_sensitivity: (1, 200),
+    distinct_vals_odr: &MotionSensOdrOptions::ALL_OPTIONS,
+    distinct_vals_fullscale: &MotionSensFsOptions::ALL_OPTIONS,
+};
 
+pub struct MotionSensOdrOptions;
+impl MotionSensOdrOptions {
+    pub const ODR_12_5_HZ: DistinctVal = DistinctVal {
+        val: 0,
+        txt: "12.5Hz",
+    };
+    pub const ODR_25_HZ: DistinctVal = DistinctVal {
+        val: 1,
+        txt: "25Hz",
+    };
+    pub const ODR_50_HZ: DistinctVal = DistinctVal {
+        val: 2,
+        txt: "50Hz",
+    };
+    pub const ODR_100_HZ: DistinctVal = DistinctVal {
+        val: 3,
+        txt: "100Hz",
+    };
+    pub const ODR_200_HZ: DistinctVal = DistinctVal {
+        val: 4,
+        txt: "200Hz",
+    };
+    pub const ALL_OPTIONS: &'static [DistinctVal] =  &[
+        Self::ODR_12_5_HZ,
+        Self::ODR_25_HZ,
+        Self::ODR_50_HZ,
+        Self::ODR_100_HZ,
+        Self::ODR_200_HZ,
+    ];
+}
+
+pub struct MotionSensFsOptions;
+impl MotionSensFsOptions {
+    pub const FS_2G: DistinctVal = DistinctVal {
+        val: 0,
+        txt: "2g",
+    };
+    pub const FS_4G: DistinctVal = DistinctVal {
+        val: 1,
+        txt: "4g",
+    };
+    pub const FS_8G: DistinctVal = DistinctVal {
+        val: 2,
+        txt: "8g",
+    };
+    pub const FS_16G: DistinctVal = DistinctVal {
+        val: 3,
+        txt: "16g",
+    };
+    pub const ALL_OPTIONS: &'static [DistinctVal] =  &[
+        MotionSensFsOptions::FS_2G,
+        MotionSensFsOptions::FS_4G,
+        MotionSensFsOptions::FS_8G,
+        MotionSensFsOptions::FS_16G,
+    ];
+}
 
 
 // ***********************

@@ -38,6 +38,7 @@ impl Default for PrmVVals {
         map.insert(TRANSMIT_STRAT.id, PrmVVal::Valid(TRANSMIT_STRAT.default_val));
         map.insert(TRANSMIT_STRAT_CUSTOM.id, PrmVVal::Valid(TRANSMIT_STRAT_CUSTOM.default_val));
         map.insert(CONFIG_FLAGS.id, PrmVVal::Valid(CONFIG_FLAGS.default_val));
+        map.insert(MOTION_SENSITIVITY.id, PrmVVal::Valid(MOTION_SENSITIVITY.default_val));
 
         Self { vvals_data: map }
 

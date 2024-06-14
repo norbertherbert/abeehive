@@ -21,8 +21,8 @@ pub struct Props {
     pub handle_onchange: Callback<(u8, String)>,
 }
 
-#[function_component(MyTransmitStratCustom)]
-pub fn my_transmit_strat_custom(props: &Props) -> Html {
+#[function_component(MycTransmitStratCustom)]
+pub fn myc_transmit_strat_custom(props: &Props) -> Html {
     
     let bitmap = match props.vval {
         PrmVVal::Valid(v) => v,

@@ -56,3 +56,14 @@
 .my-error-msg {
     @apply block mb-2 text-xs font-medium text-red-700 dark:text-red-500;
 };
+
+
+
+
+.my-valid-div {
+    @apply flex bg-gray-50 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500;
+};
+
+.my-invalid-div {
+    @apply flex bg-red-50  border border-red-500 rounded-lg focus:ring-red-500  focus:border-red-500 w-full p-2.5 dark:bg-gray-700 dark:border-red-500 dark:focus:ring-blue-500 dark:focus:border-blue-500;
+};
