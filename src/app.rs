@@ -23,8 +23,8 @@ use abeehive::components::my_select::MySelect;
 use abeehive::components::my_bitmap::MyBitmap;
 use abeehive::components::myc_transmit_strat_custom::MycTransmitStratCustom;
 use abeehive::components::myc_motion_sensitivity::MycMotionSensitivity;
-// use abeehive::components::myc_button_mapping::MycButtonMapping;
-// use abeehive::components::myc_battery_capacity::MycBatteryCapacity;
+use abeehive::components::myc_button_mapping::MycButtonMapping;
+use abeehive::components::myc_battery_capacity::MycBatteryCapacity;
 
 use abeehive::components::modal::Modal;
 use abeehive::components::navbar::{Navbar, NavbarAction};
@@ -107,6 +107,8 @@ impl Component for BeeQueenApp {
         // beequeen_app.vvals.borrow_mut().set_val_by_id(MODE.id, 10).unwrap();
         // beequeen_app.vvals.borrow_mut().set_val_by_id(CONFIG_FLAGS.id, (0b_00000000_11110111_11111111_11111111 as u32) as i32).unwrap();
         beequeen_app.vvals.borrow_mut().set_val_by_id(MOTION_SENSITIVITY.id, 0xff0201).unwrap();
+        beequeen_app.vvals.borrow_mut().set_val_by_id(BUTTON_MAPPING.id, 0x44444).unwrap();
+        beequeen_app.vvals.borrow_mut().set_val_by_id(BATTERY_CAPACITY.id, -100).unwrap();
 
         beequeen_app
 
@@ -444,17 +446,160 @@ impl Component for BeeQueenApp {
 
                     </Modal>
               
-                    <div class="m-7">
-                        <div class="grid gap-5 mb-5 md:grid-cols-2">
+                    // PARAMETER COOMPONENTS:
 
-                            <MySelect
-                                id={MODE.id}
-                                label={MODE.label}
-                                description={MODE.description}
-                                select_options={MODE.distinct_vals}
+                    // <div class="m-7 flex flex-col flex-wrap gap-5">
+                    <div class="m-7 grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
 
+                        <MySelect
+                            id={MODE.id}
+                            label={MODE.label}
+                            description={MODE.description}
+                            select_options={MODE.distinct_vals}
+
+                            vval={
+                                self.vvals.borrow().get_by_id(MODE.id)
+                                .expect("id is always valid")
+                                .expect("id always exists")
+                                .clone()
+                            }
+                            handle_onchange = {
+                                ctx.link().callback(move |(id, txt)| {
+                                    Msg::ParamValueChanged(id, txt)
+                                })
+                            }
+                        />
+
+                        <MyInput
+                            id = { UL_PERIOD.id }
+                            label = { UL_PERIOD.label }
+                            description = { UL_PERIOD.description }
+                            radix_disp = { RadixDisp::Dec }
+                            vval={
+                                self.vvals.borrow().get_by_id(UL_PERIOD.id)
+                                .expect("id is always valid")
+                                .expect("id always exists")
+                                .clone()
+                            }
+                            handle_onchange = {
+                                ctx.link().callback(move |(id, txt)| {
+                                    Msg::ParamValueChanged(id, txt)
+                                })
+                            }
+                        />
+
+                        <MyInput
+                            id = { LORA_PERIOD.id }
+                            label = { LORA_PERIOD.label }
+                            description = { LORA_PERIOD.description }
+                            radix_disp = { RadixDisp::Dec }
+                            vval={
+                                self.vvals.borrow().get_by_id(LORA_PERIOD.id)
+                                .expect("id is always valid")
+                                .expect("id always exists")
+                                .clone()
+                            }
+                            handle_onchange = {
+                                ctx.link().callback(move |(id, txt)| {
+                                    Msg::ParamValueChanged(id, txt)
+                                })
+                            }
+                        />
+
+                        <MyOptionalInput
+                            id = { PERIODIC_POS_PERIOD.id }
+                            label = { PERIODIC_POS_PERIOD.label }
+                            description = {PERIODIC_POS_PERIOD.description }
+                            disabled_value = { PERIODIC_POS_PERIOD.disabled_val }
+                            default_value = { PERIODIC_POS_PERIOD.default_val }
+                            radix_disp = { RadixDisp::Dec }
+                            vval={
+                                self.vvals.borrow().get_by_id(PERIODIC_POS_PERIOD.id)
+                                .expect("id is always valid")
+                                .expect("id always exists")
+                                .clone()
+                            }
+                            handle_onchange = {
+                                ctx.link().callback(move |(id, txt)| {
+                                    Msg::ParamValueChanged(id, txt)
+                                })
+                            }
+                        />
+
+                        <MySelect
+                            id={GEOLOC_SENSOR.id}
+                            label={GEOLOC_SENSOR.label}
+                            description={GEOLOC_SENSOR.description}
+                            select_options={GEOLOC_SENSOR.distinct_vals}
+                            vval={
+                                self.vvals.borrow().get_by_id(GEOLOC_SENSOR.id)
+                                .expect("id is always valid")
+                                .expect("id always exists")
+                                .clone()
+                            }
+                            handle_onchange = {
+                                ctx.link().callback(move |(id, txt)| {
+                                    Msg::ParamValueChanged(id, txt)
+                                })
+                            }
+                        />
+
+                        <MySelect
+                            id={GEOLOC_METHOD.id}
+                            label={GEOLOC_METHOD.label}
+                            description={GEOLOC_METHOD.description}
+                            select_options={GEOLOC_METHOD.distinct_vals}
+                            vval={
+                                self.vvals.borrow().get_by_id(GEOLOC_METHOD.id)
+                                .expect("id is always valid")
+                                .expect("id always exists")
+                                .clone()
+                            }
+                            handle_onchange = {
+                                ctx.link().callback(move |(id, txt)| {
+                                    Msg::ParamValueChanged(id, txt)
+                                })
+                            }
+                        />
+
+                        <MySelect
+                            id={TRANSMIT_STRAT.id}
+                            label={TRANSMIT_STRAT.label}
+                            description={TRANSMIT_STRAT.description}
+                            select_options={TRANSMIT_STRAT.distinct_vals}
+
+                            vval={
+                                self.vvals.borrow().get_by_id(TRANSMIT_STRAT.id)
+                                .expect("id is always valid")
+                                .expect("id always exists")
+                                .clone()
+                            }
+                            handle_onchange = {
+                                ctx.link().callback(move |(id, txt)| {
+                                    Msg::ParamValueChanged(id, txt)
+                                })
+                            }
+                        />
+
+
+                        <div
+                            hidden = { 
+                                self.vvals.borrow().get_by_id(TRANSMIT_STRAT.id)
+                                .expect("id is always valid")
+                                .expect("id always exists")
+                                .clone()
+                                !=
+                                PrmVVal::Valid(TransmitStratOption::CUSTOM.val) 
+                            }
+                            class = "col-span-1 row-span-3"
+                        >
+                            <MycTransmitStratCustom
+                                id={TRANSMIT_STRAT_CUSTOM.id}
+                                label={TRANSMIT_STRAT_CUSTOM.label}
+                                description={TRANSMIT_STRAT_CUSTOM.description}
+                                items={TRANSMIT_STRAT_CUSTOM.bits}
                                 vval={
-                                    self.vvals.borrow().get_by_id(MODE.id)
+                                    self.vvals.borrow().get_by_id(TRANSMIT_STRAT_CUSTOM.id)
                                     .expect("id is always valid")
                                     .expect("id always exists")
                                     .clone()
@@ -465,172 +610,29 @@ impl Component for BeeQueenApp {
                                     })
                                 }
                             />
-
-                            <MyInput
-                                id = { UL_PERIOD.id }
-                                label = { UL_PERIOD.label }
-                                description = { UL_PERIOD.description }
-                                radix_disp = { RadixDisp::Dec }
-                                vval={
-                                    self.vvals.borrow().get_by_id(UL_PERIOD.id)
-                                    .expect("id is always valid")
-                                    .expect("id always exists")
-                                    .clone()
-                                }
-                                handle_onchange = {
-                                    ctx.link().callback(move |(id, txt)| {
-                                        Msg::ParamValueChanged(id, txt)
-                                    })
-                                }
-                            />
-
-                            <MyInput
-                                id = { LORA_PERIOD.id }
-                                label = { LORA_PERIOD.label }
-                                description = { LORA_PERIOD.description }
-                                radix_disp = { RadixDisp::Hex }
-                                vval={
-                                    self.vvals.borrow().get_by_id(LORA_PERIOD.id)
-                                    .expect("id is always valid")
-                                    .expect("id always exists")
-                                    .clone()
-                                }
-                                handle_onchange = {
-                                    ctx.link().callback(move |(id, txt)| {
-                                        Msg::ParamValueChanged(id, txt)
-                                    })
-                                }
-                            />
-
-                            <MyOptionalInput
-                                id = { PERIODIC_POS_PERIOD.id }
-                                label = { PERIODIC_POS_PERIOD.label }
-                                description = {PERIODIC_POS_PERIOD.description }
-                                disabled_value = { PERIODIC_POS_PERIOD.disabled_val }
-                                default_value = { PERIODIC_POS_PERIOD.default_val }
-                                radix_disp = { RadixDisp::Dec }
-                                vval={
-                                    self.vvals.borrow().get_by_id(PERIODIC_POS_PERIOD.id)
-                                    .expect("id is always valid")
-                                    .expect("id always exists")
-                                    .clone()
-                                }
-                                handle_onchange = {
-                                    ctx.link().callback(move |(id, txt)| {
-                                        Msg::ParamValueChanged(id, txt)
-                                    })
-                                }
-                            />
-
-                            <MySelect
-                                id={GEOLOC_SENSOR.id}
-                                label={GEOLOC_SENSOR.label}
-                                description={GEOLOC_SENSOR.description}
-                                select_options={GEOLOC_SENSOR.distinct_vals}
-                                vval={
-                                    self.vvals.borrow().get_by_id(GEOLOC_SENSOR.id)
-                                    .expect("id is always valid")
-                                    .expect("id always exists")
-                                    .clone()
-                                }
-                                handle_onchange = {
-                                    ctx.link().callback(move |(id, txt)| {
-                                        Msg::ParamValueChanged(id, txt)
-                                    })
-                                }
-                            />
-
-                            <MySelect
-                                id={GEOLOC_METHOD.id}
-                                label={GEOLOC_METHOD.label}
-                                description={GEOLOC_METHOD.description}
-                                select_options={GEOLOC_METHOD.distinct_vals}
-                                vval={
-                                    self.vvals.borrow().get_by_id(GEOLOC_METHOD.id)
-                                    .expect("id is always valid")
-                                    .expect("id always exists")
-                                    .clone()
-                                }
-                                handle_onchange = {
-                                    ctx.link().callback(move |(id, txt)| {
-                                        Msg::ParamValueChanged(id, txt)
-                                    })
-                                }
-                            />
+                        </div>
 
 
-                            <div>
-                                <MySelect
-                                    id={TRANSMIT_STRAT.id}
-                                    label={TRANSMIT_STRAT.label}
-                                    description={TRANSMIT_STRAT.description}
-                                    select_options={TRANSMIT_STRAT.distinct_vals}
-
-                                    vval={
-                                        self.vvals.borrow().get_by_id(TRANSMIT_STRAT.id)
-                                        .expect("id is always valid")
-                                        .expect("id always exists")
-                                        .clone()
-                                    }
-                                    handle_onchange = {
-                                        ctx.link().callback(move |(id, txt)| {
-                                            Msg::ParamValueChanged(id, txt)
-                                        })
-                                    }
-                                />
-                                <div
-                                    hidden = { 
-                                        self.vvals.borrow().get_by_id(TRANSMIT_STRAT.id)
-                                        .expect("id is always valid")
-                                        .expect("id always exists")
-                                        .clone()
-                                        !=
-                                        PrmVVal::Valid(TransmitStratOption::CUSTOM.val) 
-                                    }
-                                    class={"ml-5 mt-2"}
-                                >
-                                    <MycTransmitStratCustom
-                                        id={TRANSMIT_STRAT_CUSTOM.id}
-                                        label={TRANSMIT_STRAT_CUSTOM.label}
-                                        description={TRANSMIT_STRAT_CUSTOM.description}
-                                        items={TRANSMIT_STRAT_CUSTOM.bits}
-                                        vval={
-                                            self.vvals.borrow().get_by_id(TRANSMIT_STRAT_CUSTOM.id)
-                                            .expect("id is always valid")
-                                            .expect("id always exists")
-                                            .clone()
-                                        }
-                                        handle_onchange = {
-                                            ctx.link().callback(move |(id, txt)| {
-                                                Msg::ParamValueChanged(id, txt)
-                                            })
-                                        }
-                                    />
-                                </div>
-                            </div>
+                        <MyBitmap
+                            id={CONFIG_FLAGS.id}
+                            label={CONFIG_FLAGS.label}
+                            description={CONFIG_FLAGS.description}
+                            items={CONFIG_FLAGS.bits}
+                            vval={
+                                self.vvals.borrow().get_by_id(CONFIG_FLAGS.id)
+                                .expect("id is always valid")
+                                .expect("id always exists")
+                                .clone()
+                            }
+                            handle_onchange = {
+                                ctx.link().callback(move |(id, txt)| {
+                                    Msg::ParamValueChanged(id, txt)
+                                })
+                            }
+                        />
 
 
-                            <MyBitmap
-                                id={CONFIG_FLAGS.id}
-                                label={CONFIG_FLAGS.label}
-                                description={CONFIG_FLAGS.description}
-                                items={CONFIG_FLAGS.bits}
-                                vval={
-                                    self.vvals.borrow().get_by_id(CONFIG_FLAGS.id)
-                                    .expect("id is always valid")
-                                    .expect("id always exists")
-                                    .clone()
-                                }
-                                handle_onchange = {
-                                    ctx.link().callback(move |(id, txt)| {
-                                        Msg::ParamValueChanged(id, txt)
-                                    })
-                                }
-                            />
-
-
-
-                            
+                        <div class = "col-span-1 row-span-2">
                             <MycMotionSensitivity
                                 id = {MOTION_SENSITIVITY.id}
                                 label = {MOTION_SENSITIVITY.label}
@@ -652,30 +654,78 @@ impl Component for BeeQueenApp {
                                     })
                                 }
                             />
-
-
-
-                            <button
-                                id = "btn-submit"
-                                data-tooltip-target = "submit-tooltip"
-                                class = "text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                                onclick = { ctx.link().callback(move |_| {
-                                    Msg::Submit
-                                }) } 
-                            >
-                                { "Submit" }
-                            </button>
-                            <div
-                                id = "submit-tooltip"
-                                role = "tooltip"
-                                class = "absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
-                            >
-                                { "Click to submit the form!" }
-                                <div class="tooltip-arrow" data-popper-arrow="true"></div>
-                            </div>
-
-
                         </div>
+
+
+
+                        <div class = "col-span-1 row-span-4">
+                            <MycButtonMapping
+                                id = {BUTTON_MAPPING.id}
+                                label = {BUTTON_MAPPING.label}
+                                description = {BUTTON_MAPPING.description}
+                                default_val = {BUTTON_MAPPING.default_val}
+                                long_press_duration_range = {BUTTON_MAPPING.long_press_duration_range}
+                                action_distinct_vals = {BUTTON_MAPPING.action_distinct_vals}
+
+                                vval={
+                                    self.vvals.borrow().get_by_id(BUTTON_MAPPING.id)
+                                    .expect("id is always valid")
+                                    .expect("id always exists")
+                                    .clone()
+                                }
+                                handle_onchange = {
+                                    ctx.link().callback(move |(id, txt)| {
+                                        Msg::ParamValueChanged(id, txt)
+                                    })
+                                }
+                            />
+                        </div>
+
+                        <div class = "col-span-1 row-span-2">
+                            <MycBatteryCapacity
+                                id = {BATTERY_CAPACITY.id}
+                                label = {BATTERY_CAPACITY.label}
+                                description = {BATTERY_CAPACITY.description}
+                                default_val = {BATTERY_CAPACITY.default_val}
+                                distinct_vals = {BATTERY_CAPACITY.distinct_vals}
+
+                                vval={
+                                    self.vvals.borrow().get_by_id(BATTERY_CAPACITY.id)
+                                    .expect("id is always valid")
+                                    .expect("id always exists")
+                                    .clone()
+                                }
+                                handle_onchange = {
+                                    ctx.link().callback(move |(id, txt)| {
+                                        Msg::ParamValueChanged(id, txt)
+                                    })
+                                }
+                            />
+                        </div>
+
+                    </div>
+
+                    <div>
+
+                        <button
+                            id = "btn-submit"
+                            data-tooltip-target = "submit-tooltip"
+                            class = "text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                            onclick = { ctx.link().callback(move |_| {
+                                Msg::Submit
+                            }) } 
+                        >
+                            { "Submit" }
+                        </button>
+                        <div
+                            id = "submit-tooltip"
+                            role = "tooltip"
+                            class = "absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
+                        >
+                            { "Click to submit the form!" }
+                            <div class="tooltip-arrow" data-popper-arrow="true"></div>
+                        </div>
+
                     </div>
 
                     <pre>{ &self.greet_msg }</pre>

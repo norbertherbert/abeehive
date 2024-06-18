@@ -1,3 +1,4 @@
+// use gloo::console::log;
 use regex::Regex;
 
 use crate::prm::val::PrmVVal;
@@ -9,7 +10,7 @@ fn interim_vval_from_txt(txt: &str) -> PrmVVal {
     if txt.is_empty() {
         return PrmVVal::InvalidTxt(("".to_owned(), "This field musn't be empty.".to_owned()));
     }
-    let regex_for_dec = Regex::new("^[0-9]+$").unwrap();
+    let regex_for_dec = Regex::new("^-?[0-9]+$").unwrap();
     let regex_for_hex = Regex::new("^(0x){1}[a-fA-F0-9]+$").unwrap();
     if regex_for_dec.is_match(txt) {
         let Ok(val) = PrmVal::from_str_radix(txt, 10) else {
@@ -414,7 +415,11 @@ impl PrmDat for PrmDatBatteryCapacity {
     fn name(&self) -> &str { self.name }
     fn vval_from_val(&self, val: PrmVal) -> PrmVVal {
 
+
+        // log!(format!("{}, {}, {}", self.range.0, val, self.range.1));
+
         if self.range.0 <= val && val <= self.range.1 {
+            // log!("KKKKAAAAKKKKUUUUKKKK");
             return PrmVVal::Valid(val);
         }
 

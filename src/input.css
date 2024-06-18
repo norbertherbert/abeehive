@@ -5,7 +5,6 @@
 .my-valid-label {
     @apply block mb-2 text-sm font-medium text-gray-900 dark:text-white;
 };
-
 .my-invalid-label {
     @apply block mb-2 text-sm font-medium text-red-700 dark:text-red-500;
 };
@@ -13,38 +12,46 @@
 .my-valid-input {
     @apply bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white  dark:focus:ring-blue-500 dark:focus:border-blue-500;
 };
-
 .my-invalid-input {
     @apply bg-red-50  border border-red-500  text-red-900 placeholder-red-700 text-sm rounded-lg focus:ring-red-500  focus:border-red-500  block w-full p-2.5 dark:bg-gray-700 dark:border-red-500  dark:placeholder-red-500  dark:text-red-500 dark:focus:ring-blue-500 dark:focus:border-blue-500;
 };
 
-.my-valid-button {
-    @apply flex justify-between items-center bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-56 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500
-}
 
-.my-invalid-button {
-    @apply flex justify-between items-center bg-gray-50 border border-red-500 text-red-900 text-sm rounded-lg focus:ring-1 focus:ring-red-500 focus:border-red-500 w-56 p-2.5 dark:bg-gray-700 dark:border-red-600 dark:placeholder-red-500 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500
+
+
+.my-valid-button {
+    @apply w-full p-2.5 flex justify-between items-center bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500
 }
+.my-invalid-button {
+    @apply w-full p-2.5 flex justify-between items-center bg-gray-50 border border-red-500 text-red-900 text-sm rounded-lg focus:ring-1 focus:ring-red-500 focus:border-red-500 dark:bg-gray-700 dark:border-red-600 dark:placeholder-red-500 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500
+}
+/* .my-bitmap-dropdown { */
+    /* @apply w-64 p-2.5 hidden z-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 */
+    /* @apply hidden z-10 w-56 p-2.5 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 */
+/* }; */
+
+
+
 
 .my-disabled-input {
     @apply bg-gray-50 border border-gray-300 text-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white  dark:focus:ring-blue-500 dark:focus:border-blue-500;
 };
 
+
+
 .my-valid-checkbox-label {
-    @apply w-full ms-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300
+    @apply w-full ms-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300;
 }
 .my-invalid-checkbox-label {
-    @apply w-full ms-2 text-sm font-medium text-red-700 rounded dark:text-red-500
+    @apply w-full ms-2 text-sm font-medium text-red-700 rounded dark:text-red-500;
 }
 
 .my-valid-optional-input {
     @apply ps-14 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white  dark:focus:ring-blue-500 dark:focus:border-blue-500;
 };
-
 .my-invalid-optional-input {
     @apply ps-14 bg-red-50  border border-red-500  text-red-900 placeholder-red-700 text-sm rounded-lg focus:ring-red-500  focus:border-red-500  block w-full p-2.5 dark:bg-gray-700 dark:border-red-500  dark:placeholder-red-500  dark:text-red-500 dark:focus:ring-blue-500 dark:focus:border-blue-500;
 };
-
 .my-disabled-optional-input {
     @apply ps-14 bg-gray-50 border border-gray-300 text-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white  dark:focus:ring-blue-500 dark:focus:border-blue-500;
 };
@@ -61,9 +68,13 @@
 
 
 .my-valid-div {
-    @apply flex bg-gray-50 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500;
+    @apply flex flex-wrap gap-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500;
+};
+.my-invalid-div {
+    @apply flex flex-wrap gap-2 bg-red-50  border border-red-500 rounded-lg focus:ring-red-500  focus:border-red-500 w-full p-2.5 dark:bg-gray-700 dark:border-red-500 dark:focus:ring-blue-500 dark:focus:border-blue-500;
 };
 
-.my-invalid-div {
-    @apply flex bg-red-50  border border-red-500 rounded-lg focus:ring-red-500  focus:border-red-500 w-full p-2.5 dark:bg-gray-700 dark:border-red-500 dark:focus:ring-blue-500 dark:focus:border-blue-500;
+
+.my-vertical-div {
+    @apply flex flex-col items-stretch gap-2 w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500;
 };

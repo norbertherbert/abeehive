@@ -55,7 +55,7 @@ pub fn my_label(props: &Props) -> Html {
                 <div
                     id={tooltip_id}
                     role="tooltip"
-                    class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-75 tooltip dark:bg-gray-700"
+                    class="absolute z-30 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-75 tooltip dark:bg-gray-700"
                 >
                     {&props.description}
                     <div class="tooltip-arrow" data-popper-arrow="true"></div>

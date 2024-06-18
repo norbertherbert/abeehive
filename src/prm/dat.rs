@@ -18,8 +18,8 @@ use super::typ::{PrmDatBatteryCapacity, PrmDatButtonMapping, PrmDatMotionSensiti
 pub static MODE: PrmDatDistinct = PrmDatDistinct {
     id: 0xf9,
     name: "mode",
-    label: "Operation Mode",
-    description: "The operational mode of the tracker.",
+    label: "Operating Mode",
+    description: "The operation mode of the tracker.",
     default_val: ModeOption::MOTION_TRACKING.val,
     distinct_vals: &[
         ModeOption::STANDBY,
@@ -140,7 +140,7 @@ pub static UL_PERIOD: PrmDatDec = PrmDatDec {
     id: 0x00,
     name: "ul_period",
     label: "Location update period",
-    description: "Periodicity of position or activity messages in motion, start/end, activity or permanent operating mode.",
+    description: "Periodicity of position or activity messages in motion, start/end, activity or permanent tracking operating mode.",
     default_val: 300,
     range: (15, 86400),
 };
@@ -168,7 +168,7 @@ pub static GEOLOC_SENSOR: PrmDatDistinct = PrmDatDistinct {
     id: 0x05,
     name: "geoloc_sensor",
     label: "Primary Geoloc Technology",
-    description: "Geolocation sensor profile used in main operating mode and SOS.",
+    description: "Geolocation technology used in main operating mode and SOS.",
     default_val: GeolocSensorOption::GPS.val,
     distinct_vals: &[
         GeolocSensorOption::WIFI,
@@ -272,7 +272,7 @@ pub static GEOLOC_METHOD: PrmDatDistinct = PrmDatDistinct {
     id: 0x06,
     name: "geoloc_method",
     label: "Secondary Geoloc Technology",
-    description: "Secondary Geoloc Technology Help Text",
+    description: "Geolocation technology used in side operating modes.",
     default_val: GeolocSensorOption::GPS.val,
     distinct_vals: &[
         GeolocMethodOption::WIFI,
@@ -1572,17 +1572,17 @@ impl ConfigFlagsBit {
 pub static BATTERY_CAPACITY: PrmDatBatteryCapacity = PrmDatBatteryCapacity {
     id: 0x28,
     name: "battery_capacity",
-    label: "Battery capacity calculation setting.",
-    description: "Battery capacity calculation setting.",
-    range: (1, 65535),
-    default_val: BatteryCapacityCalcOptions::PROVISIONED.val,
+    label: "Battery Type",
+    description: "Battery type setting.",
+    range: (-1, 65535),
+    default_val: -1,
     distinct_vals: &BatteryCapacityCalcOptions::ALL_OPTIONS,
 };
 pub struct BatteryCapacityCalcOptions;
 impl BatteryCapacityCalcOptions {
     pub const PROVISIONED: DistinctVal = DistinctVal {
         val: -1,
-        txt: "Use provisioned value.",
+        txt: "Provisioned battery type.",
     };
     pub const RECHARGEABLE: DistinctVal = DistinctVal {
         val: 0,
@@ -1590,7 +1590,7 @@ impl BatteryCapacityCalcOptions {
     };
     pub const PRIMARY: DistinctVal = DistinctVal {
         val: 1,
-        txt: "Primary battery with given caapacity",
+        txt: "Primary battery with given capacity",
     };
     pub const ALL_OPTIONS: &'static [DistinctVal] = &[
         Self::PROVISIONED,
@@ -1663,7 +1663,7 @@ pub static BUTTON_MAPPING: PrmDatButtonMapping = PrmDatButtonMapping {
     name: "button_mapping",
     label: "Button Mapping.",
     description: "Button Mapping.",
-    default_val: 74768,
+    default_val: 0x00012010,
     long_press_duration_range: (1, 8),
     action_distinct_vals: ButtonMappingOptions::ALL_OPTIONS,
 };

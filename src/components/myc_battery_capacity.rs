@@ -1,11 +1,15 @@
-use wasm_bindgen::JsCast;
+use gloo::console::log;
+// use wasm_bindgen::JsCast;
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
 
 use crate::components::my_label::MyLabel;
 
 use crate::prm::{
-    typ::DistinctVal,
+    typ::{
+        PrmVal, 
+        DistinctVal
+    },
     val::PrmVVal,
 };
 
@@ -14,7 +18,8 @@ pub struct Props {
     pub id: u8,
     pub label: &'static str,
     pub description: &'static str,
-    pub select_options: &'static [DistinctVal],
+    pub default_val: PrmVal,
+    pub distinct_vals: &'static [DistinctVal],
 
     pub vval: PrmVVal,
     pub handle_onchange: Callback<(u8, String)>,
@@ -23,110 +28,189 @@ pub struct Props {
 #[function_component(MycBatteryCapacity)]
 pub fn myc_battery_capacity(props: &Props) -> Html {
 
-    let onchange = {
+    let battery_type_ref = NodeRef::default();
+    let battery_capacity_ref = NodeRef::default();
+
+    let set_default = {
         let handle_onchange = props.handle_onchange.clone();
         let id = props.id;
-        Callback::from(move |event: Event| {
-            let txt = event
-                .target()
-                .unwrap()
-                .unchecked_into::<HtmlInputElement>()
-                .value();
+        let default_val = props.default_val;
+        Callback::from(move |_event: MouseEvent| {
+            let val = default_val;
+            log!(&format!("{}", val));
+            handle_onchange.emit((id, format!("{}", val)));
+        })
+    };
 
-            handle_onchange.emit((id, txt));
+    let onchange = {
+
+        let handle_onchange = props.handle_onchange.clone();
+
+        let battery_type_ref = battery_type_ref.clone();
+        let battery_capacity_ref = battery_capacity_ref.clone();
+    
+        let id = props.id;
+
+        let (default_val_battery_type, default_val_battery_capacity) = match props.default_val {
+            -1 | 0 => { (props.default_val, 43500) },
+            1..=65535 => { (1, props.default_val) },
+            _ => { (-1, 0) }
+        };
+
+        Callback::from(move |_event: Event| {
+            
+            // let txt = event
+            //     .target()
+            //     .unwrap()
+            //     .unchecked_into::<HtmlInputElement>()
+            //     .value();
+
+            let battery_type_i32 = battery_type_ref
+                .cast::<HtmlInputElement>()
+                .unwrap()
+                .value()
+                .parse::<i32>()
+                .unwrap_or(default_val_battery_type);
+
+            let mut battery_capacity_i32 = battery_capacity_ref
+                .cast::<HtmlInputElement>()
+                .unwrap()
+                .value()
+                .parse::<i32>()
+                .unwrap_or(default_val_battery_capacity);
+
+            if battery_capacity_i32 < 1 { battery_capacity_i32 = 1 }
+            if battery_capacity_i32 > 65535 { battery_capacity_i32 = 65535 }
+
+            let val = match battery_type_i32 {
+                -1 | 0 => battery_type_i32,
+                1 => battery_capacity_i32,
+                _ => -1,
+            };
+
+            log!(format!("{:08x}", val));
+            handle_onchange.emit((id, val.to_string()));
+
         })
     };
 
     let vval = props.vval.clone();
-    let aria_id = format!("{}-aria", &props.id);
 
-    let value = match props.vval {
-        PrmVVal::Valid(v) => v.to_string(),
-        _ => "".to_string(), // TODO: select the right default value!
+    let (
+        battery_type, 
+        battery_capacity, 
+        err 
+    ) = match vval {
+        PrmVVal::Valid(val) => {
+            match val {
+                -1 | 0 => { ( val.to_string() , 43500.to_string(), "".to_string() ) }
+                1..=65535 => { ( 1.to_string() , val.to_string(), "".to_string() ) }
+                _ => { ( (-1).to_string() , 43500.to_string(), "".to_string() ) }
+            }
+        }
+        PrmVVal::Invalid((val, err)) => {
+            match val {
+                -1 | 0 => { ( val.to_string() , 43500.to_string(), err ) }
+                1..=65535 => { ( 1.to_string() , val.to_string(), err ) }
+                _ => { ( (-1).to_string() , 43500.to_string(), err ) }
+            }
+        }
+        PrmVVal::InvalidTxt((val, err)) => {
+            (
+                "".to_string(), 
+                "".to_string(), 
+                format!("cannot decode value: {}; {}", val, err)
+            )
+        }
     };
 
     html! {
+  
         <div>
 
             <MyLabel
                 input_element_id = { props.id }
                 label = { props.label }
                 description = { props.description}
-                is_valid = {
-                    match &vval {
-                        PrmVVal::Valid(_) => true,
-                        PrmVVal::Invalid(_) => false,
-                        PrmVVal::InvalidTxt(_) => false,
-                    }
-                }
+                is_valid = { err.is_empty() }
             />
 
-            <div>
-                <select
-                    id = { props.id.to_string() }
-                    // class = "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    class = {
-                        match &vval {
-                            PrmVVal::Valid(_) => "my-valid-input",
-                            PrmVVal::Invalid(_) => "my-invalid-input",
-                            PrmVVal::InvalidTxt(_) => "my-invalid-input",
-                        }
-                    }
-
-                    value = { value.to_string() }
-
-                    aria-describedby = { aria_id.clone() }
-                    onchange = { onchange }
-                >
-
-                    // <option value = { "0xaaa" }>{ "invalid value for testing" }</option>
-
-                    {
-                        props.select_options.iter().map(|item| {
-                            html!{ 
-                                <option value = { item.val.to_string() } selected = { item.val.to_string() == value } >
-                                    { format!("{} - {}", item.val, item.txt) }
-                                </option> 
-                            }
-                        }).collect::<Html>()
-                    }
-
-                    {
-                        match vval {
-                            PrmVVal::Valid(_) => html!(),
-                            PrmVVal::Invalid((val, _)) => {
-                                html! (
-                                    <option value = { "" } selected = true>
-                                        { format!("{} - Please select a valid value!", val) }
-                                    </option>
-                                )
-                            },
-                            PrmVVal::InvalidTxt((_, _)) => {
-                                html! (
-                                    <option value = { "" } selected = true>
-                                        { "Please select a valid value!" }
-                                    </option>
-                                )
-                            }
-                        }
-
-                    }
-
-                </select>
-
-                <span id = { aria_id } class = "hidden">{ &props.description }</span>
-            </div>
-
-            // <span id={aria_id} class = "hidden">
             {
-            match &vval {
-                PrmVVal::Valid(_) => html!(),
-                PrmVVal::Invalid((_, err)) => html!( <span class = { "my-error-msg" }>{ err.clone() }</span> ),
-                PrmVVal::InvalidTxt((_, err)) => html!( <span class = { "my-error-msg" }>{ err.clone() }</span> ),
+
+                if !err.is_empty() { html!(
+
+
+                    <div class = { "my-invalid-div" } >
+
+                        { "Invalid values found. Do you want to replace them with default values?" } 
+    
+                        <button
+                            class = "text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                            onclick = { set_default }
+                        >
+                            { "Replace by default" }
+                        </button>
+    
+                    </div>
+
+                )} else { html!(
+
+                    <div 
+                        class = {
+                            if err.is_empty() { "my-vertical-div" }
+                            else { "my-invalid-div" }
+                        }
+                    >
+
+                        <div>
+                            <label>{"Battery Type"}</label>
+                            <select
+                                class = {
+                                    if err.is_empty() { "my-valid-input" }
+                                    else { "my-invalid-input" }
+                                }
+                                value = { battery_type.clone() }
+
+                                ref = { battery_type_ref.clone() }
+                                onchange = { onchange.clone() }
+                            >
+                                {
+                                    props.distinct_vals.iter().map(|item| {
+                                        html!{ 
+                                            <option value = { item.val.to_string() } selected = { item.val.to_string() == battery_type } >
+                                                // { format!("{} - {}", item.val, item.txt) }
+                                                { item.txt }
+                                            </option> 
+                                        }
+                                    }).collect::<Html>()
+                                }
+                            </select>
+                        </div>
+
+                        <div hidden = {battery_type != "1"} >
+                            <label>{"Capacity [mAh]"}</label>
+                            <input
+                                type="text"
+                                autocomplete = "off"
+                                class = {
+                                    if err.is_empty() { "my-valid-input" }
+                                    else { "my-invalid-input" }
+                                }
+                                value = { battery_capacity.clone() }
+                                ref = { battery_capacity_ref.clone() }
+                                onchange={ onchange.clone() }
+                            />
+                        </div>
+
+                    </div>
+
+                )}
+
             }
-            }
-            // </span>
 
         </div>
     }
+
 }
+
+    

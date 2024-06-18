@@ -6,10 +6,9 @@ use yew::prelude::*;
 use crate::components::my_label::MyLabel;
 
 // use crate::prm::dat::MotionSensFsOptions;
-use crate::prm::typ::PrmVal;
 use crate::prm::{
     typ::{
-        // PrmVal, 
+        PrmVal, 
         DistinctVal
     },
     val::PrmVVal,
@@ -62,29 +61,24 @@ pub fn myc_motion_sensitivity(props: &Props) -> Html {
             //     .unchecked_into::<HtmlInputElement>()
             //     .value();
 
-            let sensitivity_element = sensitivity_ref
-                .cast::<HtmlInputElement>()
-                .unwrap();
 
-            let odr_element = odr_ref
-                .cast::<HtmlInputElement>()
-                .unwrap();
-
-            let fullscale_element = fullscale_ref
-                .cast::<HtmlInputElement>()
-                .unwrap();
-
-            let mut sensitivity_i32 = sensitivity_element
+            let mut sensitivity_i32 = sensitivity_ref
+            .cast::<HtmlInputElement>()
+            .unwrap()
             .value()
             .parse::<i32>()
             .unwrap_or(63);
 
-            let odr_i32 = odr_element
+            let odr_i32 =odr_ref
+            .cast::<HtmlInputElement>()
+            .unwrap()
             .value()
             .parse::<i32>()
             .unwrap_or(0);
 
-            let fullscale_i32 = fullscale_element
+            let fullscale_i32 = fullscale_ref
+            .cast::<HtmlInputElement>()
+            .unwrap()
             .value()
             .parse::<i32>()
             .unwrap_or(0);
@@ -163,12 +157,12 @@ pub fn myc_motion_sensitivity(props: &Props) -> Html {
 
                     <div 
                         class = {
-                            if err.is_empty() { "my-valid-div" }
+                            if err.is_empty() { "my-vertical-div" }
                             else { "my-invalid-div" }
                         }
                     >
 
-                        <div class="p-2">
+                        <div>
                             <label>{"Sensitivity [mg]"}</label>
                             <input
                                 type="text"
@@ -183,57 +177,58 @@ pub fn myc_motion_sensitivity(props: &Props) -> Html {
                             />
                         </div>
 
-                        <div class="p-2">
-                            <label>{"Sample Rate"}</label>
-                            <select
-                                class = {
-                                    if err.is_empty() { "my-valid-input" }
-                                    else { "my-invalid-input" }
-                                }
-                                value = { odr.clone() }
 
-                                ref = { odr_ref.clone() }
-                                onchange = { onchange.clone() }
-                            >
-                                <option value = { 100 } >
-                                    { format!("{} - {}", 100, "invalid") }
-                                </option> 
-                                {
-                                    props.distinct_vals_odr.iter().map(|item| {
-                                        html!{ 
-                                            <option value = { item.val.to_string() } selected = { item.val.to_string() == *odr } >
-                                                // { format!("{} - {}", item.val, item.txt) }
-                                                { item.txt }
-                                            </option> 
-                                        }
-                                    }).collect::<Html>()
-                                }
-                            </select>
-                        </div>
+                        <div class = "flex gap-2 justify-items-stretch">
 
-                        <div class="p-2">
-                            <label>{"Full Scale"}</label>
-                            <select
-                                class = {
-                                    if err.is_empty() { "my-valid-input" }
-                                    else { "my-invalid-input" }
-                                }
-                                value = { fullscale.clone() }
-                                ref = { fullscale_ref.clone() }
-                                onchange = { onchange }
-                            >
-                                {
-                                    props.distinct_vals_fullscale.iter().map(|item| {
-                                        html!{ 
-                                            <option value = { item.val.to_string() } selected = { item.val.to_string() == *fullscale } >
-                                                // { format!("{} - {}", item.val, item.txt) }
-                                                { item.txt }
-                                            </option> 
-                                        }
-                                    }).collect::<Html>()
-                                }
-                            </select>
+                            <div class = "flex-1">
+                                <label>{"Sample Rate"}</label>
+                                <select
+                                    class = {
+                                        if err.is_empty() { "my-valid-input" }
+                                        else { "my-invalid-input" }
+                                    }
+                                    value = { odr.clone() }
 
+                                    ref = { odr_ref.clone() }
+                                    onchange = { onchange.clone() }
+                                >
+                                    {
+                                        props.distinct_vals_odr.iter().map(|item| {
+                                            html!{ 
+                                                <option value = { item.val.to_string() } selected = { item.val.to_string() == odr } >
+                                                    // { format!("{} - {}", item.val, item.txt) }
+                                                    { item.txt }
+                                                </option> 
+                                            }
+                                        }).collect::<Html>()
+                                    }
+                                </select>
+                            </div>
+
+                            <div class = "flex-1">
+                                <label>{"Full Scale"}</label>
+                                <select
+                                    class = {
+                                        if err.is_empty() { "my-valid-input" }
+                                        else { "my-invalid-input" }
+                                    }
+                                    value = { fullscale.clone() }
+                                    ref = { fullscale_ref.clone() }
+                                    onchange = { onchange }
+                                >
+                                    {
+                                        props.distinct_vals_fullscale.iter().map(|item| {
+                                            html!{ 
+                                                <option value = { item.val.to_string() } selected = { item.val.to_string() == fullscale } >
+                                                    // { format!("{} - {}", item.val, item.txt) }
+                                                    { item.txt }
+                                                </option> 
+                                            }
+                                        }).collect::<Html>()
+                                    }
+                                </select>
+
+                            </div>
                         </div>
                     </div>
 

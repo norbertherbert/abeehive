@@ -2,6 +2,7 @@ use gloo::console::log;
 use wasm_bindgen::JsCast;
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
+// use yew::classes;
 
 use crate::components::my_label::MyLabel;
 
@@ -105,12 +106,16 @@ pub fn myc_transmit_strat_custom(props: &Props) -> Html {
             />
             <input id={props.id.to_string()} hidden=true />
 
-            <div class={"ml-5"}>
+            <div 
+                // class={"ml-5"}
+                class = "my-vertical-div"
+                // class = "flex flex-col items-stretch gap-2 w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500;"
+            >
 
 
                 // 2 checkboxes for bit 0 and bit 1
 
-                <div class={"mb-3"}>
+                <div>
 
                     <ul class="p-0 overflow-y-auto text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownSearchButton">
                         {
@@ -148,11 +153,11 @@ pub fn myc_transmit_strat_custom(props: &Props) -> Html {
                 </div>
 
 
-                <div>
+                <div class = "flex flex-wrap gap-2 justify-items-stretch">
 
-                    // 1st TX Daata Rates
+                    // 1st TX Data Rates
 
-                    <div class={"mb-3"}>
+                    <div class="shrink-0 grow basis-7">
 
                         <label for={ button_id1.clone() } class={"my-valid-label"}>
                             { "Data rates used for the 1st TX" }
@@ -163,7 +168,8 @@ pub fn myc_transmit_strat_custom(props: &Props) -> Html {
                             id={button_id1.clone()}
                             aria-describedby={aria_button_id1.clone()}
                             data-dropdown-toggle={dropdown_id1.clone()}
-                            class="flex justify-between items-center bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 block w-56 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            // class="flex justify-between items-center bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 block w-56 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            class="my-valid-button"
                         >
                             {"Bitmap ..."}
                             <svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
@@ -217,10 +223,10 @@ pub fn myc_transmit_strat_custom(props: &Props) -> Html {
 
                     // 1st TX DR Distribution
 
-                    <div class={"mb-3"}>
+                    <div class="shrink-0 grow basis-7">
 
                         <label for={ select_id1.clone() } class={"my-valid-label"}>
-                            { "Data rate distribution of the 1st TX" }
+                            { "Data rate distr. of the 1st TX" }
                         </label>
                         <select
                             id={ select_id1 }
@@ -240,13 +246,21 @@ pub fn myc_transmit_strat_custom(props: &Props) -> Html {
                     </div>
 
                 </div>
+              
 
+                <div
+                    class = { 
+                        if bitmap & 0b10 == 0b10 { 
+                            "flex gap-2 justify-items-stretch" 
+                        } else { 
+                            "hidden" 
+                        } 
+                    } 
+                >
 
-                // 2nd TX Data Rates
+                    // 2nd TX Data Rates
 
-                <div hidden={ bitmap & 0b10 != 0b10 } >
-
-                    <div class={"mb-3"}>
+                    <div class="flex-1">
                         <label for={ button_id2.clone() } class={"my-valid-label"} >
                             { "Data rates used for the 2nd TX" }
                         </label>
@@ -256,7 +270,8 @@ pub fn myc_transmit_strat_custom(props: &Props) -> Html {
                             id={button_id2.clone()}
                             aria-describedby={aria_button_id2.clone()}
                             data-dropdown-toggle={dropdown_id2.clone()}
-                            class="flex justify-between items-center bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 block w-56 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            // class="flex justify-between items-center bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 block w-56 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            class="my-valid-button"
                         >
                             {"Bitmap ..."}
                             <svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
@@ -309,10 +324,10 @@ pub fn myc_transmit_strat_custom(props: &Props) -> Html {
 
                     // 2nd TX DR Distribution
 
-                    <div class={"mb-3"}>
+                    <div class="flex-1">
 
                         <label for={ select_id2.clone() } class={"my-valid-label"} >
-                            { "Data rate distribution of the 2nd TX" }
+                            { "Data rate distr. of the 2nd TX" }
                         </label>
                         <select
                             id={ select_id2 }
