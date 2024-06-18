@@ -656,31 +656,6 @@ impl Component for BeeQueenApp {
                             />
                         </div>
 
-
-
-                        <div class = "col-span-1 row-span-4">
-                            <MycButtonMapping
-                                id = {BUTTON_MAPPING.id}
-                                label = {BUTTON_MAPPING.label}
-                                description = {BUTTON_MAPPING.description}
-                                default_val = {BUTTON_MAPPING.default_val}
-                                long_press_duration_range = {BUTTON_MAPPING.long_press_duration_range}
-                                action_distinct_vals = {BUTTON_MAPPING.action_distinct_vals}
-
-                                vval={
-                                    self.vvals.borrow().get_by_id(BUTTON_MAPPING.id)
-                                    .expect("id is always valid")
-                                    .expect("id always exists")
-                                    .clone()
-                                }
-                                handle_onchange = {
-                                    ctx.link().callback(move |(id, txt)| {
-                                        Msg::ParamValueChanged(id, txt)
-                                    })
-                                }
-                            />
-                        </div>
-
                         <div class = "col-span-1 row-span-2">
                             <MycBatteryCapacity
                                 id = {BATTERY_CAPACITY.id}
@@ -703,7 +678,32 @@ impl Component for BeeQueenApp {
                             />
                         </div>
 
+                        <div class = "col-span-1 row-span-4">
+                            <MycButtonMapping
+                                id = {BUTTON_MAPPING.id}
+                                label = {BUTTON_MAPPING.label}
+                                description = {BUTTON_MAPPING.description}
+                                default_val = {BUTTON_MAPPING.default_val}
+                                long_press_duration_range = {BUTTON_MAPPING.long_press_duration_range}
+                                action_distinct_vals = {BUTTON_MAPPING.action_distinct_vals}
+    
+                                vval={
+                                    self.vvals.borrow().get_by_id(BUTTON_MAPPING.id)
+                                    .expect("id is always valid")
+                                    .expect("id always exists")
+                                    .clone()
+                                }
+                                handle_onchange = {
+                                    ctx.link().callback(move |(id, txt)| {
+                                        Msg::ParamValueChanged(id, txt)
+                                    })
+                                }
+                            />
+                        </div>
+
                     </div>
+
+
 
                     <div class = "m-7" >
 
