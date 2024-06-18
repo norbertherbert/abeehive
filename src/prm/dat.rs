@@ -167,7 +167,7 @@ pub static LORA_PERIOD: PrmDatDec = PrmDatDec {
 pub static GEOLOC_SENSOR: PrmDatDistinct = PrmDatDistinct {
     id: 0x05,
     name: "geoloc_sensor",
-    label: "Primary Geoloc Technology",
+    label: "Primary Geoloc Techn",
     description: "Geolocation technology used in main operating mode and SOS.",
     default_val: GeolocSensorOption::GPS.val,
     distinct_vals: &[
@@ -256,7 +256,7 @@ pub static SOS_PERIOD: PrmDatDec = PrmDatDec {
 pub static PERIODIC_POS_PERIOD: PrmDatOptional = PrmDatOptional {
     id: 0x03,
     name: "periodic_pos_period",
-    label: "Periodic Position Report Period",
+    label: "Periodic Position Period",
     description: "Periodic Position Report Period.",
     default_val: 14400,
     disabled_val: 0,
@@ -271,7 +271,7 @@ pub static PERIODIC_POS_PERIOD: PrmDatOptional = PrmDatOptional {
 pub static GEOLOC_METHOD: PrmDatDistinct = PrmDatDistinct {
     id: 0x06,
     name: "geoloc_method",
-    label: "Secondary Geoloc Technology",
+    label: "Secondary Geoloc Techn",
     description: "Geolocation technology used in side operating modes.",
     default_val: GeolocSensorOption::GPS.val,
     distinct_vals: &[
@@ -519,8 +519,8 @@ pub static COLLECTION_BLE_FILTER_SEC_MASK: PrmDatOptional = PrmDatOptional {
 pub static GNSS_CONSTELLATION: PrmDatDistinct = PrmDatDistinct {
     id: 0x2A,
     name: "gnss_constellation",
-    label: "Secondary Geoloc Technology",
-    description: "Secondary Geoloc Technology Help Text",
+    label: "GNSS Constellation",
+    description: "The GNSS constellations used to compute a position",
     default_val: GeolocSensorOption::GPS.val,
     distinct_vals: &[
         GnssConstellation::GPS,

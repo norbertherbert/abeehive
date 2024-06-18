@@ -106,9 +106,9 @@ impl Component for BeeQueenApp {
         // // an invalid values to test how the GUI acts in case of errors
         // beequeen_app.vvals.borrow_mut().set_val_by_id(MODE.id, 10).unwrap();
         // beequeen_app.vvals.borrow_mut().set_val_by_id(CONFIG_FLAGS.id, (0b_00000000_11110111_11111111_11111111 as u32) as i32).unwrap();
-        beequeen_app.vvals.borrow_mut().set_val_by_id(MOTION_SENSITIVITY.id, 0xff0201).unwrap();
-        beequeen_app.vvals.borrow_mut().set_val_by_id(BUTTON_MAPPING.id, 0x44444).unwrap();
-        beequeen_app.vvals.borrow_mut().set_val_by_id(BATTERY_CAPACITY.id, -100).unwrap();
+        // beequeen_app.vvals.borrow_mut().set_val_by_id(MOTION_SENSITIVITY.id, 0xff0201).unwrap();
+        // beequeen_app.vvals.borrow_mut().set_val_by_id(BUTTON_MAPPING.id, 0x44444).unwrap();
+        // beequeen_app.vvals.borrow_mut().set_val_by_id(BATTERY_CAPACITY.id, -100).unwrap();
 
         beequeen_app
 
@@ -705,30 +705,30 @@ impl Component for BeeQueenApp {
 
                     </div>
 
-                    <div>
+                    <div class = "m-7" >
 
                         <button
                             id = "btn-submit"
                             data-tooltip-target = "submit-tooltip"
-                            class = "text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                            class = "mb-4 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                             onclick = { ctx.link().callback(move |_| {
                                 Msg::Submit
                             }) } 
                         >
-                            { "Submit" }
+                            { "Show Config" }
                         </button>
                         <div
                             id = "submit-tooltip"
                             role = "tooltip"
                             class = "absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
                         >
-                            { "Click to submit the form!" }
+                            { "Show the config file content." }
                             <div class="tooltip-arrow" data-popper-arrow="true"></div>
                         </div>
 
-                    </div>
+                        <pre>{ &self.greet_msg }</pre>
 
-                    <pre>{ &self.greet_msg }</pre>
+                    </div>
 
                 </main>
             </>
