@@ -6,21 +6,13 @@ use yew::prelude::*;
 use crate::components::my_label::MyLabel;
 
 use crate::prm::{
-    typ::{
-        PrmVal, 
-        DistinctVal
-    },
     val::PrmVVal,
+    dat::BATTERY_CAPACITY,
+    typ::PrmDat,
 };
 
 #[derive(Properties, PartialEq)]
 pub struct Props {
-    pub id: u8,
-    pub label: &'static str,
-    pub description: &'static str,
-    pub default_val: PrmVal,
-    pub distinct_vals: &'static [DistinctVal],
-
     pub vval: PrmVVal,
     pub handle_onchange: Callback<(u8, String)>,
 }
@@ -33,8 +25,8 @@ pub fn myc_battery_capacity(props: &Props) -> Html {
 
     let set_default = {
         let handle_onchange = props.handle_onchange.clone();
-        let id = props.id;
-        let default_val = props.default_val;
+        let id = BATTERY_CAPACITY.id;
+        let default_val = BATTERY_CAPACITY.default_val;
         Callback::from(move |_event: MouseEvent| {
             let val = default_val;
             log!(&format!("{}", val));
@@ -49,11 +41,11 @@ pub fn myc_battery_capacity(props: &Props) -> Html {
         let battery_type_ref = battery_type_ref.clone();
         let battery_capacity_ref = battery_capacity_ref.clone();
     
-        let id = props.id;
+        let id = BATTERY_CAPACITY.id;
 
-        let (default_val_battery_type, default_val_battery_capacity) = match props.default_val {
-            -1 | 0 => { (props.default_val, 43500) },
-            1..=65535 => { (1, props.default_val) },
+        let (default_val_battery_type, default_val_battery_capacity) = match BATTERY_CAPACITY.default_val {
+            -1 | 0 => { (BATTERY_CAPACITY.default_val, 43500) },
+            1..=65535 => { (1, BATTERY_CAPACITY.default_val) },
             _ => { (-1, 0) }
         };
 
@@ -129,9 +121,7 @@ pub fn myc_battery_capacity(props: &Props) -> Html {
         <div>
 
             <MyLabel
-                input_element_id = { props.id }
-                label = { props.label }
-                description = { props.description}
+                prm_dat = { &BATTERY_CAPACITY as &'static dyn PrmDat }
                 is_valid = { err.is_empty() }
             />
 
@@ -163,8 +153,11 @@ pub fn myc_battery_capacity(props: &Props) -> Html {
                     >
 
                         <div>
-                            <label>{"Battery Type"}</label>
+                            <label for = { BATTERY_CAPACITY.id.to_string() } >
+                                {"Battery Type"}
+                            </label>
                             <select
+                                id = { BATTERY_CAPACITY.id.to_string() }
                                 class = {
                                     if err.is_empty() { "my-valid-input" }
                                     else { "my-invalid-input" }
@@ -175,7 +168,7 @@ pub fn myc_battery_capacity(props: &Props) -> Html {
                                 onchange = { onchange.clone() }
                             >
                                 {
-                                    props.distinct_vals.iter().map(|item| {
+                                    BATTERY_CAPACITY.distinct_vals.iter().map(|item| {
                                         html!{ 
                                             <option value = { item.val.to_string() } selected = { item.val.to_string() == battery_type } >
                                                 // { format!("{} - {}", item.val, item.txt) }

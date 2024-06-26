@@ -6,17 +6,20 @@ use yew::prelude::*;
 use crate::components::my_label::MyLabel;
 
 use crate::prm::{
-    typ::BitmapBit,
+    typ::{ PrmDatBitmap, PrmDat, },
     val::PrmVVal,
 };
 
 
 #[derive(Properties, PartialEq)]
 pub struct Props {
-    pub id: u8,
-    pub label: &'static str,
-    pub description: &'static str,
-    pub items: &'static [BitmapBit],
+
+    pub prm_dat_bitmap: &'static PrmDatBitmap,
+
+    // pub id: u8,
+    // pub label: &'static str,
+    // pub description: &'static str,
+    // pub items: &'static [BitmapBit],
 
     pub vval: PrmVVal,
     pub handle_onchange: Callback<(u8, String)>,
@@ -32,7 +35,7 @@ pub fn my_bitmap(props: &Props) -> Html {
     };
 
     let handle_onchange = props.handle_onchange.clone();
-    let id = props.id;
+    let id = props.prm_dat_bitmap.id;
 
     let on_checkbox_change = {
         Callback::from(move |event: Event| {
@@ -55,16 +58,14 @@ pub fn my_bitmap(props: &Props) -> Html {
     };
 
     let vval = props.vval.clone();
-    let aria_id = format!("{}-aria", &props.id);
-    let dropdown_id = format!("{}-dropdown", props.id);
+    let aria_id = format!("{}-aria", &props.prm_dat_bitmap.id);
+    let dropdown_id = format!("{}-dropdown", props.prm_dat_bitmap.id);
 
     html! {
         <div>
 
             <MyLabel
-                input_element_id = { props.id }
-                label = { props.label }
-                description = { props.description}
+                prm_dat = { props.prm_dat_bitmap as &'static dyn PrmDat }
                 is_valid = {
                     match &vval {
                         PrmVVal::Valid(_) => true,
@@ -77,7 +78,7 @@ pub fn my_bitmap(props: &Props) -> Html {
             // This button looks like an input field
             <button
                 type="button"
-                id={props.id.to_string()}
+                id={props.prm_dat_bitmap.id.to_string()}
                 aria-describedby={aria_id.clone()}
                 data-dropdown-toggle={dropdown_id.clone()}
                 class = {
@@ -103,7 +104,7 @@ pub fn my_bitmap(props: &Props) -> Html {
                 <ul class="h-48 p-0 overflow-y-auto text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownSearchButton">
 
                     {
-                        props.items.iter()
+                        props.prm_dat_bitmap.bits.iter()
                         .filter_map(|item| {
 
                             let checked = (bitmap >> item.bit) & 1 == 1;
@@ -117,7 +118,7 @@ pub fn my_bitmap(props: &Props) -> Html {
                                 <li>
                                     <div class="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
                                         <input
-                                            id = { format!("{}-checkbox-{}", props.id, item.bit) }
+                                            id = { format!("{}-checkbox-{}", props.prm_dat_bitmap.id, item.bit) }
                                             type = "checkbox"
                                             checked = { checked }
                                             value = { item.bit.to_string() }
@@ -125,7 +126,7 @@ pub fn my_bitmap(props: &Props) -> Html {
                                             class = "w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
                                         />
                                         <label 
-                                            for = { format!("{}-checkbox-{}", props.id, item.bit) }
+                                            for = { format!("{}-checkbox-{}", props.prm_dat_bitmap.id, item.bit) }
                                             class = {
                                                 if item.ena {
                                                     // "w-full ms-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300"
@@ -149,7 +150,7 @@ pub fn my_bitmap(props: &Props) -> Html {
                 </ul>
             </div>
 
-            <span id={aria_id} class="hidden">{&props.description}</span>
+            <span id={aria_id} class="hidden">{&props.prm_dat_bitmap.description}</span>
 
             // <span id={aria_id} class = "hidden">
             {

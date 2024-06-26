@@ -573,7 +573,7 @@ pub static GPS_TIMEOUT: PrmDatDec = PrmDatDec {
     id: 0x09,
     name: "gps_timeout",
     label: "GPS Timeout",
-    description: "", // TODO!
+    description: "The GPS geolocalization procedure will be cancelled after tis timeout and either a Position Message or a Timeout Message will be sent.",
     default_val: 240,
     range: (30, 300),
 };
@@ -586,7 +586,7 @@ pub static GPS_TIMEOUT: PrmDatDec = PrmDatDec {
 pub static GPS_EHPE: PrmDatDec = PrmDatDec {
     id: 0x0B,
     name: "gps_ehpe",
-    label: "Acceptable GPS postion error in static mode",
+    label: "Postion Error - Static",
     description: "Acceptable GPS horizontal postion error in static mode.",
     default_val: 20,
     range: (0, 100),
@@ -600,7 +600,7 @@ pub static GPS_EHPE: PrmDatDec = PrmDatDec {
 pub static GPS_EHPE_MOTION: PrmDatDec = PrmDatDec {
     id: 0x79,
     name: "gps_ehpe_motion",
-    label: "Acceptable GPS postion error in motion",
+    label: "Postion Error - Motion",
     description: "Acceptable GPS horizontal postion error in motion.",
     default_val: 40,
     range: (0, 100),
@@ -614,7 +614,7 @@ pub static GPS_EHPE_MOTION: PrmDatDec = PrmDatDec {
 pub static GPS_CONVERGENCE: PrmDatDec = PrmDatDec {
     id: 0x0C,
     name: "gps_convergence",
-    label: "GPS Convergence Time in static mode",
+    label: "GPS Convergence Time - Static",
     description: "Time to let to the GPS module to refine the calculated GPS position in static mode.",
     default_val: 30,
     range: (0, 300),
@@ -628,7 +628,7 @@ pub static GPS_CONVERGENCE: PrmDatDec = PrmDatDec {
 pub static GPS_CONVERGENCE_MOTION: PrmDatDec = PrmDatDec {
     id: 0x7A,
     name: "gps_convergence_motion",
-    label: "GPS Convergence Time in motion",
+    label: "GPS Convergence Time - Motion",
     description: "Time to let to the GPS module to refine the calculated GPS position in motion.",
     default_val: 20,
     range: (0, 300),
@@ -657,7 +657,7 @@ pub static GPS_STANDBY_TIMEOUT: PrmDatOptional = PrmDatOptional {
 pub static GPS_T0_TIMEOUT: PrmDatOptional = PrmDatOptional {
     id: 0x67,
     name: "gps_t0_timeout",
-    label: "GPS Static T0 Timeout",
+    label: "GPS T0 Timeout - Static",
     description: "Timeout to abort the GPS or LPGPS geolocation when not enough satellites with C/N > 15 are in view. Applicable if the tracker is static.",
     default_val: 15,
     disabled_val: 0,
@@ -672,7 +672,7 @@ pub static GPS_T0_TIMEOUT: PrmDatOptional = PrmDatOptional {
 pub static GPS_T0_TIMEOUT_MOTION: PrmDatOptional = PrmDatOptional {
     id: 0x7B,
     name: "gps_t0_timeout_motion",
-    label: "GPS Dynamic T0 Timeout",
+    label: "GPS T0 Timeout - Motion",
     description: "Timeout to abort the GPS or LPGPS geolocation when not enough satellites with C/N > 15 are in view. Applicable if the tracker is in motion.",
     default_val: 30,
     disabled_val: 0,
@@ -1235,7 +1235,7 @@ pub static BLE_RSSI_FILTER: PrmDatDec = PrmDatDec {
 pub static POSITION_BLE_FILTER_TYPE: PrmDatDistinct = PrmDatDistinct {
     id: 0x4D,
     name: "position_ble_filter_type",
-    label: "BLE Filter Type for Position Messages",
+    label: "BLE Filter Type - Tracking",
     description: "Beacon type to scan and report when position Scan Type is BLE.",
     default_val: 0,
     distinct_vals: &[
@@ -1257,7 +1257,7 @@ pub static POSITION_BLE_FILTER_TYPE: PrmDatDistinct = PrmDatDistinct {
 pub static POSITION_BLE_FILTER_MAIN_1: PrmDatOptional = PrmDatOptional {
     id: 0x4E,
     name: "position_ble_filter_main_1",
-    label: "Main BLE filter for Position messages - 1st byte.",
+    label: "Main BLE Filter 1 - Tracking",
     description: "Main BLE filter for Position messages - 1st byte.",
     default_val: 0,
     disabled_val: 0,
@@ -1272,7 +1272,7 @@ pub static POSITION_BLE_FILTER_MAIN_1: PrmDatOptional = PrmDatOptional {
 pub static POSITION_BLE_FILTER_MAIN_2: PrmDatOptional = PrmDatOptional {
     id: 0x4F,
     name: "position_ble_filter_main_2",
-    label: "Main BLE filter for Position messages - 2nd byte.",
+    label: "Main BLE Filter 2 - Tracking",
     description: "Main BLE filter for Position messages - 2nd byte.",
     default_val: 0,
     disabled_val: 0,
@@ -1287,8 +1287,8 @@ pub static POSITION_BLE_FILTER_MAIN_2: PrmDatOptional = PrmDatOptional {
 pub static POSITION_BLE_FILTER_SEC_VALUE: PrmDatOptional = PrmDatOptional {
     id: 0x50,
     name: "position_ble_filter_sec_value",
-    label: "Secondary BLE filter VALUE for Position messages.",
-    description: "econdary BLE filter VALUE for Position messages.",
+    label: "Sec. BLE Filter Value - Tracking",
+    description: "Secondary BLE filter VALUE for Position messages.",
     default_val: 0,
     disabled_val: 0,
     range: (i32::MIN, i32::MAX),
@@ -1302,7 +1302,7 @@ pub static POSITION_BLE_FILTER_SEC_VALUE: PrmDatOptional = PrmDatOptional {
 pub static POSITION_BLE_FILTER_SEC_MASK: PrmDatOptional = PrmDatOptional {
     id: 0x51,
     name: "position_ble_filter_sec_mask",
-    label: "Secondary BLE filter MASK for Position messages.",
+    label: "Sec. BLE Filter Mask - Tracking",
     description: "Secondary BLE filter MASK for Position messages.",
     default_val: 0,
     disabled_val: 0,
@@ -1317,7 +1317,7 @@ pub static POSITION_BLE_FILTER_SEC_MASK: PrmDatOptional = PrmDatOptional {
 pub static POSITION_BLE_REPORT_TYPE: PrmDatDistinct = PrmDatDistinct {
     id: 0x52,
     name: "position_ble_report_type",
-    label: "BLE report type for Position messages.",
+    label: "BLE Report Type - Tracking",
     description: "BLE report type for Position messages.",
     default_val: PosBleReportTypeOptions::MAC_ADDR.val,
     distinct_vals: &[
@@ -1582,7 +1582,7 @@ pub struct BatteryCapacityCalcOptions;
 impl BatteryCapacityCalcOptions {
     pub const PROVISIONED: DistinctVal = DistinctVal {
         val: -1,
-        txt: "Provisioned battery type.",
+        txt: "Provisioned battery type",
     };
     pub const RECHARGEABLE: DistinctVal = DistinctVal {
         val: 0,
@@ -1661,7 +1661,7 @@ impl ReedSwitchConfOptions {
 pub static BUTTON_MAPPING: PrmDatButtonMapping = PrmDatButtonMapping {
     id: 0x77,
     name: "button_mapping",
-    label: "Button Mapping.",
+    label: "Button Mapping",
     description: "Button Mapping.",
     default_val: 0x00012010,
     long_press_duration_range: (1, 8),
@@ -1805,7 +1805,7 @@ pub static MOTION_SENSITIVITY: PrmDatMotionSensitivity = PrmDatMotionSensitivity
     id: 0x14,
     name: "motion_sensitivity",
     label: "Motion Sensitivity",
-    description: "Motion Sensitivity [Unit: mg]",
+    description: "Motion Sensitivity. [Unit: mg] (Max 1890 mg)",
     default_val: 131073,
     range_sensitivity: (1, 200),
     distinct_vals_odr: &MotionSensOdrOptions::ALL_OPTIONS,
@@ -1877,11 +1877,11 @@ impl MotionSensFsOptions {
 pub static SHOCK_DETECTION: PrmDatOptional = PrmDatOptional {
     id: 0x15,
     name: "shock_detection",
-    label: "Shock Detection Sensitivity.",
-    description: "Shock Detection Sensitivity.",
+    label: "Shock Detection Sensitivity",
+    description: "Shock Detection Sensitivity. Range: [1..255]",
     disabled_val: 0,
     default_val: 0,
-    range: (0, 255),
+    range: (1, 255),
 };
 
 
@@ -1893,7 +1893,7 @@ pub static MOTION_DEBOUNCE: PrmDatDec = PrmDatDec {
     id: 0x76,
     name: "motion_debounce",
     label: "Number of location updates sent upon motion start/end.",
-    description: "Minimum duration of a movement to be detected if motion_sensitivity parameter is set between 1 and 30. [Unit: 20ms])",
+    description: "Minimum duration of a movement to be detected if motion_sensitivity parameter is set between 1 and 30. Unit: [20ms])",
     default_val: 1,
     range: (0, 255),
 };
@@ -1906,7 +1906,7 @@ pub static MOTION_DEBOUNCE: PrmDatDec = PrmDatDec {
 pub static MOTION_NB_POS: PrmDatDec = PrmDatDec {
     id: 0x08,
     name: "motion_nb_pos",
-    label: "Number of location updates sent upon motion start/end.",
+    label: "Msgs sent on motion start/end",
     description: "Number of location updates sent upon motion start/end.",
     default_val: 1,
     range: (0, 20),
@@ -1919,7 +1919,7 @@ pub static MOTION_NB_POS: PrmDatDec = PrmDatDec {
 pub static MOTION_DURATION: PrmDatDec = PrmDatDec {
     id: 0x17,
     name: "motion_duration",
-    label: "Period of time to detect end of motion.",
+    label: "Time to detect end of motion",
     description: "Period of time required to detect the end of a motion.",
     default_val: 180,
     range: (20, 3600),
@@ -1963,7 +1963,7 @@ pub static TEMPERATURE_HIGH: PrmDatOptional = PrmDatOptional {
     id: 0x1B,
     name: "temperature_high",
     label: "Temperature High Threshold.",
-    description: "The high threshold of Temperature. [Unit: °C]",
+    description: "The high threshold of Temperature. Unit: [°C]",
     default_val: 255,
     disabled_val: 255,
     range: (-44, 85),
@@ -1978,7 +1978,7 @@ pub static TEMPERATURE_LOW: PrmDatOptional = PrmDatOptional {
     id: 0x1C,
     name: "temperature_low",
     label: "Temperature Low Threshold.",
-    description: "The low threshold of Temperature. [Unit: °C]",
+    description: "The low threshold of Temperature. Unit: [°C]",
     default_val: 255,
     disabled_val: 255,
     range: (-44, 85),
@@ -2118,7 +2118,7 @@ pub static ANGLE_REF_ACC_X: PrmDatOptional = PrmDatOptional {
     id: 0x56,
     name: "angle_ref_acc_x",
     label: "X component of reference orientation vector.",
-    description: "X component of reference orientation vector. [Unit: mg]",
+    description: "X component of reference orientation vector. Unit: [mg]",
     default_val: 0,
     disabled_val: 0xFFFF, 
     range: (-1000, 1000),
@@ -2133,7 +2133,7 @@ pub static ANGLE_REF_ACC_Y: PrmDatOptional = PrmDatOptional {
     id: 0x57,
     name: "angle_ref_acc_y",
     label: "Y component of reference orientation vector.",
-    description: "Y component of reference orientation vector. [Unit: mg]",
+    description: "Y component of reference orientation vector. Unit: [mg]",
     default_val: 0,
     disabled_val: 0xFFFF, 
     range: (-1000, 1000),
@@ -2148,7 +2148,7 @@ pub static ANGLE_REF_ACC_Z: PrmDatOptional = PrmDatOptional {
     id: 0x58,
     name: "angle_ref_acc_z",
     label: "Z component of reference orientation vector.",
-    description: "Z component of reference orientation vector. [Unit: mg]",
+    description: "Z component of reference orientation vector. Unit: [mg]",
     default_val: 0,
     disabled_val: 0xFFFF, 
     range: (-1000, 1000),
@@ -2163,7 +2163,7 @@ pub static ANGLE_CRITICAL: PrmDatDec = PrmDatDec {
     id: 0x59,
     name: "angle_critical",
     label: "Critical Angle",
-    description: "Critical angle. [Unit: degrees]",
+    description: "Critical angle. Unit: [degrees]",
     default_val: 30,
     range: (5, 175),
 };
@@ -2177,7 +2177,7 @@ pub static ANGLE_CRITICAL_HYST: PrmDatDec = PrmDatDec {
     id: 0x5A,
     name: "angle_critical_hyst",
     label: "Critical Angle Hysteresis",
-    description: "Critical angle hysteresis. [Unit: degrees]",
+    description: "Critical angle hysteresis. Unit: [degrees]",
     default_val: 5,
     range: (0, 180),
 };
@@ -2239,7 +2239,7 @@ pub static ANGLE_REPORT_PERIOD: PrmDatDec = PrmDatDec {
     id: 0x5C,
     name: "angle_report_period",
     label: "Angle Report Period.",
-    description: "The period between repeated event messages. 0 means that reports will be transmitted right after position messages. [Unit: s]",
+    description: "The period between repeated event messages. 0 means that reports will be transmitted right after position messages. Unit: [s]",
     default_val: 300,
     range: (60, 36000),
 };
@@ -2267,7 +2267,7 @@ pub static ANGLE_RISING_TIME: PrmDatDec = PrmDatDec {
     id: 0x5E,
     name: "angle_rising_time",
     label: "Rising time phase duration.",
-    description: "Rising time phase duration. [Unit: s]",
+    description: "Rising time phase duration. Unit: [s]",
     default_val: 5,
     range: (0, 3600),
 };
@@ -2281,7 +2281,7 @@ pub static ANGLE_FALLING_TIME: PrmDatDec = PrmDatDec {
     id: 0x5F,
     name: "angle_falling_time",
     label: "Falling time phase duration.",
-    description: "Falling time phase duration. [Unit: s]",
+    description: "Falling time phase duration. Unit: [s]",
     default_val: 5,
     range: (0, 3600),
 };
@@ -2295,7 +2295,7 @@ pub static ANGLE_LEARNING_TIME: PrmDatDec = PrmDatDec {
     id: 0x60,
     name: "angle_learning_time",
     label: "Learning time phase duration.",
-    description: "Learning time phase duration. [Unit: s]",
+    description: "Learning time phase duration. Unit: [s]",
     default_val: 5,
     range: (0, 3600),
 };
@@ -2309,7 +2309,7 @@ pub static ANGLE_ACC_ACCURACY: PrmDatDec = PrmDatDec {
     id: 0x61,
     name: "angle_acc_accuracy",
     label: "Accuracy of the measured acceleration.",
-    description: "Accuracy of the measured acceleration. [Unit: mg]",
+    description: "Accuracy of the measured acceleration. Unit: [mg]",
     default_val: 100,
     range: (0, 1000),
 };
@@ -2323,7 +2323,7 @@ pub static ANGLE_DEVIATION_DELTA: PrmDatDec = PrmDatDec {
     id: 0x62,
     name: "angle_deviation_delta",
     label: "Reported Angle Deviation Delta",
-    description: "At least this value of deviation from the previous reported orientation is needed to trigger an event message. Applicable only with angle deviation methods.  [Unit: degrees]",
+    description: "At least this value of deviation from the previous reported orientation is needed to trigger an event message. Applicable only with angle deviation methods. Unit: [degrees]",
     default_val: 0,
     range: (0, 175),
 };
@@ -2337,7 +2337,7 @@ pub static ANGLE_DEVIATION_MIN_INTERVAL: PrmDatDec = PrmDatDec {
     id: 0x63,
     name: "angle_deviation_min_interval",
     label: "Min Angle Deviation Report Interval.",
-    description: "No event message is sent before this delay from previous angle deviation event is elapsed. Any deviation before this delay is ignored. Applicable only with angle deviation methods. [Unit: s]",
+    description: "No event message is sent before this delay from previous angle deviation event is elapsed. Any deviation before this delay is ignored. Applicable only with angle deviation methods. Unit: [s]",
     default_val: 10,
     range: (0, 1800),
 };
@@ -2351,7 +2351,7 @@ pub static ANGLE_DEVIATION_MAX_INTERVAL: PrmDatDec = PrmDatDec {
     id: 0x64,
     name: "angle_deviation_max_interval",
     label: "Min Angle Deviation Report Interval.",
-    description: "No event message is sent after this delay from previous angle deviation event is elapsed. Any deviation after this delay is ignored. Applicable only with angle deviation methods. [Unit: s]",
+    description: "No event message is sent after this delay from previous angle deviation event is elapsed. Any deviation after this delay is ignored. Applicable only with angle deviation methods. Unit: [s]",
     default_val: 0,
     range: (0, 86400),
 };
@@ -2373,7 +2373,7 @@ pub static GEOFENCING_SCAN_PERIOD: PrmDatOptional = PrmDatOptional {
     id: 0x18,
     name: "geofencing_scan_period",
     label: "Geofencing Scan Period",
-    description: "Geofencing Scan Period [Unit: s]",
+    description: "Geofencing Scan Period Unit: [s]",
     disabled_val: 0,
     default_val: 0,
     range: (1, 300),
@@ -2388,7 +2388,7 @@ pub static GEOFENCING_COLLECT_PERIOD: PrmDatDec = PrmDatDec {
     id: 0x19,
     name: "geofencing_scan_period",
     label: "Geofencing Scan Period",
-    description: "Geofencing Scan Period [Unit: s]",
+    description: "Geofencing Scan Period Unit: [s]",
     default_val: 60,
     range: (15, 3600),
 };
@@ -2402,7 +2402,7 @@ pub static GEOFENCING_SCAN_DURATION: PrmDatDec = PrmDatDec {
     id: 0x69,
     name: "geofencing_scan_duration",
     label: "Geofencing Scan Duration",
-    description: "Geofencing Scan Duration [Unit: ms]",
+    description: "Geofencing Scan Duration Unit: [ms]",
     default_val: 370,
     range: (370, 3000),
 };
@@ -2535,7 +2535,7 @@ pub static BEACONING_STATIC_INTERVAL: PrmDatOptional = PrmDatOptional {
     id: 0x6C,
     name: "beaconing_static_interval",
     label: "Beaconing Interval in static state",
-    description: "Beaconing Interval in static state. [Unit: ms]",
+    description: "Beaconing Interval in static state. Unit: [ms]",
     default_val: 0,
     disabled_val: 0, 
     range: (100, 10000),
@@ -2550,7 +2550,7 @@ pub static BEACONING_MOTION_INTERVAL: PrmDatOptional = PrmDatOptional {
     id: 0x6D,
     name: "beaconing_motion_interval",
     label: "Beaconing Interval in motion",
-    description: "Beaconing Interval in motion. [Unit: ms]",
+    description: "Beaconing Interval in motion. Unit: [ms]",
     default_val: 0,
     disabled_val: 0, 
     range: (100, 10000),
@@ -2565,7 +2565,7 @@ pub static BEACONING_MOTION_DURATION: PrmDatDec = PrmDatDec {
     id: 0x6E,
     name: "beaconing_motion_duration",
     label: "Minimum Motion Duration for detecting motion in beaconing mode.",
-    description: "Minimum Motion Duration for detecting motion in beaconing mode. [Unit: s]",
+    description: "Minimum Motion Duration for detecting motion in beaconing mode. Unit: [s]",
     default_val: 0,
     range: (4, 255),
 };

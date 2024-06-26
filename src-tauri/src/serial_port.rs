@@ -48,7 +48,7 @@ pub fn get_config_usb(serial_port: &str) -> Result<Vec<(u8,i32)>, std::io::Error
     let mut port = serialport::new(serial_port, 115_200)
         .timeout(Duration::from_millis(10))
         .open()
-        .expect("Failed to open port");
+        ?; // .expect("Failed to open port");
 
     let response = execute_cli_cmd(&mut port, "")?;
     // println!("{}", response);
@@ -119,7 +119,7 @@ pub fn save_config_usb(prm_id_val_vec: Vec<(u8, i32)>, serial_port: String) -> R
     let mut port = serialport::new(serial_port, 115_200)
         .timeout(Duration::from_millis(10))
         .open()
-        .expect("Failed to open port");
+        ?; //.expect("Failed to open port");
 
     let response = execute_cli_cmd(&mut port, "")?;
 

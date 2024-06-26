@@ -7,24 +7,13 @@ use crate::components::my_label::MyLabel;
 
 // use crate::prm::dat::MotionSensFsOptions;
 use crate::prm::{
-    typ::{
-        PrmVal, 
-        DistinctVal
-    },
     val::PrmVVal,
+    dat::MOTION_SENSITIVITY,
+    typ::PrmDat,
 };
 
 #[derive(Properties, PartialEq)]
 pub struct Props {
-    pub id: u8,
-    pub label: &'static str,
-    pub description: &'static str,
-
-    pub default_val: PrmVal,
-    pub range_sensitivity: (u8, u8),
-    pub distinct_vals_odr: &'static [DistinctVal],
-    pub distinct_vals_fullscale: &'static [DistinctVal],
-
     pub vval: PrmVVal,
     pub handle_onchange: Callback<(u8, String)>,
 }
@@ -38,8 +27,8 @@ pub fn myc_motion_sensitivity(props: &Props) -> Html {
 
     let set_default = {
         let handle_onchange = props.handle_onchange.clone();
-        let id = props.id;
-        let default_val = props.default_val;
+        let id = MOTION_SENSITIVITY.id;
+        let default_val = MOTION_SENSITIVITY.default_val;
         Callback::from(move |_event: MouseEvent| {
             let val = default_val;
             log!(&format!("{:08x}", val));
@@ -52,7 +41,7 @@ pub fn myc_motion_sensitivity(props: &Props) -> Html {
         let sensitivity_ref = sensitivity_ref.clone();
         let odr_ref = odr_ref.clone();
         let fullscale_ref = fullscale_ref.clone();
-        let id = props.id;
+        let id = MOTION_SENSITIVITY.id;
         Callback::from(move |_event: Event| {
             
             // let txt = event
@@ -129,9 +118,7 @@ pub fn myc_motion_sensitivity(props: &Props) -> Html {
         <div>
 
             <MyLabel
-                input_element_id = { props.id }
-                label = { props.label }
-                description = { props.description}
+                prm_dat = { &MOTION_SENSITIVITY as &'static dyn PrmDat }
                 is_valid = { err.is_empty() }
             />
 
@@ -163,10 +150,13 @@ pub fn myc_motion_sensitivity(props: &Props) -> Html {
                     >
 
                         <div>
-                            <label>{"Sensitivity [mg]"}</label>
+                            <label for = { MOTION_SENSITIVITY.id.to_string() } >
+                                {"Sensitivity [mg]"}
+                            </label>
                             <input
                                 type="text"
                                 autocomplete = "off"
+                                id = { MOTION_SENSITIVITY.id.to_string() }
                                 class = {
                                     if err.is_empty() { "my-valid-input" }
                                     else { "my-invalid-input" }
@@ -193,7 +183,7 @@ pub fn myc_motion_sensitivity(props: &Props) -> Html {
                                     onchange = { onchange.clone() }
                                 >
                                     {
-                                        props.distinct_vals_odr.iter().map(|item| {
+                                        MOTION_SENSITIVITY.distinct_vals_odr.iter().map(|item| {
                                             html!{ 
                                                 <option value = { item.val.to_string() } selected = { item.val.to_string() == odr } >
                                                     // { format!("{} - {}", item.val, item.txt) }
@@ -217,7 +207,7 @@ pub fn myc_motion_sensitivity(props: &Props) -> Html {
                                     onchange = { onchange }
                                 >
                                     {
-                                        props.distinct_vals_fullscale.iter().map(|item| {
+                                        MOTION_SENSITIVITY.distinct_vals_fullscale.iter().map(|item| {
                                             html!{ 
                                                 <option value = { item.val.to_string() } selected = { item.val.to_string() == fullscale } >
                                                     // { format!("{} - {}", item.val, item.txt) }

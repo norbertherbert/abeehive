@@ -3,10 +3,10 @@
 @tailwind utilities;
 
 .my-valid-label {
-    @apply block mb-2 text-sm font-medium text-gray-900 dark:text-white;
+    @apply block mb-0 text-sm font-medium text-gray-900 dark:text-white;
 };
 .my-invalid-label {
-    @apply block mb-2 text-sm font-medium text-red-700 dark:text-red-500;
+    @apply block mb-0 text-sm font-medium text-red-700 dark:text-red-500;
 };
 
 .my-valid-input {
@@ -78,3 +78,7 @@
 .my-vertical-div {
     @apply flex flex-col items-stretch gap-2 w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500;
 };
+
+.my-valid-div label { @apply text-sm; };
+.my-invalid-div label { @apply text-sm; };
+.my-vertical-div label { @apply text-sm; };

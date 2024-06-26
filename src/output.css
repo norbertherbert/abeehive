@@ -1164,6 +1164,14 @@ input:checked + .toggle-bg {
   grid-row: span 4 / span 4;
 }
 
+.m-0 {
+  margin: 0px;
+}
+
+.m-2 {
+  margin: 0.5rem;
+}
+
 .m-7 {
   margin: 1.75rem;
 }
@@ -1171,6 +1179,14 @@ input:checked + .toggle-bg {
 .mx-auto {
   margin-left: auto;
   margin-right: auto;
+}
+
+.mb-0 {
+  margin-bottom: 0px;
+}
+
+.mb-0\.5 {
+  margin-bottom: 0.125rem;
 }
 
 .mb-1 {
@@ -1295,6 +1311,10 @@ input:checked + .toggle-bg {
 
 .h-9 {
   height: 2.25rem;
+}
+
+.h-96 {
+  height: 24rem;
 }
 
 .h-\[calc\(100\%-1rem\)\] {
@@ -1451,6 +1471,10 @@ input:checked + .toggle-bg {
   grid-template-columns: repeat(7, minmax(0, 1fr));
 }
 
+.flex-row {
+  flex-direction: row;
+}
+
 .flex-col {
   flex-direction: column;
 }
@@ -1495,8 +1519,16 @@ input:checked + .toggle-bg {
   justify-items: stretch;
 }
 
+.gap-1 {
+  gap: 0.25rem;
+}
+
 .gap-2 {
   gap: 0.5rem;
+}
+
+.gap-3 {
+  gap: 0.75rem;
 }
 
 .gap-5 {
@@ -1530,10 +1562,6 @@ input:checked + .toggle-bg {
 .divide-gray-100 > :not([hidden]) ~ :not([hidden]) {
   --tw-divide-opacity: 1;
   border-color: rgb(243 244 246 / var(--tw-divide-opacity));
-}
-
-.self-center {
-  align-self: center;
 }
 
 .overflow-hidden {
@@ -1765,6 +1793,10 @@ input:checked + .toggle-bg {
   text-align: center;
 }
 
+.text-right {
+  text-align: right;
+}
+
 .text-2xl {
   font-size: 1.5rem;
   line-height: 2rem;
@@ -1795,10 +1827,6 @@ input:checked + .toggle-bg {
 
 .font-semibold {
   font-weight: 600;
-}
-
-.italic {
-  font-style: italic;
 }
 
 .leading-6 {
@@ -1945,7 +1973,7 @@ input:checked + .toggle-bg {
 }
 
 .my-valid-label {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0px;
   display: block;
   font-size: 0.875rem;
   line-height: 1.25rem;
@@ -1960,7 +1988,7 @@ input:checked + .toggle-bg {
 }
 
 .my-invalid-label {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0px;
   display: block;
   font-size: 0.875rem;
   line-height: 1.25rem;
@@ -2648,6 +2676,21 @@ input:checked + .toggle-bg {
   --tw-ring-color: rgb(63 131 248 / var(--tw-ring-opacity));
 }
 
+.my-valid-div label {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.my-invalid-div label {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.my-vertical-div label {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
 .after\:absolute::after {
   content: var(--tw-content);
   position: absolute;
@@ -3019,6 +3062,10 @@ input:checked + .toggle-bg {
 }
 
 @media (min-width: 640px) {
+  .sm\:block {
+    display: block;
+  }
+
   .sm\:grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }

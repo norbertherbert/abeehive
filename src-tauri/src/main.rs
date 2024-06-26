@@ -7,6 +7,7 @@ use tauri::Manager;
 
 use serde::{Deserialize, Serialize};
 use std::borrow::Borrow;
+// use std::ffi::OsString;
 use std::fs::File;
 use std::io::{Read, Write};
 use std::sync::OnceLock;
@@ -44,17 +45,27 @@ fn open() -> () {
     .pick_file(move |path_buf| match path_buf {
         Some(file_path) => {
             let mut data = Vec::new();
-            let mut f = File::open(file_path).expect("Unable to open file");
+            let mut f = File::open(file_path.clone()).expect("Unable to open file");
             f.read_to_end(&mut data).expect("Unable to read data");
 
             let data = String::from_utf8_lossy(&data[..]);
             let data: &str = data.borrow();
 
-            dbg!(data);
+            // dbg!(data);
+
+            let file_name = match file_path.file_name() {
+                Some(file_name) => {
+                    file_name.to_string_lossy().into_owned()
+                },
+                None => {
+                    "unknown file name".to_string()
+                }
+            };
 
             let app = APP_HANDLE.get().unwrap();
-            app.emit_all("MenuClick", ("FileOpen".to_string(), data.to_string()))
-            .unwrap();
+            app.emit_all("FileOpen", (file_name, data.to_string()))
+                .unwrap();
+
         }
         _ => {}
     })
@@ -66,10 +77,22 @@ fn save_as(cfg_string: String) -> () {
     .add_filter("Text", &["txt"])
     .save_file(move |path_buf| match path_buf {
         Some(file_path) => {
-            println!("{:?}", file_path);
-            let mut f = File::create(file_path).expect("Unable to create file");
+            let mut f = File::create(file_path.clone()).expect("Unable to create file");
             f.write_all(cfg_string.as_bytes())
                 .expect("Unable to write data");
+
+            let file_name = match file_path.file_name() {
+                Some(file_name) => {
+                    file_name.to_string_lossy().into_owned()
+                },
+                None => {
+                    "unknown file name".to_string()
+                }
+            };
+
+            let app = APP_HANDLE.get().unwrap();
+            app.emit_all("SaveAs", file_name)
+                .unwrap();
         }
         _ => {}
     });
@@ -78,7 +101,13 @@ fn save_as(cfg_string: String) -> () {
 #[tauri::command(rename_all = "snake_case")]
 fn save_config_to_usb_cmd(cli_cmds: Vec<(u8, i32)>, port: String) -> () {
     // dbg!(cli_cmds);
-    save_config_usb(cli_cmds, port).unwrap();
+    match save_config_usb(cli_cmds, port) {
+        Ok(_) => (),
+        Err(err) => {
+            eprintln!("failed to open the USB port: {}", err);
+            () // TODO: Proper Error Haandling
+        }
+    }
 }
 
 #[tauri::command(rename_all = "snake_case")]
@@ -89,7 +118,13 @@ fn get_serial_ports() -> Vec<String> {
 
 #[tauri::command(rename_all = "snake_case")]
 fn get_config_usb_cmd(port: String) -> Vec<(u8, i32)> {
-    get_config_usb(&port).unwrap()
+    match get_config_usb(&port) {
+        Ok(config) => config,
+        Err(err) => {
+            eprintln!("failed to open the USB port: {}", err);
+            Vec::new() // TODO: Proper Error Haandling
+        }
+    }
 }
 
 fn main() {
@@ -136,4 +171,5 @@ fn main() {
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+
 }

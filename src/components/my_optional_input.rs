@@ -7,17 +7,13 @@ use crate::components::{
     my_label::MyLabel
 };
 use crate::prm::{
-    typ::PrmVal, 
+    typ::{ PrmDatOptional, PrmDat, },
     val::PrmVVal,
 };
 
 #[derive(Properties, PartialEq)]
 pub struct Props {
-    pub id: u8,
-    pub label: &'static str,
-    pub description: &'static str,
-    pub disabled_value: PrmVal,
-    pub default_value: PrmVal,
+    pub prm_dat_optional: &'static PrmDatOptional,
     pub radix_disp: RadixDisp,
     pub vval: PrmVVal,
     pub handle_onchange: Callback<(u8, String)>,
@@ -30,10 +26,16 @@ pub fn my_optional_input(props: &Props) -> Html {
     // let text_input_noderef = use_node_ref();
 
     let on_toggle = {
-        let disabled_value = props.disabled_value;
-        let default_value = props.default_value;
+        let disabled_value = props.prm_dat_optional.disabled_val;
+        
+        let default_value = if props.prm_dat_optional.default_val == disabled_value {
+            props.prm_dat_optional.range.0
+        } else {
+            props.prm_dat_optional.default_val
+        };
+
         let handle_onchange = props.handle_onchange.clone();
-        let id = props.id;
+        let id = props.prm_dat_optional.id;
         Callback::from(move |event: Event| {
             let checked = event
                 .target()
@@ -56,7 +58,7 @@ pub fn my_optional_input(props: &Props) -> Html {
 
     let onchange = {
         let handle_onchange = props.handle_onchange.clone();
-        let id = props.id;
+        let id = props.prm_dat_optional.id;
         Callback::from(move |event: Event| {
             let txt = event
                 .target()
@@ -70,12 +72,12 @@ pub fn my_optional_input(props: &Props) -> Html {
 
 
     let vval = props.vval.clone();
-    let aria_id = format!("{}-aria", &props.id);
-    let checkbox_id = format!("{}-checkbox", &props.id);
+    let aria_id = format!("{}-aria", &props.prm_dat_optional.id);
+    let checkbox_id = format!("{}-checkbox", &props.prm_dat_optional.id);
 
     let is_disabled = match vval {
         PrmVVal::Valid(current_valid_value) => {
-            current_valid_value == props.disabled_value
+            current_valid_value == props.prm_dat_optional.disabled_val
         } 
         _ => false
     };
@@ -84,9 +86,7 @@ pub fn my_optional_input(props: &Props) -> Html {
         <div>
 
             <MyLabel
-                input_element_id = { props.id }
-                label = { props.label }
-                description = { props.description}
+                prm_dat = { props.prm_dat_optional as &'static dyn PrmDat }
                 is_valid = {
                     match &vval {
                         PrmVVal::Valid(_) => true,
@@ -120,7 +120,7 @@ pub fn my_optional_input(props: &Props) -> Html {
                 <input
                     type = "text"
                     autocomplete = "off"
-                    id = {props.id.to_string()}
+                    id = { props.prm_dat_optional.id.to_string() }
                     // ref = {text_input_noderef}
                     class = {
                         match is_disabled {
@@ -139,7 +139,7 @@ pub fn my_optional_input(props: &Props) -> Html {
                     value = {
                         match is_disabled {
                             true => {
-                                props.disabled_value.to_string().clone()
+                                props.prm_dat_optional.disabled_val.to_string().clone()
                             },
                             false => {
                                 match &vval {
@@ -162,7 +162,7 @@ pub fn my_optional_input(props: &Props) -> Html {
                 />
 
                 // Aria
-                <span id={aria_id} class="hidden">{&props.description}</span>
+                <span id={aria_id} class="hidden">{&props.prm_dat_optional.description}</span>
 
             </div>
 

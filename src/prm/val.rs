@@ -1,6 +1,7 @@
 use std::collections::BTreeMap;
 use anyhow::{anyhow, Result};
 use gloo::console::log;
+use base64::prelude::*;
 
 use crate::prm::{
     typ::PrmVal,
@@ -196,6 +197,10 @@ impl PrmVVals {
         Self{vvals_data: BTreeMap::new()}
     }
 
+    pub fn is_empty(&self) -> bool {
+        self.vvals_data.is_empty()
+    }
+
     pub fn set_val_by_id(&mut self, id: u8, val: PrmVal) -> Result<()> {
         let Some(param_data) = id_to_data_map().get(&id) else {
             return Err(anyhow!("invalid parameter id: {}", id))
@@ -264,6 +269,46 @@ impl PrmVVals {
             match vval {
                 PrmVVal::Valid(val) => {
                     cfg += &format!("{} = {}\r\n", param_data.name(), val);
+                },
+                PrmVVal::Invalid((val, err_msg)) => {
+                    cfg += &format!("# ERROR: {}\r\n", err_msg);
+                    cfg += &format!("# {} = {}\r\n", param_data.name(), val);
+                },
+                PrmVVal::InvalidTxt((txt, err_msg)) => {
+                    cfg += &format!("# ERROR: {}\r\n", err_msg);
+                    cfg += &format!("# {} = {}\r\n", param_data.name(), txt);
+                },
+            }
+
+        }
+        cfg
+    }
+
+    pub fn to_lwdl_string(&self) -> String {
+        let mut cfg: String =
+r#"
+# LoRaWAN Downlink Configuration Commands must be sent to FPort=2.
+# A message paylod in hex-encoded format should start with the "0b0a" prefix.
+# You can compose a LoRaWAN downlink message from multiple (max 5) parameters 
+# so that the prefix is used only once at the beginning of the message.
+
+"#.to_owned();
+
+        for (id, vval) in self.iter() {
+            let Some(param_data) = id_to_data_map().get(id) else {
+                continue
+            };
+
+            match vval {
+                PrmVVal::Valid(val) => {
+
+                    let val_bytes = val.to_be_bytes();
+                    let pl = vec![0x0b, 0x0a, *id, val_bytes[0], val_bytes[1], val_bytes[2], val_bytes[3]];
+
+                    cfg += &format!("{} = {}\r\n", param_data.name(), val);
+                    cfg += &format!("    Payload Hex:    \"(0b0a){:02x}{:08x}\"\r\n", id, val);
+                    cfg += &format!("    Payload Base64: \"{}\"\r\n\r\n", BASE64_STANDARD.encode(pl));
+
                 },
                 PrmVVal::Invalid((val, err_msg)) => {
                     cfg += &format!("# ERROR: {}\r\n", err_msg);

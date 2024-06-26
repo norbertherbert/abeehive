@@ -6,22 +6,13 @@ use yew::prelude::*;
 use crate::components::my_label::MyLabel;
 
 use crate::prm::{
-    typ::{
-        PrmVal, 
-        DistinctVal
-    },
     val::PrmVVal,
+    dat::BUTTON_MAPPING,
+    typ::PrmDat,
 };
 
 #[derive(Properties, PartialEq)]
 pub struct Props {
-    pub id: u8,
-    pub label: &'static str,
-    pub description: &'static str,
-    pub default_val: PrmVal,
-    pub long_press_duration_range: (u8, u8),
-    pub action_distinct_vals: &'static [DistinctVal],
-
     pub vval: PrmVVal,
     pub handle_onchange: Callback<(u8, String)>,
 }
@@ -37,8 +28,8 @@ pub fn myc_button_mapping(props: &Props) -> Html {
 
     let set_default = {
         let handle_onchange = props.handle_onchange.clone();
-        let id = props.id;
-        let default_val = props.default_val;
+        let id = BUTTON_MAPPING.id;
+        let default_val = BUTTON_MAPPING.default_val;
         Callback::from(move |_event: MouseEvent| {
             let val = default_val;
             log!(&format!("{:08x}", val));
@@ -56,8 +47,8 @@ pub fn myc_button_mapping(props: &Props) -> Html {
         let short_press3_action_ref = short_press3_action_ref.clone();
         let long_press_duration_ref = long_press_duration_ref.clone();
 
-        let id = props.id;
-        let default_val = props.default_val;
+        let id = BUTTON_MAPPING.id;
+        let default_val = BUTTON_MAPPING.default_val;
 
         Callback::from(move |_event: Event| {
             
@@ -165,9 +156,7 @@ pub fn myc_button_mapping(props: &Props) -> Html {
         <div>
 
             <MyLabel
-                input_element_id = { props.id }
-                label = { props.label }
-                description = { props.description}
+                prm_dat = { &BUTTON_MAPPING as &'static dyn PrmDat }
                 is_valid = { err.is_empty() }
             />
 
@@ -199,8 +188,11 @@ pub fn myc_button_mapping(props: &Props) -> Html {
                     >
 
                         <div>
-                            <label>{"Long Press Action"}</label>
+                            <label for = { BUTTON_MAPPING.id.to_string() } >
+                                {"Long Press Action"}
+                            </label>
                             <select
+                                id = { BUTTON_MAPPING.id.to_string() }
                                 class = {
                                     if err.is_empty() { "my-valid-input" }
                                     else { "my-invalid-input" }
@@ -211,7 +203,7 @@ pub fn myc_button_mapping(props: &Props) -> Html {
                                 onchange = { onchange.clone() }
                             >
                                 {
-                                    props.action_distinct_vals.iter().map(|item| {
+                                    BUTTON_MAPPING.action_distinct_vals.iter().map(|item| {
                                         html!{ 
                                             <option value = { item.val.to_string() } selected = { item.val.to_string() == long_press_action } >
                                                 // { format!("{} - {}", item.val, item.txt) }
@@ -251,7 +243,7 @@ pub fn myc_button_mapping(props: &Props) -> Html {
                                 onchange = { onchange.clone() }
                             >
                                 {
-                                    props.action_distinct_vals.iter().map(|item| {
+                                    BUTTON_MAPPING.action_distinct_vals.iter().map(|item| {
                                         html!{ 
                                             <option value = { item.val.to_string() } selected = { item.val.to_string() == short_press_action } >
                                                 // { format!("{} - {}", item.val, item.txt) }
@@ -277,7 +269,7 @@ pub fn myc_button_mapping(props: &Props) -> Html {
                                 onchange = { onchange.clone() }
                             >
                                 {
-                                    props.action_distinct_vals.iter().map(|item| {
+                                    BUTTON_MAPPING.action_distinct_vals.iter().map(|item| {
                                         html!{ 
                                             <option value = { item.val.to_string() } selected = { item.val.to_string() == short_press2_action } >
                                                 // { format!("{} - {}", item.val, item.txt) }
@@ -302,7 +294,7 @@ pub fn myc_button_mapping(props: &Props) -> Html {
                                 onchange = { onchange.clone() }
                             >
                                 {
-                                    props.action_distinct_vals.iter().map(|item| {
+                                    BUTTON_MAPPING.action_distinct_vals.iter().map(|item| {
                                         html!{ 
                                             <option value = { item.val.to_string() } selected = { item.val.to_string() == short_press3_action } >
                                                 // { format!("{} - {}", item.val, item.txt) }
@@ -313,23 +305,6 @@ pub fn myc_button_mapping(props: &Props) -> Html {
                                 }
                             </select>
                         </div>
-
-
-                        <div>
-                            <label>{"Long Press Duration [s]"}</label>
-                            <input
-                                type="text"
-                                autocomplete = "off"
-                                class = {
-                                    if err.is_empty() { "my-valid-input" }
-                                    else { "my-invalid-input" }
-                                }
-                                value = { long_press_duration.clone() }
-                                ref = { long_press_duration_ref.clone() }
-                                onchange={ onchange.clone() }
-                            />
-                        </div>
-
 
                     </div>
 

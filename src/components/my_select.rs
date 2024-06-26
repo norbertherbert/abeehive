@@ -5,17 +5,13 @@ use yew::prelude::*;
 use crate::components::my_label::MyLabel;
 
 use crate::prm::{
-    typ::DistinctVal,
+    typ::{ PrmDatDistinct, PrmDat, },
     val::PrmVVal,
 };
 
 #[derive(Properties, PartialEq)]
 pub struct Props {
-    pub id: u8,
-    pub label: &'static str,
-    pub description: &'static str,
-    pub select_options: &'static [DistinctVal],
-
+    pub prm_dat_distinct: &'static PrmDatDistinct,
     pub vval: PrmVVal,
     pub handle_onchange: Callback<(u8, String)>,
 }
@@ -25,7 +21,7 @@ pub fn my_select(props: &Props) -> Html {
 
     let onchange = {
         let handle_onchange = props.handle_onchange.clone();
-        let id = props.id;
+        let id = props.prm_dat_distinct.id;
         Callback::from(move |event: Event| {
             let txt = event
                 .target()
@@ -38,7 +34,7 @@ pub fn my_select(props: &Props) -> Html {
     };
 
     let vval = props.vval.clone();
-    let aria_id = format!("{}-aria", &props.id);
+    let aria_id = format!("{}-aria", &props.prm_dat_distinct.id);
 
     let value = match props.vval {
         PrmVVal::Valid(v) => v.to_string(),
@@ -49,9 +45,7 @@ pub fn my_select(props: &Props) -> Html {
         <div>
 
             <MyLabel
-                input_element_id = { props.id }
-                label = { props.label }
-                description = { props.description}
+                prm_dat = { props.prm_dat_distinct as &'static dyn PrmDat }
                 is_valid = {
                     match &vval {
                         PrmVVal::Valid(_) => true,
@@ -63,7 +57,7 @@ pub fn my_select(props: &Props) -> Html {
 
             <div>
                 <select
-                    id = { props.id.to_string() }
+                    id = { props.prm_dat_distinct.id.to_string() }
                     // class = "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     class = {
                         match &vval {
@@ -82,7 +76,7 @@ pub fn my_select(props: &Props) -> Html {
                     // <option value = { "0xaaa" }>{ "invalid value for testing" }</option>
 
                     {
-                        props.select_options.iter().map(|item| {
+                        props.prm_dat_distinct.distinct_vals.iter().map(|item| {
                             html!{ 
                                 <option value = { item.val.to_string() } selected = { item.val.to_string() == value } >
                                     { format!("{} - {}", item.val, item.txt) }
@@ -114,7 +108,7 @@ pub fn my_select(props: &Props) -> Html {
 
                 </select>
 
-                <span id = { aria_id } class = "hidden">{ &props.description }</span>
+                <span id = { aria_id } class = "hidden">{ &props.prm_dat_distinct.description }</span>
             </div>
 
             // <span id={aria_id} class = "hidden">

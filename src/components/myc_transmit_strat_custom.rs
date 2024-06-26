@@ -7,17 +7,13 @@ use yew::prelude::*;
 use crate::components::my_label::MyLabel;
 
 use crate::prm::{
-    typ::{ PrmVal, BitmapBit },
     val::PrmVVal,
+    dat::TRANSMIT_STRAT_CUSTOM,
+    typ::{ PrmVal, PrmDat, },
 };
 
 #[derive(Properties, PartialEq)]
 pub struct Props {
-    pub id: u8,
-    pub label: &'static str,
-    pub description: &'static str,
-    pub items: &'static [BitmapBit],
-
     pub vval: PrmVVal,
     pub handle_onchange: Callback<(u8, String)>,
 }
@@ -32,10 +28,10 @@ pub fn myc_transmit_strat_custom(props: &Props) -> Html {
     };
 
     let handle_onchange = props.handle_onchange.clone();
-    let id = props.id;
+    let id = TRANSMIT_STRAT_CUSTOM.id;
 
-    let select_id1 = format!("{}-select1", &props.id);
-    let select_id2 = format!("{}-select2", &props.id);
+    let select_id1 = format!("{}-select1", &TRANSMIT_STRAT_CUSTOM.id);
+    let select_id2 = format!("{}-select2", &TRANSMIT_STRAT_CUSTOM.id);
 
     let on_select_change = {
         let select_id1 = select_id1.clone();
@@ -82,29 +78,27 @@ pub fn myc_transmit_strat_custom(props: &Props) -> Html {
         })
     };
 
-    let aria_select_id1 = format!("{}-aria_select1", &props.id);
-    let aria_select_id2 = format!("{}-aria_select2", &props.id);
+    let aria_select_id1 = format!("{}-aria_select1", &TRANSMIT_STRAT_CUSTOM.id);
+    let aria_select_id2 = format!("{}-aria_select2", &TRANSMIT_STRAT_CUSTOM.id);
 
     let select_value1 = (bitmap >> 2) & 0b111;
     let select_value2 = (bitmap >> 5) & 0b111;
 
-    let button_id1 = format!("{}-button1", &props.id);
-    let button_id2 = format!("{}-button2", &props.id);
-    let aria_button_id1 = format!("{}-aria_button1", &props.id);
-    let aria_button_id2 = format!("{}-aria_button2", &props.id);
-    let dropdown_id1 = format!("{}-dropdown1", props.id);
-    let dropdown_id2 = format!("{}-dropdown2", props.id);
+    let button_id1 = format!("{}-button1", &TRANSMIT_STRAT_CUSTOM.id);
+    let button_id2 = format!("{}-button2", &TRANSMIT_STRAT_CUSTOM.id);
+    let aria_button_id1 = format!("{}-aria_button1", &TRANSMIT_STRAT_CUSTOM.id);
+    let aria_button_id2 = format!("{}-aria_button2", &TRANSMIT_STRAT_CUSTOM.id);
+    let dropdown_id1 = format!("{}-dropdown1", TRANSMIT_STRAT_CUSTOM.id);
+    let dropdown_id2 = format!("{}-dropdown2", TRANSMIT_STRAT_CUSTOM.id);
 
     html! {
         <div>
 
             <MyLabel
-                input_element_id={props.id}
-                label={props.label}
-                description={props.description}
-                is_valid=true
+                prm_dat = { &TRANSMIT_STRAT_CUSTOM as &'static dyn PrmDat }
+                is_valid = true
             />
-            <input id={props.id.to_string()} hidden=true />
+            <input id={TRANSMIT_STRAT_CUSTOM.id.to_string()} hidden=true />
 
             <div 
                 // class={"ml-5"}
@@ -119,7 +113,7 @@ pub fn myc_transmit_strat_custom(props: &Props) -> Html {
 
                     <ul class="p-0 overflow-y-auto text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownSearchButton">
                         {
-                            props.items
+                            TRANSMIT_STRAT_CUSTOM.bits
                             .iter()
                             .filter(|item| {
                                 item.bit == 0 || item.bit == 1
@@ -130,14 +124,14 @@ pub fn myc_transmit_strat_custom(props: &Props) -> Html {
                                     <li>
                                         <div class="flex items-center px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
                                             <input
-                                                id={format!("{}-checkbox-{}", props.id, item.bit)}
+                                                id={format!("{}-checkbox-{}", TRANSMIT_STRAT_CUSTOM.id, item.bit)}
                                                 type="checkbox"
                                                 checked = { (bitmap >> item.bit) & 1 == 1 }
                                                 value={item.bit.to_string()}
                                                 onchange={on_checkbox_change.clone()}
                                                 class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
                                             />
-                                            <label for={format!("{}-checkbox-{}", props.id, item.bit)}
+                                            <label for={format!("{}-checkbox-{}", TRANSMIT_STRAT_CUSTOM.id, item.bit)}
                                                     class="w-full ms-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">
                                                 {item.txt}
                                             </label>
@@ -185,7 +179,7 @@ pub fn myc_transmit_strat_custom(props: &Props) -> Html {
                             <ul class="h-48 p-0 overflow-y-auto text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownSearchButton">
 
                                 {
-                                    props.items
+                                    TRANSMIT_STRAT_CUSTOM.bits
                                     .iter()
                                     .filter(|item| {
                                         8 <= item.bit && item.bit <= 15
@@ -196,14 +190,14 @@ pub fn myc_transmit_strat_custom(props: &Props) -> Html {
                                             <li>
                                                 <div class="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
                                                     <input
-                                                        id={format!("{}-checkbox-{}", props.id, item.bit)}
+                                                        id={format!("{}-checkbox-{}", TRANSMIT_STRAT_CUSTOM.id, item.bit)}
                                                         type="checkbox"
                                                         checked = { (bitmap >> item.bit) & 1 == 1 }
                                                         value={item.bit.to_string()}
                                                         onchange={on_checkbox_change.clone()}
                                                         class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
                                                     />
-                                                    <label for={format!("{}-checkbox-{}", props.id, item.bit)}
+                                                    <label for={format!("{}-checkbox-{}", TRANSMIT_STRAT_CUSTOM.id, item.bit)}
                                                         class="w-full ms-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">
                                                         {item.txt}
                                                     </label>
@@ -217,7 +211,7 @@ pub fn myc_transmit_strat_custom(props: &Props) -> Html {
 
                             </ul>
                         </div>
-                        <span id={aria_button_id1} class="hidden">{&props.description}</span>
+                        <span id={aria_button_id1} class="hidden">{&TRANSMIT_STRAT_CUSTOM.description}</span>
 
                     </div>
 
@@ -241,7 +235,7 @@ pub fn myc_transmit_strat_custom(props: &Props) -> Html {
                             <option value="2" selected={select_value1 == 2} >{"Ring"}</option>
 
                         </select>
-                        <span id={aria_select_id1} class="hidden">{&props.description}</span>
+                        <span id={aria_select_id1} class="hidden">{&TRANSMIT_STRAT_CUSTOM.description}</span>
 
                     </div>
 
@@ -287,7 +281,7 @@ pub fn myc_transmit_strat_custom(props: &Props) -> Html {
                             <ul class="h-48 p-0 overflow-y-auto text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownSearchButton">
 
                                 {
-                                    props.items
+                                    TRANSMIT_STRAT_CUSTOM.bits
                                     .iter()
                                     .filter(|item| {
                                         16 <= item.bit && item.bit <= 23
@@ -298,14 +292,14 @@ pub fn myc_transmit_strat_custom(props: &Props) -> Html {
                                             <li>
                                                 <div class="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
                                                     <input
-                                                        id={format!("{}-checkbox-{}", props.id, item.bit)}
+                                                        id={format!("{}-checkbox-{}", TRANSMIT_STRAT_CUSTOM.id, item.bit)}
                                                         type="checkbox"
                                                         checked = { (bitmap >> item.bit) & 1 == 1 }
                                                         value={item.bit.to_string()}
                                                         onchange={on_checkbox_change.clone()}
                                                         class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
                                                     />
-                                                    <label for={format!("{}-checkbox-{}", props.id, item.bit)}
+                                                    <label for={format!("{}-checkbox-{}", TRANSMIT_STRAT_CUSTOM.id, item.bit)}
                                                         class="w-full ms-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">
                                                         {item.txt}
                                                     </label>
@@ -319,7 +313,7 @@ pub fn myc_transmit_strat_custom(props: &Props) -> Html {
 
                             </ul>
                         </div>
-                        <span id={aria_button_id2} class="hidden">{&props.description}</span>
+                        <span id={aria_button_id2} class="hidden">{&TRANSMIT_STRAT_CUSTOM.description}</span>
                     </div>
 
                     // 2nd TX DR Distribution
@@ -342,7 +336,7 @@ pub fn myc_transmit_strat_custom(props: &Props) -> Html {
                             <option value="2" selected={select_value2 == 2} >{"Ring"}</option>
 
                         </select>
-                        <span id={aria_select_id2} class="hidden">{&props.description}</span>
+                        <span id={aria_select_id2} class="hidden">{&TRANSMIT_STRAT_CUSTOM.description}</span>
 
                     </div>
 

@@ -7,13 +7,14 @@ use crate::components::{
     my_label::MyLabel
 };
 
-use crate::prm::val::PrmVVal;
+use crate::prm::{
+    val::PrmVVal,
+    typ::{ PrmDatDec, PrmDat, },
+};
 
 #[derive(Properties, PartialEq)]
 pub struct Props {
-    pub id: u8,
-    pub label: &'static str,
-    pub description: &'static str,
+    pub prm_dat_dec: &'static PrmDatDec,
     pub radix_disp: RadixDisp,
     pub vval: PrmVVal,
     pub handle_onchange: Callback<(u8, String)>,
@@ -24,7 +25,7 @@ pub fn my_input(props: &Props) -> Html {
 
     let onchange = {
         let handle_onchange = props.handle_onchange.clone();
-        let id = props.id;
+        let id = props.prm_dat_dec.id;
         Callback::from(move |event: Event| {
             let txt = event
                 .target()
@@ -37,15 +38,13 @@ pub fn my_input(props: &Props) -> Html {
     };
 
     let vval = props.vval.clone();
-    let aria_id = format!("{}-aria", &props.id);
+    let aria_id = format!("{}-aria", &props.prm_dat_dec.id);
 
     html! {
         <div>
 
             <MyLabel
-                input_element_id = { props.id }
-                label = { props.label }
-                description = { props.description}
+                prm_dat = { props.prm_dat_dec as &'static dyn PrmDat }
                 is_valid = {
                     match &vval {
                         PrmVVal::Valid(_) => true,
@@ -59,7 +58,7 @@ pub fn my_input(props: &Props) -> Html {
                 <input
                     type="text"
                     autocomplete = "off"
-                    id={props.id.to_string()}
+                    id={props.prm_dat_dec.id.to_string()}
                     class = {
                         match &vval {
                             PrmVVal::Valid(_) => "my-valid-input",
@@ -85,7 +84,7 @@ pub fn my_input(props: &Props) -> Html {
                 />
 
                 // Aria
-                <span id = { aria_id } class = "hidden">{ &props.description }</span>
+                <span id = { aria_id } class = "hidden">{ &props.prm_dat_dec.description }</span>
 
             </div>
 

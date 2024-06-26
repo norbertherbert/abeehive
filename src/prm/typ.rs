@@ -23,13 +23,13 @@ fn interim_vval_from_txt(txt: &str) -> PrmVVal {
     } 
     else if regex_for_hex.is_match(txt) {
         let txt = txt.strip_prefix("0x").expect("never fails, secured by regex");
-        let Ok(val) = PrmVal::from_str_radix(txt, 16) else {
+        let Ok(val) = u32::from_str_radix(txt, 16) else {
             return PrmVVal::InvalidTxt((
                 txt.to_owned(), 
                 format!("Cannot convert the input text to a 32 bit number: \"{}\"", txt),
             ));
         };
-        PrmVVal::Valid(val) // Interim value. Still to be validated by the trait's vval_from_val() method!
+        PrmVVal::Valid(val as i32) // Interim value. Still to be validated by the trait's vval_from_val() method!
     }
     else {
         return PrmVVal::InvalidTxt((
@@ -58,12 +58,18 @@ pub struct DistinctVal {
 pub trait PrmDat {
     fn id(&self) -> u8;
     fn name(&self) -> &str;
+    fn label(&self) -> &str;
+    fn description(&self) -> &str;
     fn vval_from_val(&self, val: PrmVal) -> PrmVVal;
     fn vval_from_txt(&self, txt: &str) -> PrmVVal;
 }
+impl PartialEq for dyn PrmDat {
+    fn eq(&self, other: &Self) -> bool {
+        self.id() == other.id()
+    }
+}
 
-
-// An Enum thaat can represent any Parameter Types
+// An Enum that can represent any Parameter Types
 
 pub enum PrmDatEnum {
     PrmDatDec(PrmDatDec),
@@ -76,6 +82,7 @@ pub enum PrmDatEnum {
 
 /// Meta Data for a Parameter Type that can represent a DECIMAL VALUE
 
+#[derive(PartialEq)]
 pub struct PrmDatDec {
     pub id: u8,
     pub name: &'static str,
@@ -88,6 +95,8 @@ pub struct PrmDatDec {
 impl PrmDat for PrmDatDec {
     fn id(&self) -> u8 { self.id }
     fn name(&self) -> &str { self.name }
+    fn label(&self) -> &str { self.label }
+    fn description(&self) -> &str { self.description }
     fn vval_from_val(&self, val: PrmVal) -> PrmVVal {
         if self.range.0 <= val && val <= self.range.1 { 
             PrmVVal::Valid(val)
@@ -113,6 +122,7 @@ impl PrmDat for PrmDatDec {
 
 /// Meta Data for a Parameter Type that can represent an OPTIONAL VALUE
 
+#[derive(PartialEq)]
 pub struct PrmDatOptional {
     pub id: u8,
     pub name: &'static str,
@@ -126,6 +136,8 @@ pub struct PrmDatOptional {
 impl PrmDat for PrmDatOptional {
     fn id(&self) -> u8 { self.id }
     fn name(&self) -> &str { self.name }
+    fn label(&self) -> &str { self.label }
+    fn description(&self) -> &str { self.description }
     fn vval_from_val(&self, val: PrmVal) -> PrmVVal {
         if (self.range.0 <= val && val <= self.range.1) || val == self.disabled_val {
             PrmVVal::Valid(val)
@@ -151,6 +163,7 @@ impl PrmDat for PrmDatOptional {
 
 /// Meta Data for a Parameter Type that can represent a DISTINCT VALUE
 
+#[derive(PartialEq)]
 pub struct PrmDatDistinct {
     pub id: u8,
     pub name: &'static str,
@@ -163,6 +176,8 @@ pub struct PrmDatDistinct {
 impl PrmDat for PrmDatDistinct {
     fn id(&self) -> u8 { self.id }
     fn name(&self) -> &str { self.name }
+    fn label(&self) -> &str { self.label }
+    fn description(&self) -> &str { self.description }
     fn vval_from_val(&self, val: PrmVal) -> PrmVVal {
         for v in self.distinct_vals {
             if v.val == val {
@@ -193,6 +208,7 @@ impl PrmDat for PrmDatDistinct {
 
 /// Meta Data for a Parameter Type that can represents a BITMAP
 
+#[derive(PartialEq)]
 pub struct PrmDatBitmap {
     pub id: u8,
     pub name: &'static str,
@@ -205,6 +221,8 @@ pub struct PrmDatBitmap {
 impl PrmDat for PrmDatBitmap {
     fn id(&self) -> u8 { self.id }
     fn name(&self) -> &str { self.name }
+    fn label(&self) -> &str { self.label }
+    fn description(&self) -> &str { self.description }
     fn vval_from_val(&self, val: PrmVal) -> PrmVVal {
         
         let mut valid_bitmap: PrmVal = 0;
@@ -238,6 +256,7 @@ impl PrmDat for PrmDatBitmap {
 
 /// Meta Data for a Parameter Type that can represent a MOTION_SENSITIVITY VALUE
 
+#[derive(PartialEq)]
 pub struct PrmDatMotionSensitivity {
     pub id: u8,
     pub name: &'static str,
@@ -251,6 +270,8 @@ pub struct PrmDatMotionSensitivity {
 impl PrmDat for PrmDatMotionSensitivity {
     fn id(&self) -> u8 { self.id }
     fn name(&self) -> &str { self.name }
+    fn label(&self) -> &str { self.label }
+    fn description(&self) -> &str { self.description }
     fn vval_from_val(&self, val: PrmVal) -> PrmVVal {
 
         let mut err = String::new();
@@ -311,6 +332,7 @@ impl PrmDat for PrmDatMotionSensitivity {
 
 /// Meta Data for a Parameter Type that can represent a BUTTON_MAPPING VALUE
 
+#[derive(PartialEq)]
 pub struct PrmDatButtonMapping {
     pub id: u8,
     pub name: &'static str,
@@ -323,6 +345,8 @@ pub struct PrmDatButtonMapping {
 impl PrmDat for PrmDatButtonMapping {
     fn id(&self) -> u8 { self.id }
     fn name(&self) -> &str { self.name }
+    fn label(&self) -> &str { self.label }
+    fn description(&self) -> &str { self.description }
     fn vval_from_val(&self, val: PrmVal) -> PrmVVal {
 
         let mut v = val;
@@ -400,6 +424,7 @@ impl PrmDat for PrmDatButtonMapping {
 
 /// Meta Data for a Parameter Type that can represent a BATTERY_CAPACITY VALUE
 
+#[derive(PartialEq)]
 pub struct PrmDatBatteryCapacity {
     pub id: u8,
     pub name: &'static str,
@@ -413,6 +438,8 @@ pub struct PrmDatBatteryCapacity {
 impl PrmDat for PrmDatBatteryCapacity {
     fn id(&self) -> u8 { self.id }
     fn name(&self) -> &str { self.name }
+    fn label(&self) -> &str { self.label }
+    fn description(&self) -> &str { self.description }
     fn vval_from_val(&self, val: PrmVal) -> PrmVVal {
 
 
