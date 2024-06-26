@@ -86,6 +86,7 @@ pub enum Msg {
     New,
     Close,
     Open,
+    OpenWith,
     SaveAs,
     ExportAsLWDL,
     GetConfigUsbModalToggle,
@@ -151,6 +152,7 @@ impl Component for BeeQueenApp {
         match msg {
             Msg::ParamValueChanged(id, val) => {
                 self.vvals.borrow_mut().set_txt_by_id(id, &val).expect("id is always valid");
+                self.greet_msg = String::new();
                 true
             },
 
@@ -181,6 +183,13 @@ impl Component for BeeQueenApp {
                 let args = to_value(&()).unwrap();
                 spawn_local(async move {
                     invoke("open", args).await; // .as_string().unwrap();
+                });
+                true
+            },
+            Msg::OpenWith => {
+                let args = to_value(&()).unwrap();
+                spawn_local(async move {
+                    invoke("open_with", args).await; // .as_string().unwrap();
                 });
                 true
             },
@@ -400,8 +409,16 @@ impl Component for BeeQueenApp {
     }
 
 
-    fn rendered(&mut self, ctx: &Context<Self>, _first_render: bool) {
+    fn rendered(&mut self, ctx: &Context<Self>, first_render: bool) {
 
+        if first_render { 
+
+            let open_with = ctx.link().callback(move |_| {
+                Msg::OpenWith
+            });
+            open_with.emit(());
+
+        }
 
         // ************************************************************************
         // *** Initiating the Flowbite framework as an external Javascript Call 

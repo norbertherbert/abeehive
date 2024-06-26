@@ -7,9 +7,11 @@ use tauri::Manager;
 
 use serde::{Deserialize, Serialize};
 use std::borrow::Borrow;
+use std::env;
 // use std::ffi::OsString;
 use std::fs::File;
 use std::io::{Read, Write};
+use std::path::PathBuf;
 use std::sync::OnceLock;
 
 mod serial_port;
@@ -41,7 +43,7 @@ static APP_HANDLE: OnceLock<tauri::AppHandle> = OnceLock::new();
 #[tauri::command(rename_all = "snake_case")]
 fn open() -> () {
     dialog::FileDialogBuilder::default()
-    .add_filter("Text", &["txt"])
+    .add_filter("Text", &["bwc"])
     .pick_file(move |path_buf| match path_buf {
         Some(file_path) => {
             let mut data = Vec::new();
@@ -72,9 +74,52 @@ fn open() -> () {
 }
 
 #[tauri::command(rename_all = "snake_case")]
+fn open_with() -> () {
+    let mut args = env::args();
+    match args.next() {
+        Some(_) => {},
+        None => return (),
+    };
+    if let Some(file_path) = args.next() {
+
+        let file_path = PathBuf::from(file_path);
+
+        let mut data = Vec::new();
+        let mut f = File::open(file_path.clone())
+            .expect("Unable to open file");
+        f.read_to_end(&mut data).expect("Unable to read data");
+
+        let data = String::from_utf8_lossy(&data[..]);
+        let data: &str = data.borrow();
+
+        let file_name = match file_path.file_name() {
+            Some(file_name) => {
+                file_name.to_string_lossy().into_owned()
+            },
+            None => {
+                "unknown file name".to_string()
+            }
+        };
+        
+        // println!("{}\n{}", file_name, data);
+
+        let app = APP_HANDLE.get().unwrap();
+        app.emit_all("FileOpen", (file_name, data.to_string())).unwrap();
+
+    }
+}
+
+#[tauri::command(rename_all = "snake_case")]
 fn save_as(cfg_string: String) -> () {
+
+    let file_extesions = if cfg_string.starts_with("# LoRaWAN Downlink") {
+        &["txt"]
+    } else {
+        &["bwc"]
+    };
+
     dialog::FileDialogBuilder::default()
-    .add_filter("Text", &["txt"])
+    .add_filter("Text", file_extesions)
     .save_file(move |path_buf| match path_buf {
         Some(file_path) => {
             let mut f = File::create(file_path.clone()).expect("Unable to create file");
@@ -128,6 +173,10 @@ fn get_config_usb_cmd(port: String) -> Vec<(u8, i32)> {
 }
 
 fn main() {
+
+    // let args: Vec<String> = env::args().collect();
+    // dbg!(args);
+
     // let open_file = CustomMenuItem::new("open_file".to_string(), "Open file");
     // let save_to_file = CustomMenuItem::new("save_to_file".to_string(), "Save to file");
     // let open_device = CustomMenuItem::new("open_device".to_string(), "Open device");
@@ -165,9 +214,11 @@ fn main() {
             greet,
             save_as,
             open,
+            open_with,
             get_serial_ports,
             get_config_usb_cmd,
-            save_config_to_usb_cmd
+            save_config_to_usb_cmd,
+            
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -286,8 +286,7 @@ impl PrmVVals {
 
     pub fn to_lwdl_string(&self) -> String {
         let mut cfg: String =
-r#"
-# LoRaWAN Downlink Configuration Commands must be sent to FPort=2.
+r#"# LoRaWAN Downlink Configuration Commands must be sent to FPort=2.
 # A message paylod in hex-encoded format should start with the "0b0a" prefix.
 # You can compose a LoRaWAN downlink message from multiple (max 5) parameters 
 # so that the prefix is used only once at the beginning of the message.
