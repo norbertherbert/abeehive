@@ -147,13 +147,79 @@ pub fn navbar(props: &Props) -> Html {
                             // <!-- Dropdown menu -->
                             <div id="dropdownNavbarFile" class="z-10 hidden font-normal bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
                                 <ul class="py-2 text-sm text-gray-700 dark:text-gray-400" aria-labelledby="dropdownLargeButton">
-                                    <li>
-                                        <a href="#"
-                                            class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                                            onclick = { onclick_new.clone() }
+                                    <li aria-labelledby="dropdownNavbarLink">
+                                        <button 
+                                            id="configTemplatesButton" 
+                                            data-dropdown-toggle="configTemplatesDropdown" 
+                                            data-dropdown-placement="right-start" 
+                                            type="button" 
+                                            class="flex items-center justify-between w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                                         >
-                                            {"New from Default"}
-                                        </a>
+                                            { "New from Template" }
+                                            <svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+                                            </svg>
+                                        </button>
+                                        <div id="configTemplatesDropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
+                                            <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="doubleDropdownButton">
+                                                <li>
+                                                    <a href="#" 
+                                                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                                                        onclick = { onclick_new.clone() }
+                                                    >
+                                                        { "Tracking WiFi+GPS" }
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" 
+                                                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                                                        onclick = { onclick_new.clone() }
+                                                    >
+                                                        { "Tracking BLE+GPS" }
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" 
+                                                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                                                        onclick = { onclick_new.clone() }
+                                                    >
+                                                        { "Tracking BLE+GPS Realtime-15s" }
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" 
+                                                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                                                        onclick = { onclick_new.clone() }
+                                                    >
+                                                        { "BLE Geo-zoning" }
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" 
+                                                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                                                        onclick = { onclick_new.clone() }
+                                                    >
+                                                        { "Scan Collection" }
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" 
+                                                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                                                        onclick = { onclick_new.clone() }
+                                                    >
+                                                        { "Angle Detection" }
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" 
+                                                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                                                        onclick = { onclick_new.clone() }
+                                                    >
+                                                        { "BLE Beaconing" }
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </li>
                                     <li>
                                         <a href="#"
@@ -168,7 +234,7 @@ pub fn navbar(props: &Props) -> Html {
                                             class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                                             onclick = { onclick_save_to_file.clone() }
                                         >
-                                            {"Save as..."}
+                                            {"Save file as..."}
                                         </a>
                                     </li>
                                     <li>

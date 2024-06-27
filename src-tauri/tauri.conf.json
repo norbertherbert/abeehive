@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "abeehive",
-    "version": "0.0.1"
+    "version": "0.0.2"
   },
   "tauri": {
     "allowlist": {
@@ -30,7 +30,7 @@
     },
     "windows": [
       {
-        "title": "abeehive 0.0.1",
+        "title": "abeehive 0.0.2",
         "width": 800,
         "height": 600
       }
@@ -49,6 +49,14 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ]
+    },
+    "updater": {
+      "active": true,
+      "endpoints": [
+        "https://nano-things.net/abeeway/abeehive_updates/update_msi.json"
+      ],
+      "dialog": true,
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDExNzBDQTA1MUMxMzgxQzgKUldUSWdSTWNCY3B3RWR4Uy9TTVU5NVRHL1B1eDAyTWVWblpjQk1pMy9VVFVBYnVHaHN3OHFmUFYK"
     }
   }
 }

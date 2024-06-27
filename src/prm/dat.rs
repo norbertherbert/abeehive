@@ -257,7 +257,7 @@ pub static PERIODIC_POS_PERIOD: PrmDatOptional = PrmDatOptional {
     id: 0x03,
     name: "periodic_pos_period",
     label: "Periodic Position Period",
-    description: "Periodic Position Report Period.",
+    description: "Periodic Position Report Side Operation Period. Range: [900..604800] Unit: [s]",
     default_val: 14400,
     disabled_val: 0,
     range: (900 , 604800),
@@ -1906,7 +1906,7 @@ pub static MOTION_DEBOUNCE: PrmDatDec = PrmDatDec {
 pub static MOTION_NB_POS: PrmDatDec = PrmDatDec {
     id: 0x08,
     name: "motion_nb_pos",
-    label: "Msgs sent on motion start/end",
+    label: "Messages on motion start/end",
     description: "Number of location updates sent upon motion start/end.",
     default_val: 1,
     range: (0, 20),

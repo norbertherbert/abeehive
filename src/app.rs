@@ -176,6 +176,7 @@ impl Component for BeeQueenApp {
             Msg::Close => {
                 let vvals = PrmVVals::new();
                 self.vvals.replace(vvals);
+                self.source_name = String::new();
                 true
             },
 
@@ -527,13 +528,161 @@ impl Component for BeeQueenApp {
 
     fn view(&self, ctx: &Context<Self>) -> Html {
 
-
         let handle_onchange = {
             ctx.link().callback(move |(id, txt)| {
                 Msg::ParamValueChanged(id, txt)
             })
         };
 
+        let mut is_standby = true;
+        let mut is_gps_used = false; 
+        let mut _is_lpgps_used = false;
+        let mut is_ble_position_used = false;
+        let mut _is_wifi_used = false;
+        let mut is_accelerometer_used = false;
+
+        if !self.vvals.borrow().is_empty() {
+
+
+            (is_accelerometer_used, is_standby) = 
+                match self.vvals.borrow().get_by_id(MODE.id)
+                    .expect("id is always valid")
+                    .expect("id always exists")
+                {
+                    PrmVVal::Valid(v) => {
+                        match v {
+                            v if *v==ModeOption::STANDBY.val => (false, true),
+                            v if *v==ModeOption::MOTION_TRACKING.val => (true, false),
+                            v if *v==ModeOption::MOTION_START_END_TRACKING.val => (true, false),
+                            v if *v==ModeOption::ACTIVITY_TRACKING.val => (true, false),
+                            _ => (false, false)
+                        }
+                    },
+                    _ => (false, false)
+                };
+
+            is_accelerometer_used |= 
+                match self.vvals.borrow().get_by_id(SHOCK_DETECTION.id)
+                    .expect("id is always valid")
+                    .expect("id always exists")
+                {
+                    PrmVVal::Valid(v) => {
+                        match v {
+                            v if *v==SHOCK_DETECTION.disabled_val => false,
+                            _ => true,
+                        }
+                    },
+                    _ => false
+                };
+
+            is_accelerometer_used |= 
+                match self.vvals.borrow().get_by_id(CONFIG_FLAGS.id)
+                    .expect("id is always valid")
+                    .expect("id always exists")
+                {
+                    PrmVVal::Valid(bitmap) => {
+                        let bitmask: i32 = 
+                            (1<<ConfigFlagsBit::MOTION_START_EVENT_ENABLED.bit) |
+                            (1<<ConfigFlagsBit::MOTION_END_EVENT_ENABLED.bit);
+                        (bitmap & bitmask) > 0
+                    },
+                    _ => false
+                };
+
+            if !is_standby {
+                (is_gps_used, _is_lpgps_used, is_ble_position_used, _is_wifi_used) = 
+                    match self.vvals.borrow().get_by_id(GEOLOC_SENSOR.id)
+                        .expect("id is always valid")
+                        .expect("id always exists")
+                    {
+                        PrmVVal::Valid(v) => {
+                            
+                            let is_gps_used = match v {
+                                v if *v==GeolocSensorOption::GPS.val => true,
+                                v if *v==GeolocSensorOption::BLE_GPS.val => true,
+                                v if *v==GeolocSensorOption::WIFI_GPS.val => true,
+                                v if *v==GeolocSensorOption::WIFI_LPGPS_WIFI_GPS.val => true,
+                                _ => false,
+                            };
+
+                            let is_lpgps_used = match v {
+                                v if *v==GeolocSensorOption::LPGPS.val => true,
+                                v if *v==GeolocSensorOption::BLE_LPGPS.val => true,
+                                v if *v==GeolocSensorOption::WIFI_LPGPS.val => true,
+                                v if *v==GeolocSensorOption::WIFI_LPGPS_WIFI_GPS.val => true,
+                                _ => false,
+                            };
+
+                            let is_ble_positioning_used = match v {
+                                v if *v==GeolocSensorOption::BLE.val => true,
+                                v if *v==GeolocSensorOption::BLE_GPS.val => true,
+                                v if *v==GeolocSensorOption::BLE_LPGPS.val => true,
+                                _ => false,
+                            };
+
+                            let is_wifi_used = match v {
+                                v if *v==GeolocSensorOption::WIFI.val => true,
+                                v if *v==GeolocSensorOption::WIFI_GPS.val => true,
+                                v if *v==GeolocSensorOption::WIFI_LPGPS.val => true,
+                                v if *v==GeolocSensorOption::WIFI_LPGPS_WIFI_GPS.val => true,
+                                _ => false,
+                            };
+
+                            (is_gps_used, is_lpgps_used, is_ble_positioning_used, is_wifi_used)
+
+                        },
+                        _ => (false, false, false, false) 
+                    };
+            }
+
+            let (is_gps_used_1, is_lpgps_used_1, is_ble_position_used_1, is_wifi_used_1) = 
+                match self.vvals.borrow().get_by_id(GEOLOC_METHOD.id)
+                    .expect("id is always valid")
+                    .expect("id always exists")
+                {
+                    PrmVVal::Valid(v) => {
+                        
+                        let is_gps_used = match v {
+                            v if *v==GeolocMethodOption::GPS.val => true,
+                            v if *v==GeolocMethodOption::BLE_GPS.val => true,
+                            v if *v==GeolocMethodOption::WIFI_GPS.val => true,
+                            _ => false,
+                        };
+
+                        let is_lpgps_used = match v {
+                            v if *v==GeolocMethodOption::LPGPS.val => true,
+                            v if *v==GeolocMethodOption::BLE_LPGPS.val => true,
+                            v if *v==GeolocMethodOption::WIFI_LPGPS.val => true,
+                            _ => false,
+                        };
+
+                        let is_ble_position_used = match v {
+                            v if *v==GeolocMethodOption::BLE.val => true,
+                            v if *v==GeolocMethodOption::BLE_GPS.val => true,
+                            v if *v==GeolocMethodOption::BLE_LPGPS.val => true,
+                            _ => false,
+                        };
+
+                        let is_wifi_used = match v {
+                            v if *v==GeolocMethodOption::WIFI.val => true,
+                            v if *v==GeolocMethodOption::WIFI_GPS.val => true,
+                            v if *v==GeolocMethodOption::WIFI_LPGPS.val => true,
+                            _ => false,
+                        };
+
+                        (is_gps_used, is_lpgps_used, is_ble_position_used, is_wifi_used)
+
+                    },
+                    _ => (false, false, false, false) 
+                };
+
+            is_gps_used |= is_gps_used_1;
+            _is_lpgps_used |= is_lpgps_used_1;
+            is_ble_position_used |= is_ble_position_used_1;
+            _is_wifi_used |= is_wifi_used_1;
+
+
+        }
 
         html!(
             <>
@@ -688,43 +837,50 @@ impl Component for BeeQueenApp {
                                         }
                                         handle_onchange = { handle_onchange.clone() }
                                     />
-
-                                    <MyInput
-                                        prm_dat_dec = { &MOTION_DURATION }
-                                        radix_disp = { RadixDisp::Dec }
-                                        vval={
-                                            self.vvals.borrow().get_by_id(MOTION_DURATION.id)
-                                            .expect("id is always valid")
-                                            .expect("id always exists")
-                                            .clone()
-                                        }
-                                        handle_onchange = { handle_onchange.clone() }
-                                    />
-
-                                    <div class = "col-span-1 row-span-2">
-                                        <MycMotionSensitivity
+                                    
+                                    <div hidden = { !is_accelerometer_used } >
+                                        <MyInput
+                                            prm_dat_dec = { &MOTION_DURATION }
+                                            radix_disp = { RadixDisp::Dec }
                                             vval={
-                                                self.vvals.borrow().get_by_id(MOTION_SENSITIVITY.id)
+                                                self.vvals.borrow().get_by_id(MOTION_DURATION.id)
                                                 .expect("id is always valid")
                                                 .expect("id always exists")
                                                 .clone()
                                             }
                                             handle_onchange = { handle_onchange.clone() }
-                                            />
+                                        />
                                     </div>
 
-                                    <MyInput
-                                        prm_dat_dec = { &MOTION_NB_POS }
-                                        radix_disp = { RadixDisp::Dec }
-                                        vval={
-                                            self.vvals.borrow().get_by_id(MOTION_NB_POS.id)
-                                            .expect("id is always valid")
-                                            .expect("id always exists")
-                                            .clone()
-                                        }
-                                        handle_onchange = { handle_onchange.clone() }
-                                    />
+                                    <div hidden = { !is_accelerometer_used } class = "col-span-1 row-span-2">
+                                        <div>
+                                            <MycMotionSensitivity
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(MOTION_SENSITIVITY.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                                />
+                                        </div>
+                                    </div>
 
+                                    
+                                    <div hidden = { !is_accelerometer_used } >
+                                        <MyInput
+                                            prm_dat_dec = { &MOTION_NB_POS }
+                                            radix_disp = { RadixDisp::Dec }
+                                            vval={
+                                                self.vvals.borrow().get_by_id(MOTION_NB_POS.id)
+                                                .expect("id is always valid")
+                                                .expect("id always exists")
+                                                .clone()
+                                            }
+                                            handle_onchange = { handle_onchange.clone() }
+                                        />
+                                    </div>
+                                    
                                     <MyOptionalInput
                                         prm_dat_optional = { &SHOCK_DETECTION }
                                         radix_disp = { RadixDisp::Dec }
@@ -736,18 +892,22 @@ impl Component for BeeQueenApp {
                                         }
                                         handle_onchange = { handle_onchange.clone() }
                                     />
+                            
 
-                                    <MySelect
-                                        prm_dat_distinct = { &GEOLOC_SENSOR } 
-                                        vval={
-                                            self.vvals.borrow().get_by_id(GEOLOC_SENSOR.id)
-                                            .expect("id is always valid")
-                                            .expect("id always exists")
-                                            .clone()
-                                        }
-                                        handle_onchange = { handle_onchange.clone() }
-                                    />
+                                    <div hidden = { is_standby } >
+                                        <MySelect
+                                            prm_dat_distinct = { &GEOLOC_SENSOR } 
+                                            vval={
+                                                self.vvals.borrow().get_by_id(GEOLOC_SENSOR.id)
+                                                .expect("id is always valid")
+                                                .expect("id always exists")
+                                                .clone()
+                                            }
+                                            handle_onchange = { handle_onchange.clone() }
+                                        />
+                                    </div>
 
+                                    
                                     <MySelect
                                         prm_dat_distinct = { &GEOLOC_METHOD } 
                                         vval={
@@ -789,7 +949,7 @@ impl Component for BeeQueenApp {
                                                 .clone()
                                             }
                                             handle_onchange = { handle_onchange.clone() }
-                                            />
+                                        />
                                     </div>
 
                                     <MyBitmap
@@ -803,230 +963,268 @@ impl Component for BeeQueenApp {
                                         handle_onchange = { handle_onchange.clone() }
                                     />
 
-                                    <MySelect
-                                        prm_dat_distinct = { &GNSS_CONSTELLATION } 
-                                        vval={
-                                            self.vvals.borrow().get_by_id(GNSS_CONSTELLATION.id)
-                                            .expect("id is always valid")
-                                            .expect("id always exists")
-                                            .clone()
-                                        }
-                                        handle_onchange = { handle_onchange.clone() }
-                                    />
+                                    <div hidden = { !is_gps_used } >
+                                        <MySelect
+                                            prm_dat_distinct = { &GNSS_CONSTELLATION } 
+                                            vval={
+                                                self.vvals.borrow().get_by_id(GNSS_CONSTELLATION.id)
+                                                .expect("id is always valid")
+                                                .expect("id always exists")
+                                                .clone()
+                                            }
+                                            handle_onchange = { handle_onchange.clone() }
+                                        />
+                                    </div>
 
-                                    <MyOptionalInput
-                                        prm_dat_optional = { &GPS_T0_TIMEOUT }
-                                        radix_disp = { RadixDisp::Dec }
-                                        vval={
-                                            self.vvals.borrow().get_by_id(GPS_T0_TIMEOUT.id)
-                                            .expect("id is always valid")
-                                            .expect("id always exists")
-                                            .clone()
-                                        }
-                                        handle_onchange = { handle_onchange.clone() }
-                                    />
+                                    <div hidden = { !is_gps_used } >
+                                        <MyOptionalInput
+                                            prm_dat_optional = { &GPS_T0_TIMEOUT }
+                                            radix_disp = { RadixDisp::Dec }
+                                            vval={
+                                                self.vvals.borrow().get_by_id(GPS_T0_TIMEOUT.id)
+                                                .expect("id is always valid")
+                                                .expect("id always exists")
+                                                .clone()
+                                            }
+                                            handle_onchange = { handle_onchange.clone() }
+                                        />
+                                    </div>
 
-                                    <MyOptionalInput
-                                        prm_dat_optional = { &GPS_T0_TIMEOUT_MOTION }
-                                        radix_disp = { RadixDisp::Dec }
-                                        vval={
-                                            self.vvals.borrow().get_by_id(GPS_T0_TIMEOUT_MOTION.id)
-                                            .expect("id is always valid")
-                                            .expect("id always exists")
-                                            .clone()
-                                        }
-                                        handle_onchange = { handle_onchange.clone() }
-                                    />
+                                    <div hidden = { !is_gps_used } >
+                                        <MyOptionalInput
+                                            prm_dat_optional = { &GPS_T0_TIMEOUT_MOTION }
+                                            radix_disp = { RadixDisp::Dec }
+                                            vval={
+                                                self.vvals.borrow().get_by_id(GPS_T0_TIMEOUT_MOTION.id)
+                                                .expect("id is always valid")
+                                                .expect("id always exists")
+                                                .clone()
+                                            }
+                                            handle_onchange = { handle_onchange.clone() }
+                                        />
+                                    </div>
 
-                                    <MyInput
-                                        prm_dat_dec = { &GPS_EHPE }
-                                        radix_disp = { RadixDisp::Dec }
-                                        vval={
-                                            self.vvals.borrow().get_by_id(GPS_EHPE.id)
-                                            .expect("id is always valid")
-                                            .expect("id always exists")
-                                            .clone()
-                                        }
-                                        handle_onchange = { handle_onchange.clone() }
-                                    />
+                                    <div hidden = { !is_gps_used } >
+                                        <MyInput
+                                            prm_dat_dec = { &GPS_EHPE }
+                                            radix_disp = { RadixDisp::Dec }
+                                            vval={
+                                                self.vvals.borrow().get_by_id(GPS_EHPE.id)
+                                                .expect("id is always valid")
+                                                .expect("id always exists")
+                                                .clone()
+                                            }
+                                            handle_onchange = { handle_onchange.clone() }
+                                        />
+                                    </div>
 
-                                    <MyInput
-                                        prm_dat_dec = { &GPS_EHPE_MOTION }
-                                        radix_disp = { RadixDisp::Dec }
-                                        vval={
-                                            self.vvals.borrow().get_by_id(GPS_EHPE_MOTION.id)
-                                            .expect("id is always valid")
-                                            .expect("id always exists")
-                                            .clone()
-                                        }
-                                        handle_onchange = { handle_onchange.clone() }
-                                    />
+                                    <div hidden = { !is_gps_used } >
+                                        <MyInput
+                                            prm_dat_dec = { &GPS_EHPE_MOTION }
+                                            radix_disp = { RadixDisp::Dec }
+                                            vval={
+                                                self.vvals.borrow().get_by_id(GPS_EHPE_MOTION.id)
+                                                .expect("id is always valid")
+                                                .expect("id always exists")
+                                                .clone()
+                                            }
+                                            handle_onchange = { handle_onchange.clone() }
+                                        />
+                                    </div>
 
-                                    <MyInput
-                                        prm_dat_dec = { &GPS_CONVERGENCE }
-                                        radix_disp = { RadixDisp::Dec }
-                                        vval={
-                                            self.vvals.borrow().get_by_id(GPS_CONVERGENCE.id)
-                                            .expect("id is always valid")
-                                            .expect("id always exists")
-                                            .clone()
-                                        }
-                                        handle_onchange = { handle_onchange.clone() }
-                                    />
+                                    <div hidden = { !is_gps_used } >
+                                        <MyInput
+                                            prm_dat_dec = { &GPS_CONVERGENCE }
+                                            radix_disp = { RadixDisp::Dec }
+                                            vval={
+                                                self.vvals.borrow().get_by_id(GPS_CONVERGENCE.id)
+                                                .expect("id is always valid")
+                                                .expect("id always exists")
+                                                .clone()
+                                            }
+                                            handle_onchange = { handle_onchange.clone() }
+                                        />
+                                    </div>
 
-                                    <MyInput
-                                        prm_dat_dec = { &GPS_CONVERGENCE_MOTION }
-                                        radix_disp = { RadixDisp::Dec }
-                                        vval={
-                                            self.vvals.borrow().get_by_id(GPS_CONVERGENCE_MOTION.id)
-                                            .expect("id is always valid")
-                                            .expect("id always exists")
-                                            .clone()
-                                        }
-                                        handle_onchange = { handle_onchange.clone() }
-                                    />
+                                    <div hidden = { !is_gps_used } >
+                                        <MyInput
+                                            prm_dat_dec = { &GPS_CONVERGENCE_MOTION }
+                                            radix_disp = { RadixDisp::Dec }
+                                            vval={
+                                                self.vvals.borrow().get_by_id(GPS_CONVERGENCE_MOTION.id)
+                                                .expect("id is always valid")
+                                                .expect("id always exists")
+                                                .clone()
+                                            }
+                                            handle_onchange = { handle_onchange.clone() }
+                                        />
+                                    </div>
 
-                                    <MyOptionalInput
-                                        prm_dat_optional = { &GPS_FIX_TIMEOUT }
-                                        radix_disp = { RadixDisp::Dec }
-                                        vval={
-                                            self.vvals.borrow().get_by_id(GPS_FIX_TIMEOUT.id)
-                                            .expect("id is always valid")
-                                            .expect("id always exists")
-                                            .clone()
-                                        }
-                                        handle_onchange = { handle_onchange.clone() }
-                                    />
+                                    <div hidden = { !is_gps_used } >
+                                        <MyOptionalInput
+                                            prm_dat_optional = { &GPS_FIX_TIMEOUT }
+                                            radix_disp = { RadixDisp::Dec }
+                                            vval={
+                                                self.vvals.borrow().get_by_id(GPS_FIX_TIMEOUT.id)
+                                                .expect("id is always valid")
+                                                .expect("id always exists")
+                                                .clone()
+                                            }
+                                            handle_onchange = { handle_onchange.clone() }
+                                        />
+                                    </div>
 
-                                    <MyInput
-                                        prm_dat_dec = { &GPS_TIMEOUT }
-                                        radix_disp = { RadixDisp::Dec }
-                                        vval={
-                                            self.vvals.borrow().get_by_id(GPS_TIMEOUT.id)
-                                            .expect("id is always valid")
-                                            .expect("id always exists")
-                                            .clone()
-                                        }
-                                        handle_onchange = { handle_onchange.clone() }
-                                    />
+                                    <div hidden = { !is_gps_used } >
+                                        <MyInput
+                                            prm_dat_dec = { &GPS_TIMEOUT }
+                                            radix_disp = { RadixDisp::Dec }
+                                            vval={
+                                                self.vvals.borrow().get_by_id(GPS_TIMEOUT.id)
+                                                .expect("id is always valid")
+                                                .expect("id always exists")
+                                                .clone()
+                                            }
+                                            handle_onchange = { handle_onchange.clone() }
+                                        />
+                                    </div>
 
-                                    <MyOptionalInput
-                                        prm_dat_optional = { &GPS_STANDBY_TIMEOUT }
-                                        radix_disp = { RadixDisp::Dec }
-                                        vval={
-                                            self.vvals.borrow().get_by_id(GPS_STANDBY_TIMEOUT.id)
-                                            .expect("id is always valid")
-                                            .expect("id always exists")
-                                            .clone()
-                                        }
-                                        handle_onchange = { handle_onchange.clone() }
-                                    />
+                                    <div hidden = { !is_gps_used } >
+                                        <MyOptionalInput
+                                            prm_dat_optional = { &GPS_STANDBY_TIMEOUT }
+                                            radix_disp = { RadixDisp::Dec }
+                                            vval={
+                                                self.vvals.borrow().get_by_id(GPS_STANDBY_TIMEOUT.id)
+                                                .expect("id is always valid")
+                                                .expect("id always exists")
+                                                .clone()
+                                            }
+                                            handle_onchange = { handle_onchange.clone() }
+                                        />
+                                    </div>
 
-                                    <MyInput
-                                        prm_dat_dec = { &BLE_BEACON_TIMEOUT }
-                                        radix_disp = { RadixDisp::Dec }
-                                        vval={
-                                            self.vvals.borrow().get_by_id(BLE_BEACON_TIMEOUT.id)
-                                            .expect("id is always valid")
-                                            .expect("id always exists")
-                                            .clone()
-                                        }
-                                        handle_onchange = { handle_onchange.clone() }
-                                    />
+                                    <div hidden = { !is_ble_position_used } >
+                                        <MyInput
+                                            prm_dat_dec = { &BLE_BEACON_TIMEOUT }
+                                            radix_disp = { RadixDisp::Dec }
+                                            vval={
+                                                self.vvals.borrow().get_by_id(BLE_BEACON_TIMEOUT.id)
+                                                .expect("id is always valid")
+                                                .expect("id always exists")
+                                                .clone()
+                                            }
+                                            handle_onchange = { handle_onchange.clone() }
+                                        />
+                                    </div>
 
-                                    <MyInput
-                                        prm_dat_dec = { &BLE_RSSI_FILTER }
-                                        radix_disp = { RadixDisp::Dec }
-                                        vval={
-                                            self.vvals.borrow().get_by_id(BLE_RSSI_FILTER.id)
-                                            .expect("id is always valid")
-                                            .expect("id always exists")
-                                            .clone()
-                                        }
-                                        handle_onchange = { handle_onchange.clone() }
-                                    />
+                                    <div hidden = { !is_ble_position_used } >
+                                        <MyInput
+                                            prm_dat_dec = { &BLE_RSSI_FILTER }
+                                            radix_disp = { RadixDisp::Dec }
+                                            vval={
+                                                self.vvals.borrow().get_by_id(BLE_RSSI_FILTER.id)
+                                                .expect("id is always valid")
+                                                .expect("id always exists")
+                                                .clone()
+                                            }
+                                            handle_onchange = { handle_onchange.clone() }
+                                        />
+                                    </div>
 
-                                    <MyInput
-                                        prm_dat_dec = { &BLE_BEACON_CNT }
-                                        radix_disp = { RadixDisp::Dec }
-                                        vval={
-                                            self.vvals.borrow().get_by_id(BLE_BEACON_CNT.id)
-                                            .expect("id is always valid")
-                                            .expect("id always exists")
-                                            .clone()
-                                        }
-                                        handle_onchange = { handle_onchange.clone() }
-                                    />
+                                    <div hidden = { !is_ble_position_used } >
+                                        <MyInput
+                                            prm_dat_dec = { &BLE_BEACON_CNT }
+                                            radix_disp = { RadixDisp::Dec }
+                                            vval={
+                                                self.vvals.borrow().get_by_id(BLE_BEACON_CNT.id)
+                                                .expect("id is always valid")
+                                                .expect("id always exists")
+                                                .clone()
+                                            }
+                                            handle_onchange = { handle_onchange.clone() }
+                                        />
+                                    </div>
 
-                                    <MySelect
-                                        prm_dat_distinct = { &POSITION_BLE_FILTER_TYPE } 
-                                        vval={
-                                            self.vvals.borrow().get_by_id(POSITION_BLE_FILTER_TYPE.id)
-                                            .expect("id is always valid")
-                                            .expect("id always exists")
-                                            .clone()
-                                        }
-                                        handle_onchange = { handle_onchange.clone() }
-                                    />
+                                    <div hidden = { !is_ble_position_used } >
+                                        <MySelect
+                                            prm_dat_distinct = { &POSITION_BLE_FILTER_TYPE } 
+                                            vval={
+                                                self.vvals.borrow().get_by_id(POSITION_BLE_FILTER_TYPE.id)
+                                                .expect("id is always valid")
+                                                .expect("id always exists")
+                                                .clone()
+                                            }
+                                            handle_onchange = { handle_onchange.clone() }
+                                        />
+                                    </div>
 
-                                    <MySelect
-                                        prm_dat_distinct = { &POSITION_BLE_REPORT_TYPE } 
-                                        vval={
-                                            self.vvals.borrow().get_by_id(POSITION_BLE_REPORT_TYPE.id)
-                                            .expect("id is always valid")
-                                            .expect("id always exists")
-                                            .clone()
-                                        }
-                                        handle_onchange = { handle_onchange.clone() }
-                                    />
+                                    <div hidden = { !is_ble_position_used } >
+                                        <MySelect
+                                            prm_dat_distinct = { &POSITION_BLE_REPORT_TYPE } 
+                                            vval={
+                                                self.vvals.borrow().get_by_id(POSITION_BLE_REPORT_TYPE.id)
+                                                .expect("id is always valid")
+                                                .expect("id always exists")
+                                                .clone()
+                                            }
+                                            handle_onchange = { handle_onchange.clone() }
+                                        />
+                                    </div>
 
-                                    <MyOptionalInput
-                                        prm_dat_optional = { &POSITION_BLE_FILTER_MAIN_1 }
-                                        radix_disp = { RadixDisp::Hex }
-                                        vval={
-                                            self.vvals.borrow().get_by_id(POSITION_BLE_FILTER_MAIN_1.id)
-                                            .expect("id is always valid")
-                                            .expect("id always exists")
-                                            .clone()
-                                        }
-                                        handle_onchange = { handle_onchange.clone() }
-                                    />
+                                    <div hidden = { !is_ble_position_used } >
+                                        <MyOptionalInput
+                                            prm_dat_optional = { &POSITION_BLE_FILTER_MAIN_1 }
+                                            radix_disp = { RadixDisp::Hex }
+                                            vval={
+                                                self.vvals.borrow().get_by_id(POSITION_BLE_FILTER_MAIN_1.id)
+                                                .expect("id is always valid")
+                                                .expect("id always exists")
+                                                .clone()
+                                            }
+                                            handle_onchange = { handle_onchange.clone() }
+                                        />
+                                    </div>
 
-                                    <MyOptionalInput
-                                        prm_dat_optional = { &POSITION_BLE_FILTER_MAIN_2 }
-                                        radix_disp = { RadixDisp::Hex }
-                                        vval={
-                                            self.vvals.borrow().get_by_id(POSITION_BLE_FILTER_MAIN_2.id)
-                                            .expect("id is always valid")
-                                            .expect("id always exists")
-                                            .clone()
-                                        }
-                                        handle_onchange = { handle_onchange.clone() }
-                                    />
+                                    <div hidden = { !is_ble_position_used } >
+                                        <MyOptionalInput
+                                            prm_dat_optional = { &POSITION_BLE_FILTER_MAIN_2 }
+                                            radix_disp = { RadixDisp::Hex }
+                                            vval={
+                                                self.vvals.borrow().get_by_id(POSITION_BLE_FILTER_MAIN_2.id)
+                                                .expect("id is always valid")
+                                                .expect("id always exists")
+                                                .clone()
+                                            }
+                                            handle_onchange = { handle_onchange.clone() }
+                                        />
+                                    </div>
 
-                                    <MyOptionalInput
-                                        prm_dat_optional = { &POSITION_BLE_FILTER_SEC_VALUE }
-                                        radix_disp = { RadixDisp::Hex }
-                                        vval={
-                                            self.vvals.borrow().get_by_id(POSITION_BLE_FILTER_SEC_VALUE.id)
-                                            .expect("id is always valid")
-                                            .expect("id always exists")
-                                            .clone()
-                                        }
-                                        handle_onchange = { handle_onchange.clone() }
-                                    />
+                                    <div hidden = { !is_ble_position_used } >
+                                        <MyOptionalInput
+                                            prm_dat_optional = { &POSITION_BLE_FILTER_SEC_VALUE }
+                                            radix_disp = { RadixDisp::Hex }
+                                            vval={
+                                                self.vvals.borrow().get_by_id(POSITION_BLE_FILTER_SEC_VALUE.id)
+                                                .expect("id is always valid")
+                                                .expect("id always exists")
+                                                .clone()
+                                            }
+                                            handle_onchange = { handle_onchange.clone() }
+                                        />
+                                    </div>
 
-                                    <MyOptionalInput
-                                        prm_dat_optional = { &POSITION_BLE_FILTER_SEC_MASK }
-                                        radix_disp = { RadixDisp::Hex }
-                                        vval={
-                                            self.vvals.borrow().get_by_id(POSITION_BLE_FILTER_SEC_MASK.id)
-                                            .expect("id is always valid")
-                                            .expect("id always exists")
-                                            .clone()
-                                        }
-                                        handle_onchange = { handle_onchange.clone() }
-                                    />
+                                    <div hidden = { !is_ble_position_used } >
+                                        <MyOptionalInput
+                                            prm_dat_optional = { &POSITION_BLE_FILTER_SEC_MASK }
+                                            radix_disp = { RadixDisp::Hex }
+                                            vval={
+                                                self.vvals.borrow().get_by_id(POSITION_BLE_FILTER_SEC_MASK.id)
+                                                .expect("id is always valid")
+                                                .expect("id always exists")
+                                                .clone()
+                                            }
+                                            handle_onchange = { handle_onchange.clone() }
+                                        />
+                                    </div>
 
                                     <MyInput
                                         prm_dat_dec = { &BUZZER_VOLUME }
