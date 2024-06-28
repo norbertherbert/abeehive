@@ -1,0 +1,11 @@
+{
+  "version": "0.0.0",
+  "notes": "Test version (Alpha release)",
+  "pub_date": "2024-06-27T10:00:00Z",
+  "platforms": {
+    "windows-x86_64": {
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVUSWdSTWNCY3B3RVV1SEtjYk5IdVRKSjdMdFNMZElnUnNSdWdISEtxN04wUjRjZVFhdlFHOVM3c3RBZ0g3N2FQTm91cURUaHJtbXpTajI1ZUpNM3AwWGhnSnF0VFdKOEFjPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzE5NDk5NDE1CWZpbGU6YWJlZWhpdmVfMC4wLjBfeDY0X2VuLVVTLm1zaS56aXAKUVlhNG5nME01dmdmNUFBdGNPVHFHNGgwWkJQSTVvdDlRUWlmaTJHVEJRRGhBOWpkdzNMSmdIZVE0VlpXd1hvV0pDU09Ua2grYkp3K214QVRNYlloRFE9PQo=",
+      "url": "https://nano-things.net/abeeway/abeehive_updates/windows/x86_64/0.0.0/abeehive_0.0.0_x64_en-US.msi.zip"
+    }
+  }
+}
