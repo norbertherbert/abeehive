@@ -1351,232 +1351,247 @@ impl Component for BeeQueenApp {
 
 
                                     // Angle Deteection Parameters
-                                    <h5 hidden={!is_angle_detection_on} class="col-span-full text-xl font-bold dark:text-white">
-                                        {"Angle Deteection Parameters"}
-                                    </h5>
+                                    <div hidden={!is_angle_detection_on} class="col-span-full">
+                                    <div class="m-7 grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-10">
+                                        <h7 class="col-span-full text-base font-bold dark:text-white">
+                                            {"Angle Deteection Parameters"}
+                                        </h7>
 
-                                    <div hidden={!is_angle_detection_on}>
                                         <MySelect
-                                            prm_dat_distinct = { &ANGLE_REF_ACQ } 
+                                            prm_dat_distinct = { &ANGLE_DETECT_MODE } 
                                             vval={
-                                                self.vvals.borrow().get_by_id(ANGLE_REF_ACQ.id)
+                                                self.vvals.borrow().get_by_id(ANGLE_DETECT_MODE.id)
                                                 .expect("id is always valid")
                                                 .expect("id always exists")
                                                 .clone()
                                             }
                                             handle_onchange = { handle_onchange.clone() }
                                         />
+
+                                        // <div hidden={!is_angle_detection_on}>
+                                            <MySelect
+                                                prm_dat_distinct = { &ANGLE_REF_ACQ } 
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(ANGLE_REF_ACQ.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        // </div>
+
+                                        // <div hidden={!is_angle_detection_on}>
+                                            <MyOptionalInput
+                                                prm_dat_optional = { &ANGLE_REF_ACC_X }
+                                                radix_disp = { RadixDisp::Dec }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(ANGLE_REF_ACC_X.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        // </div>
+
+                                        // <div hidden={!is_angle_detection_on}>
+                                            <MyOptionalInput
+                                                prm_dat_optional = { &ANGLE_REF_ACC_Y }
+                                                radix_disp = { RadixDisp::Dec }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(ANGLE_REF_ACC_Y.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        // </div>
+
+                                        // <div hidden={!is_angle_detection_on}>
+                                            <MyOptionalInput
+                                                prm_dat_optional = { &ANGLE_REF_ACC_Z }
+                                                radix_disp = { RadixDisp::Dec }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(ANGLE_REF_ACC_Z.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        // </div>
+
+                                        // <div hidden={!is_angle_detection_on}>
+                                            <MyInput
+                                                prm_dat_dec = { &ANGLE_CRITICAL }
+                                                radix_disp = { RadixDisp::Dec }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(ANGLE_CRITICAL.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            /> 
+                                        // </div>                                  
+                                        
+                                        // <div hidden={!is_angle_detection_on}>
+                                            <MyInput
+                                                prm_dat_dec = { &ANGLE_CRITICAL_HYST }
+                                                radix_disp = { RadixDisp::Dec }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(ANGLE_CRITICAL_HYST.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        // </div>
+
+
+                                        // <div hidden={!is_angle_detection_on}>
+                                            <MyBitmap
+                                                prm_dat_bitmap = { &ANGLE_REPORT_MODE }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(ANGLE_REPORT_MODE.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        // </div>
+
+
+                                        // <div hidden={!is_angle_detection_on}>
+                                            <MyInput
+                                                prm_dat_dec = { &ANGLE_REPORT_PERIOD }
+                                                radix_disp = { RadixDisp::Dec }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(ANGLE_REPORT_PERIOD.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        // </div>
+
+                                        // <div hidden={!is_angle_detection_on}>
+                                            <MyInput
+                                                prm_dat_dec = { &ANGLE_REPORT_REPEAT }
+                                                radix_disp = { RadixDisp::Dec }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(ANGLE_REPORT_REPEAT.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        // </div>
+
+                                        // <div hidden={!is_angle_detection_on}>
+                                            <MyInput
+                                                prm_dat_dec = { &ANGLE_RISING_TIME }
+                                                radix_disp = { RadixDisp::Dec }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(ANGLE_RISING_TIME.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        // </div>
+
+                                        // <div hidden={!is_angle_detection_on}>
+                                            <MyInput
+                                                prm_dat_dec = { &ANGLE_FALLING_TIME }
+                                                radix_disp = { RadixDisp::Dec }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(ANGLE_FALLING_TIME.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        // </div>
+
+                                        // <div hidden={!is_angle_detection_on}>
+                                            <MyInput
+                                                prm_dat_dec = { &ANGLE_LEARNING_TIME }
+                                                radix_disp = { RadixDisp::Dec }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(ANGLE_LEARNING_TIME.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        // </div>
+
+                                        // <div hidden={!is_angle_detection_on}>
+                                            <MyInput
+                                                prm_dat_dec = { &ANGLE_ACC_ACCURACY }
+                                                radix_disp = { RadixDisp::Dec }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(ANGLE_ACC_ACCURACY.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        // </div>
+
+                                        // <div hidden={!is_angle_detection_on}>
+                                            <MyInput
+                                                prm_dat_dec = { &ANGLE_DEVIATION_DELTA }
+                                                radix_disp = { RadixDisp::Dec }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(ANGLE_DEVIATION_DELTA.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        // </div>
+
+                                        // <div hidden={!is_angle_detection_on}>
+                                            <MyInput
+                                                prm_dat_dec = { &ANGLE_DEVIATION_MIN_INTERVAL }
+                                                radix_disp = { RadixDisp::Dec }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(ANGLE_DEVIATION_MIN_INTERVAL.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        // </div>
+
+                                        // <div hidden={!is_angle_detection_on}>
+                                            <MyInput
+                                                prm_dat_dec = { &ANGLE_DEVIATION_MAX_INTERVAL }
+                                                radix_disp = { RadixDisp::Dec }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(ANGLE_DEVIATION_MAX_INTERVAL.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        // </div>
                                     </div>
-
-                                    <div hidden={!is_angle_detection_on}>
-                                        <MyOptionalInput
-                                            prm_dat_optional = { &ANGLE_REF_ACC_X }
-                                            radix_disp = { RadixDisp::Dec }
-                                            vval={
-                                                self.vvals.borrow().get_by_id(ANGLE_REF_ACC_X.id)
-                                                .expect("id is always valid")
-                                                .expect("id always exists")
-                                                .clone()
-                                            }
-                                            handle_onchange = { handle_onchange.clone() }
-                                        />
-                                    </div>
-
-                                    <div hidden={!is_angle_detection_on}>
-                                        <MyOptionalInput
-                                            prm_dat_optional = { &ANGLE_REF_ACC_Y }
-                                            radix_disp = { RadixDisp::Dec }
-                                            vval={
-                                                self.vvals.borrow().get_by_id(ANGLE_REF_ACC_Y.id)
-                                                .expect("id is always valid")
-                                                .expect("id always exists")
-                                                .clone()
-                                            }
-                                            handle_onchange = { handle_onchange.clone() }
-                                        />
-                                    </div>
-
-                                    <div hidden={!is_angle_detection_on}>
-                                        <MyOptionalInput
-                                            prm_dat_optional = { &ANGLE_REF_ACC_Z }
-                                            radix_disp = { RadixDisp::Dec }
-                                            vval={
-                                                self.vvals.borrow().get_by_id(ANGLE_REF_ACC_Z.id)
-                                                .expect("id is always valid")
-                                                .expect("id always exists")
-                                                .clone()
-                                            }
-                                            handle_onchange = { handle_onchange.clone() }
-                                        />
-                                    </div>
-
-                                    <div hidden={!is_angle_detection_on}>
-                                        <MyInput
-                                            prm_dat_dec = { &ANGLE_CRITICAL }
-                                            radix_disp = { RadixDisp::Dec }
-                                            vval={
-                                                self.vvals.borrow().get_by_id(ANGLE_CRITICAL.id)
-                                                .expect("id is always valid")
-                                                .expect("id always exists")
-                                                .clone()
-                                            }
-                                            handle_onchange = { handle_onchange.clone() }
-                                        /> 
-                                    </div>                                  
-                                    
-                                    <div hidden={!is_angle_detection_on}>
-                                        <MyInput
-                                            prm_dat_dec = { &ANGLE_CRITICAL_HYST }
-                                            radix_disp = { RadixDisp::Dec }
-                                            vval={
-                                                self.vvals.borrow().get_by_id(ANGLE_CRITICAL_HYST.id)
-                                                .expect("id is always valid")
-                                                .expect("id always exists")
-                                                .clone()
-                                            }
-                                            handle_onchange = { handle_onchange.clone() }
-                                        />
-                                    </div>
-
-
-                                    <div hidden={!is_angle_detection_on}>
-                                        <MyBitmap
-                                            prm_dat_bitmap = { &ANGLE_REPORT_MODE }
-                                            vval={
-                                                self.vvals.borrow().get_by_id(ANGLE_REPORT_MODE.id)
-                                                .expect("id is always valid")
-                                                .expect("id always exists")
-                                                .clone()
-                                            }
-                                            handle_onchange = { handle_onchange.clone() }
-                                        />
-                                    </div>
-
-
-                                    <div hidden={!is_angle_detection_on}>
-                                        <MyInput
-                                            prm_dat_dec = { &ANGLE_REPORT_PERIOD }
-                                            radix_disp = { RadixDisp::Dec }
-                                            vval={
-                                                self.vvals.borrow().get_by_id(ANGLE_REPORT_PERIOD.id)
-                                                .expect("id is always valid")
-                                                .expect("id always exists")
-                                                .clone()
-                                            }
-                                            handle_onchange = { handle_onchange.clone() }
-                                        />
-                                    </div>
-
-                                    <div hidden={!is_angle_detection_on}>
-                                        <MyInput
-                                            prm_dat_dec = { &ANGLE_REPORT_REPEAT }
-                                            radix_disp = { RadixDisp::Dec }
-                                            vval={
-                                                self.vvals.borrow().get_by_id(ANGLE_REPORT_REPEAT.id)
-                                                .expect("id is always valid")
-                                                .expect("id always exists")
-                                                .clone()
-                                            }
-                                            handle_onchange = { handle_onchange.clone() }
-                                        />
-                                    </div>
-
-                                    <div hidden={!is_angle_detection_on}>
-                                        <MyInput
-                                            prm_dat_dec = { &ANGLE_RISING_TIME }
-                                            radix_disp = { RadixDisp::Dec }
-                                            vval={
-                                                self.vvals.borrow().get_by_id(ANGLE_RISING_TIME.id)
-                                                .expect("id is always valid")
-                                                .expect("id always exists")
-                                                .clone()
-                                            }
-                                            handle_onchange = { handle_onchange.clone() }
-                                        />
-                                    </div>
-
-                                    <div hidden={!is_angle_detection_on}>
-                                        <MyInput
-                                            prm_dat_dec = { &ANGLE_FALLING_TIME }
-                                            radix_disp = { RadixDisp::Dec }
-                                            vval={
-                                                self.vvals.borrow().get_by_id(ANGLE_FALLING_TIME.id)
-                                                .expect("id is always valid")
-                                                .expect("id always exists")
-                                                .clone()
-                                            }
-                                            handle_onchange = { handle_onchange.clone() }
-                                        />
-                                    </div>
-
-                                    <div hidden={!is_angle_detection_on}>
-                                        <MyInput
-                                            prm_dat_dec = { &ANGLE_LEARNING_TIME }
-                                            radix_disp = { RadixDisp::Dec }
-                                            vval={
-                                                self.vvals.borrow().get_by_id(ANGLE_LEARNING_TIME.id)
-                                                .expect("id is always valid")
-                                                .expect("id always exists")
-                                                .clone()
-                                            }
-                                            handle_onchange = { handle_onchange.clone() }
-                                        />
-                                    </div>
-
-                                    <div hidden={!is_angle_detection_on}>
-                                        <MyInput
-                                            prm_dat_dec = { &ANGLE_ACC_ACCURACY }
-                                            radix_disp = { RadixDisp::Dec }
-                                            vval={
-                                                self.vvals.borrow().get_by_id(ANGLE_ACC_ACCURACY.id)
-                                                .expect("id is always valid")
-                                                .expect("id always exists")
-                                                .clone()
-                                            }
-                                            handle_onchange = { handle_onchange.clone() }
-                                        />
-                                    </div>
-
-                                    <div hidden={!is_angle_detection_on}>
-                                        <MyInput
-                                            prm_dat_dec = { &ANGLE_DEVIATION_DELTA }
-                                            radix_disp = { RadixDisp::Dec }
-                                            vval={
-                                                self.vvals.borrow().get_by_id(ANGLE_DEVIATION_DELTA.id)
-                                                .expect("id is always valid")
-                                                .expect("id always exists")
-                                                .clone()
-                                            }
-                                            handle_onchange = { handle_onchange.clone() }
-                                        />
-                                    </div>
-
-                                    <div hidden={!is_angle_detection_on}>
-                                        <MyInput
-                                            prm_dat_dec = { &ANGLE_DEVIATION_MIN_INTERVAL }
-                                            radix_disp = { RadixDisp::Dec }
-                                            vval={
-                                                self.vvals.borrow().get_by_id(ANGLE_DEVIATION_MIN_INTERVAL.id)
-                                                .expect("id is always valid")
-                                                .expect("id always exists")
-                                                .clone()
-                                            }
-                                            handle_onchange = { handle_onchange.clone() }
-                                        />
-                                    </div>
-
-                                    <div hidden={!is_angle_detection_on}>
-                                        <MyInput
-                                            prm_dat_dec = { &ANGLE_DEVIATION_MAX_INTERVAL }
-                                            radix_disp = { RadixDisp::Dec }
-                                            vval={
-                                                self.vvals.borrow().get_by_id(ANGLE_DEVIATION_MAX_INTERVAL.id)
-                                                .expect("id is always valid")
-                                                .expect("id always exists")
-                                                .clone()
-                                            }
-                                            handle_onchange = { handle_onchange.clone() }
-                                        />
                                     </div>
 
 
