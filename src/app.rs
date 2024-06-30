@@ -174,6 +174,9 @@ impl Component for BeeQueenApp {
                 let vvals = PrmVVals::default();
                 self.source_name = "New Configuration".to_string();
                 self.vvals.replace(vvals);
+                // if let Some(element) = self.phantom_node_ref.cast::<HtmlElement>() {
+                //     element.click();
+                // }
                 true
             },
             Msg::Close => {
@@ -359,6 +362,9 @@ impl Component for BeeQueenApp {
 
 
             Msg::Navbar(navbar_action) => {
+                if let Some(element) = self.phantom_node_ref.cast::<HtmlElement>() {
+                    element.click();
+                }
                 match navbar_action {
 
                     NavbarAction::New => {
@@ -430,9 +436,9 @@ impl Component for BeeQueenApp {
 
         init_flowbite();
 
-        if let Some(element) = self.phantom_node_ref.cast::<HtmlElement>() {
-            element.click();
-        }
+        // if let Some(element) = self.phantom_node_ref.cast::<HtmlElement>() {
+        //     element.click();
+        // }
 
 
         // *************************************

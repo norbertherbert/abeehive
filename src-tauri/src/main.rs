@@ -8,6 +8,7 @@ use tauri::Manager;
 use serde::{Deserialize, Serialize};
 use std::borrow::Borrow;
 use std::env;
+use std::ffi::OsString;
 // use std::ffi::OsString;
 use std::fs::File;
 use std::io::{Read, Write};
@@ -112,16 +113,34 @@ fn open_with() -> () {
 #[tauri::command(rename_all = "snake_case")]
 fn save_as(cfg_string: String) -> () {
 
-    let file_extesions = if cfg_string.starts_with("# LoRaWAN Downlink") {
-        &["txt"]
+    let required_file_extension = if cfg_string.starts_with("# LoRaWAN Downlink") {
+        "txt"
     } else {
-        &["bwc"]
+        "bwc"
     };
 
     dialog::FileDialogBuilder::default()
-    .add_filter("Text", file_extesions)
+    .add_filter("Text", &[required_file_extension])
     .save_file(move |path_buf| match path_buf {
-        Some(file_path) => {
+        Some(mut file_path) => {
+
+            // Making sure that the file is created with the correct extension
+            // Only needed for Linux
+            let required_file_extension = OsString::from(required_file_extension);
+            if let Some(current_file_extesion) = file_path.extension() {
+                if required_file_extension != *current_file_extesion {
+                    let mut fp = OsString::from(file_path);
+                    fp.push(".");
+                    fp.push(required_file_extension);
+                    file_path = PathBuf::from(fp);
+                }
+            } else {
+                let mut fp = OsString::from(file_path);
+                fp.push(".");
+                fp.push(required_file_extension);
+                file_path = PathBuf::from(fp);
+            }
+
             let mut f = File::create(file_path.clone()).expect("Unable to create file");
             f.write_all(cfg_string.as_bytes())
                 .expect("Unable to write data");
