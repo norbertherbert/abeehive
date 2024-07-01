@@ -348,7 +348,7 @@ pub static PERIODIC_ACTIVITY_PERIOD: PrmDatOptional = PrmDatOptional {
 pub static COLLECTION_SCAN_TYPE: PrmDatDistinct = PrmDatDistinct {
     id: 0x21,
     name: "collection_scan_type",
-    label: "BLE Scan Collection",
+    label: "BLE Scan Collection Type",
     description: "Collection scan type used",
     default_val: CollScanTypeOption::NONE.val,
     distinct_vals: &[
@@ -1747,11 +1747,12 @@ pub static PASSWORD: PrmDatDec = PrmDatDec {
 // 2 - PW_STAT_PERIOD
 // ***********************
 
-pub static PW_STAT_PERIOD: PrmDatDec = PrmDatDec {
+pub static PW_STAT_PERIOD: PrmDatOptional = PrmDatOptional {
     id: 0x02,
     name: "pw_stat_period",
     label: "Power Statistics Period",
     description: "Power statistics period",
+    disabled_val: 0,
     default_val: 0,
     range: (300, 604800),
 };
@@ -2039,7 +2040,7 @@ impl TemperatureActionOptions {
 pub static ANGLE_DETECT_MODE: PrmDatDistinct = PrmDatDistinct {
     id: 0x54,
     name: "angle_detect_mode",
-    label: "Angle Detection",
+    label: "Angle Detection Mode",
     description: "Angle Detection Mode.",
     default_val: AngleDetectModeOptions::DISABLED.val,
     distinct_vals: &[
@@ -2422,7 +2423,7 @@ pub static GEOFENCING_SCAN_DURATION: PrmDatDec = PrmDatDec {
 pub static BEACONING_TYPE: PrmDatDistinct = PrmDatDistinct {
     id: 0x6A,
     name: "beaconing_type",
-    label: "BLE Beaconing",
+    label: "BLE Beaconing Type",
     description: "Beaconing advertisement type.",
     default_val: BeaconingTypeOptions::DISABLED.val,
     distinct_vals: &[

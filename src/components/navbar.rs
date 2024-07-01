@@ -1,8 +1,10 @@
 use yew::prelude::*;
 
+use crate::templates::CfgTemplate;
+
 #[derive(Debug, PartialEq)]
 pub enum NavbarAction {
-    New,
+    New(CfgTemplate),
     Close,
     GetFromFile,
     SaveToFile,
@@ -19,12 +21,79 @@ pub struct Props {
 
 #[function_component(Navbar)]
 pub fn navbar(props: &Props) -> Html {
-    let onclick_new = {
+    
+    
+
+
+
+
+    
+
+
+    let onclick_new_tracking_gps = {
         let parent_onclick = props.onclick.clone();
         Callback::from(move |_ev: MouseEvent| {
-            parent_onclick.emit(NavbarAction::New);
+            parent_onclick.emit(NavbarAction::New(CfgTemplate::TrackingGps));
         })
     };
+
+    let onclick_new_tracking_wifi_gps = {
+        let parent_onclick = props.onclick.clone();
+        Callback::from(move |_ev: MouseEvent| {
+            parent_onclick.emit(NavbarAction::New(CfgTemplate::TrackingWifiGps));
+        })
+    };
+
+    let onclick_new_tracking_ble_gps = {
+        let parent_onclick = props.onclick.clone();
+        Callback::from(move |_ev: MouseEvent| {
+            parent_onclick.emit(NavbarAction::New(CfgTemplate::TrackingBleGps));
+        })
+    };
+
+    let onclick_new_tracking_ble_gps_realtime = {
+        let parent_onclick = props.onclick.clone();
+        Callback::from(move |_ev: MouseEvent| {
+            parent_onclick.emit(NavbarAction::New(CfgTemplate::TrackingBleGpsRealtime));
+        })
+    };
+
+    let onclick_new_ble_geozoning = {
+        let parent_onclick = props.onclick.clone();
+        Callback::from(move |_ev: MouseEvent| {
+            parent_onclick.emit(NavbarAction::New(CfgTemplate::BleGeozoning));
+        })
+    };
+
+    let onclick_new_ble_scan_collection = {
+        let parent_onclick = props.onclick.clone();
+        Callback::from(move |_ev: MouseEvent| {
+            parent_onclick.emit(NavbarAction::New(CfgTemplate::BleScanCollection));
+        })
+    };
+
+    let onclick_new_angle_detection = {
+        let parent_onclick = props.onclick.clone();
+        Callback::from(move |_ev: MouseEvent| {
+            parent_onclick.emit(NavbarAction::New(CfgTemplate::AngleDetection));
+        })
+    };
+
+    let onclick_new_ble_beaconing = {
+        let parent_onclick = props.onclick.clone();
+        Callback::from(move |_ev: MouseEvent| {
+            parent_onclick.emit(NavbarAction::New(CfgTemplate::BleBeaconing));
+        })
+    };
+
+
+
+
+
+
+
+
+
     let onclick_close = {
         let parent_onclick = props.onclick.clone();
         Callback::from(move |_ev: MouseEvent| {
@@ -160,12 +229,22 @@ pub fn navbar(props: &Props) -> Html {
                                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
                                             </svg>
                                         </button>
+                                        
+                                        // Templates Submenu
                                         <div id="configTemplatesDropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
                                             <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="doubleDropdownButton">
                                                 <li>
                                                     <a href="#" 
                                                         class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-                                                        onclick = { onclick_new.clone() }
+                                                        onclick = { onclick_new_tracking_gps.clone() }
+                                                    >
+                                                        { "Tracking GPS" }
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" 
+                                                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                                                        onclick = { onclick_new_tracking_wifi_gps.clone() }
                                                     >
                                                         { "Tracking WiFi+GPS" }
                                                     </a>
@@ -173,7 +252,7 @@ pub fn navbar(props: &Props) -> Html {
                                                 <li>
                                                     <a href="#" 
                                                         class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-                                                        onclick = { onclick_new.clone() }
+                                                        onclick = { onclick_new_tracking_ble_gps.clone() }
                                                     >
                                                         { "Tracking BLE+GPS" }
                                                     </a>
@@ -181,7 +260,7 @@ pub fn navbar(props: &Props) -> Html {
                                                 <li>
                                                     <a href="#" 
                                                         class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-                                                        onclick = { onclick_new.clone() }
+                                                        onclick = { onclick_new_tracking_ble_gps_realtime.clone() }
                                                     >
                                                         { "Tracking BLE+GPS Realtime-15s" }
                                                     </a>
@@ -189,15 +268,15 @@ pub fn navbar(props: &Props) -> Html {
                                                 <li>
                                                     <a href="#" 
                                                         class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-                                                        onclick = { onclick_new.clone() }
+                                                        onclick = { onclick_new_ble_geozoning.clone() }
                                                     >
-                                                        { "BLE Geo-zoning" }
+                                                        { "BLE Geofencing" }
                                                     </a>
                                                 </li>
                                                 <li>
                                                     <a href="#" 
                                                         class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-                                                        onclick = { onclick_new.clone() }
+                                                        onclick = { onclick_new_ble_scan_collection.clone() }
                                                     >
                                                         { "Scan Collection" }
                                                     </a>
@@ -205,7 +284,7 @@ pub fn navbar(props: &Props) -> Html {
                                                 <li>
                                                     <a href="#" 
                                                         class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-                                                        onclick = { onclick_new.clone() }
+                                                        onclick = { onclick_new_angle_detection.clone() }
                                                     >
                                                         { "Angle Detection" }
                                                     </a>
@@ -213,7 +292,7 @@ pub fn navbar(props: &Props) -> Html {
                                                 <li>
                                                     <a href="#" 
                                                         class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-                                                        onclick = { onclick_new.clone() }
+                                                        onclick = { onclick_new_ble_beaconing.clone() }
                                                     >
                                                         { "BLE Beaconing" }
                                                     </a>

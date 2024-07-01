@@ -17,21 +17,25 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
 
-use abeehive::components::RadixDisp;
-use abeehive::components::my_input::MyInput;
-use abeehive::components::my_optional_input::MyOptionalInput;
-use abeehive::components::my_select::MySelect;
-use abeehive::components::my_bitmap::MyBitmap;
-use abeehive::components::myc_transmit_strat_custom::MycTransmitStratCustom;
-use abeehive::components::myc_motion_sensitivity::MycMotionSensitivity;
-use abeehive::components::myc_button_mapping::MycButtonMapping;
-use abeehive::components::myc_battery_capacity::MycBatteryCapacity;
+use abeehive::components::{
+    RadixDisp,
+    my_input::MyInput,
+    my_optional_input::MyOptionalInput,
+    my_select::MySelect,
+    my_bitmap::MyBitmap,
+    myc_transmit_strat_custom::MycTransmitStratCustom,
+    myc_motion_sensitivity::MycMotionSensitivity,
+    myc_button_mapping::MycButtonMapping,
+    myc_battery_capacity::MycBatteryCapacity,
 
-use abeehive::components::modal::Modal;
-use abeehive::components::navbar::{Navbar, NavbarAction};
-use abeehive::components::select_usb_port::SelectUsbPort;
+    modal::Modal,
+    navbar::{Navbar, NavbarAction},
+    select_usb_port::SelectUsbPort,
+};
 
 use abeehive::prm::{ dat::*, val::PrmVVal, typ::PrmVal };
+
+use abeehive::templates::*;
 
 #[wasm_bindgen]
 extern "C" {
@@ -84,7 +88,7 @@ pub enum Msg {
     ParamValueChanged(u8, String),
     ShowCfg,
     ShowLWDL,
-    New,
+    New(CfgTemplate),
     Close,
     Open,
     OpenWith,
@@ -170,15 +174,22 @@ impl Component for BeeQueenApp {
                 true
             },
 
-            Msg::New => {
-                let vvals = PrmVVals::default();
-                self.source_name = "New Configuration".to_string();
-                self.vvals.replace(vvals);
-                // if let Some(element) = self.phantom_node_ref.cast::<HtmlElement>() {
-                //     element.click();
-                // }
+            Msg::New(templ) => {
+                
+                // let vvals = PrmVVals::default();
+
+                if let Ok(vvals) = PrmVVals::from_cfg_str(templ.txt()) {
+                    self.source_name = format!("Template: {}", templ.name());
+                    // let vvals = PrmVVals::default();
+                    self.vvals.replace(vvals);
+                } else {
+                    self.source_name = format!("Template: Cannot Open Template!");
+                    let vvals = PrmVVals::new();
+                    self.vvals.replace(vvals);
+                }                
                 true
             },
+
             Msg::Close => {
                 let vvals = PrmVVals::new();
                 self.vvals.replace(vvals);
@@ -367,9 +378,9 @@ impl Component for BeeQueenApp {
                 }
                 match navbar_action {
 
-                    NavbarAction::New => {
+                    NavbarAction::New(templ) => {
                         ctx.link().callback(move |_: ()| {
-                            Msg::New
+                            Msg::New(templ.clone())
                         }).emit(());
                     },
                     NavbarAction::Close => {
@@ -841,7 +852,7 @@ impl Component for BeeQueenApp {
                         
                             html! {
                                 <div class="m-7 w-full h-96">
-                                    { "Please open/create a file or connect to a device!" }
+                                    { "Please open/create a file or connect a device!" }
                                 </div>
                             }
                         
@@ -849,7 +860,7 @@ impl Component for BeeQueenApp {
                         
                             html! {
                             <>
-                                <div class="m-7 grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-10">
+                                <div class="m-7 grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
 
                                     // Main Operating Mode Parameters
                                     <h5 class="col-span-full text-xl font-bold dark:text-white">
@@ -959,50 +970,568 @@ impl Component for BeeQueenApp {
                                         handle_onchange = { handle_onchange.clone() }
                                     />
 
-                                    <MySelect
-                                        prm_dat_distinct = { &ANGLE_DETECT_MODE } 
-                                        vval={
-                                            self.vvals.borrow().get_by_id(ANGLE_DETECT_MODE.id)
-                                            .expect("id is always valid")
-                                            .expect("id always exists")
-                                            .clone()
+                                    // Angle Deteection Parameters
+                                    <div class = {
+                                        if is_angle_detection_on {
+                                            "col-span-full grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6"
                                         }
-                                        handle_onchange = { handle_onchange.clone() }
-                                    />
+                                        else {""}                                          
+                                    }>
+                                        <h7 class="col-span-full text-base font-bold dark:text-white">
+                                            {"Angle Deteection Parameters"}
+                                        </h7>
 
-                                    <MySelect
-                                        prm_dat_distinct = { &BEACONING_TYPE } 
-                                        vval={
-                                            self.vvals.borrow().get_by_id(BEACONING_TYPE.id)
-                                            .expect("id is always valid")
-                                            .expect("id always exists")
-                                            .clone()
-                                        }
-                                        handle_onchange = { handle_onchange.clone() }
-                                    />
+                                        <MySelect
+                                            prm_dat_distinct = { &ANGLE_DETECT_MODE } 
+                                            vval={
+                                                self.vvals.borrow().get_by_id(ANGLE_DETECT_MODE.id)
+                                                .expect("id is always valid")
+                                                .expect("id always exists")
+                                                .clone()
+                                            }
+                                            handle_onchange = { handle_onchange.clone() }
+                                        />
 
-                                    <MySelect
-                                        prm_dat_distinct = { &COLLECTION_SCAN_TYPE } 
-                                        vval={
-                                            self.vvals.borrow().get_by_id(COLLECTION_SCAN_TYPE.id)
-                                            .expect("id is always valid")
-                                            .expect("id always exists")
-                                            .clone()
+                                        <div hidden={!is_angle_detection_on}>
+                                            <MySelect
+                                                prm_dat_distinct = { &ANGLE_REF_ACQ } 
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(ANGLE_REF_ACQ.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        </div>
+
+                                        <div hidden={!is_angle_detection_on}>
+                                            <MyOptionalInput
+                                                prm_dat_optional = { &ANGLE_REF_ACC_X }
+                                                radix_disp = { RadixDisp::Dec }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(ANGLE_REF_ACC_X.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        </div>
+
+                                        <div hidden={!is_angle_detection_on}>
+                                            <MyOptionalInput
+                                                prm_dat_optional = { &ANGLE_REF_ACC_Y }
+                                                radix_disp = { RadixDisp::Dec }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(ANGLE_REF_ACC_Y.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        </div>
+
+                                        <div hidden={!is_angle_detection_on}>
+                                            <MyOptionalInput
+                                                prm_dat_optional = { &ANGLE_REF_ACC_Z }
+                                                radix_disp = { RadixDisp::Dec }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(ANGLE_REF_ACC_Z.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        </div>
+
+                                        <div hidden={!is_angle_detection_on}>
+                                            <MyInput
+                                                prm_dat_dec = { &ANGLE_CRITICAL }
+                                                radix_disp = { RadixDisp::Dec }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(ANGLE_CRITICAL.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            /> 
+                                        </div>                                  
+                                        
+                                        <div hidden={!is_angle_detection_on}>
+                                            <MyInput
+                                                prm_dat_dec = { &ANGLE_CRITICAL_HYST }
+                                                radix_disp = { RadixDisp::Dec }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(ANGLE_CRITICAL_HYST.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        </div>
+
+
+                                        <div hidden={!is_angle_detection_on}>
+                                            <MyBitmap
+                                                prm_dat_bitmap = { &ANGLE_REPORT_MODE }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(ANGLE_REPORT_MODE.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        </div>
+
+
+                                        <div hidden={!is_angle_detection_on}>
+                                            <MyInput
+                                                prm_dat_dec = { &ANGLE_REPORT_PERIOD }
+                                                radix_disp = { RadixDisp::Dec }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(ANGLE_REPORT_PERIOD.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        </div>
+
+                                        <div hidden={!is_angle_detection_on}>
+                                            <MyInput
+                                                prm_dat_dec = { &ANGLE_REPORT_REPEAT }
+                                                radix_disp = { RadixDisp::Dec }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(ANGLE_REPORT_REPEAT.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        </div>
+
+                                        <div hidden={!is_angle_detection_on}>
+                                            <MyInput
+                                                prm_dat_dec = { &ANGLE_RISING_TIME }
+                                                radix_disp = { RadixDisp::Dec }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(ANGLE_RISING_TIME.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        </div>
+
+                                        <div hidden={!is_angle_detection_on}>
+                                            <MyInput
+                                                prm_dat_dec = { &ANGLE_FALLING_TIME }
+                                                radix_disp = { RadixDisp::Dec }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(ANGLE_FALLING_TIME.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        </div>
+
+                                        <div hidden={!is_angle_detection_on}>
+                                            <MyInput
+                                                prm_dat_dec = { &ANGLE_LEARNING_TIME }
+                                                radix_disp = { RadixDisp::Dec }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(ANGLE_LEARNING_TIME.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        </div>
+
+                                        <div hidden={!is_angle_detection_on}>
+                                            <MyInput
+                                                prm_dat_dec = { &ANGLE_ACC_ACCURACY }
+                                                radix_disp = { RadixDisp::Dec }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(ANGLE_ACC_ACCURACY.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        </div>
+
+                                        <div hidden={!is_angle_detection_on}>
+                                            <MyInput
+                                                prm_dat_dec = { &ANGLE_DEVIATION_DELTA }
+                                                radix_disp = { RadixDisp::Dec }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(ANGLE_DEVIATION_DELTA.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        </div>
+
+                                        <div hidden={!is_angle_detection_on}>
+                                            <MyInput
+                                                prm_dat_dec = { &ANGLE_DEVIATION_MIN_INTERVAL }
+                                                radix_disp = { RadixDisp::Dec }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(ANGLE_DEVIATION_MIN_INTERVAL.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        </div>
+
+                                        <div hidden={!is_angle_detection_on}>
+                                            <MyInput
+                                                prm_dat_dec = { &ANGLE_DEVIATION_MAX_INTERVAL }
+                                                radix_disp = { RadixDisp::Dec }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(ANGLE_DEVIATION_MAX_INTERVAL.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        </div>
+                                    </div>
+
+
+
+
+                                    // BLE Beaconing Parameters
+                                    <div class = {
+                                        if is_ble_beaconing_on {
+                                            "col-span-full grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6"
                                         }
-                                        handle_onchange = { handle_onchange.clone() }
-                                    />                                 
+                                        else {""}                                          
+                                    }>
+                                        <h7 class="col-span-full text-base font-bold dark:text-white">
+                                            {"BLE Beaconing Parameters"}
+                                        </h7>
+                                        
+                                        <MySelect
+                                            prm_dat_distinct = { &BEACONING_TYPE } 
+                                            vval={
+                                                self.vvals.borrow().get_by_id(BEACONING_TYPE.id)
+                                                .expect("id is always valid")
+                                                .expect("id always exists")
+                                                .clone()
+                                            }
+                                            handle_onchange = { handle_onchange.clone() }
+                                        />
+
+                                        <div hidden={!is_ble_beaconing_on}>
+                                            <MySelect
+                                                prm_dat_distinct = { &BEACONING_TX_POWER } 
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(BEACONING_TX_POWER.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        </div>
+
+                                        <div hidden={!is_ble_beaconing_on}>
+                                            <MyOptionalInput
+                                                prm_dat_optional = { &BEACONING_STATIC_INTERVAL }
+                                                radix_disp = { RadixDisp::Dec }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(BEACONING_STATIC_INTERVAL.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        </div>
+
+                                        <div hidden={!is_ble_beaconing_on}>
+                                            <MyOptionalInput
+                                                prm_dat_optional = { &BEACONING_MOTION_INTERVAL }
+                                                radix_disp = { RadixDisp::Dec }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(BEACONING_MOTION_INTERVAL.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        </div>
+
+                                        <div hidden={!is_ble_beaconing_on}>
+                                            <MyInput
+                                                prm_dat_dec = { &BEACONING_MOTION_DURATION }
+                                                radix_disp = { RadixDisp::Dec }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(BEACONING_MOTION_DURATION.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        </div>
+
+                                        <div hidden={!is_ble_beaconing_on}>
+                                            <MyInput
+                                                prm_dat_dec = { &BEACON_ID_0 }
+                                                radix_disp = { RadixDisp::Hex }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(BEACON_ID_0.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        </div>
+
+                                        <div hidden={!is_ble_beaconing_on}>
+                                            <MyInput
+                                                prm_dat_dec = { &BEACON_ID_1 }
+                                                radix_disp = { RadixDisp::Hex }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(BEACON_ID_1.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        </div>
+
+                                        <div hidden={!is_ble_beaconing_on}>
+                                            <MyInput
+                                                prm_dat_dec = { &BEACON_ID_2 }
+                                                radix_disp = { RadixDisp::Hex }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(BEACON_ID_2.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        </div>
+
+                                        <div hidden={!is_ble_beaconing_on}>
+                                            <MyInput
+                                                prm_dat_dec = { &BEACON_ID_3 }
+                                                radix_disp = { RadixDisp::Hex }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(BEACON_ID_3.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        </div>
+
+                                        <div hidden={!is_ble_beaconing_on}>
+                                            <MyInput
+                                                prm_dat_dec = { &BEACON_ID_4 }
+                                                radix_disp = { RadixDisp::Hex }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(BEACON_ID_4.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        </div>
+
+                                    </div>
+
+
+
+
+                                    // Scan Collection Parameters
+                                    <div class = {
+                                        if is_scan_collection_on {
+                                            "col-span-full grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6"
+                                        }
+                                        else {""}                                          
+                                    }>
+                                        <h7 class="col-span-full text-base font-bold dark:text-white">
+                                            {"Scan Collection Parameters"}
+                                        </h7>
+
+                                        <MySelect
+                                            prm_dat_distinct = { &COLLECTION_SCAN_TYPE } 
+                                            vval={
+                                                self.vvals.borrow().get_by_id(COLLECTION_SCAN_TYPE.id)
+                                                .expect("id is always valid")
+                                                .expect("id always exists")
+                                                .clone()
+                                            }
+                                            handle_onchange = { handle_onchange.clone() }
+                                        />
+
+                                        <div hidden={!is_scan_collection_on}>
+                                            <MyInput
+                                                prm_dat_dec = { &COLLECTION_NB_ENTRY }
+                                                radix_disp = { RadixDisp::Dec }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(COLLECTION_NB_ENTRY.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        </div>
+
+                                        <div hidden={!is_scan_collection_on}>
+                                            <MySelect
+                                                prm_dat_distinct = { &COLLECTION_BLE_FILTER_TYPE } 
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(COLLECTION_BLE_FILTER_TYPE.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        </div>
+
+                                        <div hidden={!is_scan_collection_on}>
+                                            <MyOptionalInput
+                                                prm_dat_optional = { &COLLECTION_BLE_FILTER_MAIN_1 }
+                                                radix_disp = { RadixDisp::Hex }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(COLLECTION_BLE_FILTER_MAIN_1.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        </div>
+
+                                        <div hidden={!is_scan_collection_on}>
+                                            <MyOptionalInput
+                                                prm_dat_optional = { &COLLECTION_BLE_FILTER_MAIN_2 }
+                                                radix_disp = { RadixDisp::Hex }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(COLLECTION_BLE_FILTER_MAIN_2.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        </div>
+
+                                        <div hidden={!is_scan_collection_on}>
+                                            <MyOptionalInput
+                                                prm_dat_optional = { &COLLECTION_BLE_FILTER_SEC_VALUE }
+                                                radix_disp = { RadixDisp::Hex }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(COLLECTION_BLE_FILTER_SEC_VALUE.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        </div>
+
+                                        <div hidden={!is_scan_collection_on}>
+                                            <MyOptionalInput
+                                                prm_dat_optional = { &COLLECTION_BLE_FILTER_SEC_MASK }
+                                                radix_disp = { RadixDisp::Hex }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(COLLECTION_BLE_FILTER_SEC_MASK.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        </div>
+
+                                    </div>
                                     
-                                    <MyOptionalInput
-                                        prm_dat_optional = { &GEOFENCING_SCAN_PERIOD }
-                                        radix_disp = { RadixDisp::Dec }
-                                        vval={
-                                            self.vvals.borrow().get_by_id(GEOFENCING_SCAN_PERIOD.id)
-                                            .expect("id is always valid")
-                                            .expect("id always exists")
-                                            .clone()
+                                    // BLE Geofencing Parameters
+                                    <div class = {
+                                        if is_geofencing_on {
+                                            "col-span-full grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6"
                                         }
-                                        handle_onchange = { handle_onchange.clone() }
-                                    /> 
+                                        else {""}                                          
+                                    }>
+                                        <h7 class="col-span-full text-base font-bold dark:text-white">
+                                            {"BLE Geofencing Parameters"}
+                                        </h7>
+
+                                        <MyOptionalInput
+                                            prm_dat_optional = { &GEOFENCING_SCAN_PERIOD }
+                                            radix_disp = { RadixDisp::Dec }
+                                            vval={
+                                                self.vvals.borrow().get_by_id(GEOFENCING_SCAN_PERIOD.id)
+                                                .expect("id is always valid")
+                                                .expect("id always exists")
+                                                .clone()
+                                            }
+                                            handle_onchange = { handle_onchange.clone() }
+                                        /> 
+
+                                        <div hidden={!is_geofencing_on}>
+                                            <MyInput
+                                                prm_dat_dec = { &GEOFENCING_COLLECT_PERIOD }
+                                                radix_disp = { RadixDisp::Dec }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(GEOFENCING_COLLECT_PERIOD.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        </div>
+
+                                        <div hidden={!is_geofencing_on}>
+                                            <MyInput
+                                                prm_dat_dec = { &GEOFENCING_SCAN_DURATION }
+                                                radix_disp = { RadixDisp::Dec }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(GEOFENCING_SCAN_DURATION.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        </div>
+
+                                    </div>
+
 
                                     // GNSS Configuration Parameters
                                     <h5 hidden = { !is_gps_used } class="col-span-full text-xl font-bold dark:text-white">
@@ -1356,504 +1885,6 @@ impl Component for BeeQueenApp {
 
 
 
-                                    // Angle Deteection Parameters
-                                    <div hidden={!is_angle_detection_on} class="col-span-full">
-                                    <div class="m-7 grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-10">
-                                        <h7 class="col-span-full text-base font-bold dark:text-white">
-                                            {"Angle Deteection Parameters"}
-                                        </h7>
-
-                                        <MySelect
-                                            prm_dat_distinct = { &ANGLE_DETECT_MODE } 
-                                            vval={
-                                                self.vvals.borrow().get_by_id(ANGLE_DETECT_MODE.id)
-                                                .expect("id is always valid")
-                                                .expect("id always exists")
-                                                .clone()
-                                            }
-                                            handle_onchange = { handle_onchange.clone() }
-                                        />
-
-                                        // <div hidden={!is_angle_detection_on}>
-                                            <MySelect
-                                                prm_dat_distinct = { &ANGLE_REF_ACQ } 
-                                                vval={
-                                                    self.vvals.borrow().get_by_id(ANGLE_REF_ACQ.id)
-                                                    .expect("id is always valid")
-                                                    .expect("id always exists")
-                                                    .clone()
-                                                }
-                                                handle_onchange = { handle_onchange.clone() }
-                                            />
-                                        // </div>
-
-                                        // <div hidden={!is_angle_detection_on}>
-                                            <MyOptionalInput
-                                                prm_dat_optional = { &ANGLE_REF_ACC_X }
-                                                radix_disp = { RadixDisp::Dec }
-                                                vval={
-                                                    self.vvals.borrow().get_by_id(ANGLE_REF_ACC_X.id)
-                                                    .expect("id is always valid")
-                                                    .expect("id always exists")
-                                                    .clone()
-                                                }
-                                                handle_onchange = { handle_onchange.clone() }
-                                            />
-                                        // </div>
-
-                                        // <div hidden={!is_angle_detection_on}>
-                                            <MyOptionalInput
-                                                prm_dat_optional = { &ANGLE_REF_ACC_Y }
-                                                radix_disp = { RadixDisp::Dec }
-                                                vval={
-                                                    self.vvals.borrow().get_by_id(ANGLE_REF_ACC_Y.id)
-                                                    .expect("id is always valid")
-                                                    .expect("id always exists")
-                                                    .clone()
-                                                }
-                                                handle_onchange = { handle_onchange.clone() }
-                                            />
-                                        // </div>
-
-                                        // <div hidden={!is_angle_detection_on}>
-                                            <MyOptionalInput
-                                                prm_dat_optional = { &ANGLE_REF_ACC_Z }
-                                                radix_disp = { RadixDisp::Dec }
-                                                vval={
-                                                    self.vvals.borrow().get_by_id(ANGLE_REF_ACC_Z.id)
-                                                    .expect("id is always valid")
-                                                    .expect("id always exists")
-                                                    .clone()
-                                                }
-                                                handle_onchange = { handle_onchange.clone() }
-                                            />
-                                        // </div>
-
-                                        // <div hidden={!is_angle_detection_on}>
-                                            <MyInput
-                                                prm_dat_dec = { &ANGLE_CRITICAL }
-                                                radix_disp = { RadixDisp::Dec }
-                                                vval={
-                                                    self.vvals.borrow().get_by_id(ANGLE_CRITICAL.id)
-                                                    .expect("id is always valid")
-                                                    .expect("id always exists")
-                                                    .clone()
-                                                }
-                                                handle_onchange = { handle_onchange.clone() }
-                                            /> 
-                                        // </div>                                  
-                                        
-                                        // <div hidden={!is_angle_detection_on}>
-                                            <MyInput
-                                                prm_dat_dec = { &ANGLE_CRITICAL_HYST }
-                                                radix_disp = { RadixDisp::Dec }
-                                                vval={
-                                                    self.vvals.borrow().get_by_id(ANGLE_CRITICAL_HYST.id)
-                                                    .expect("id is always valid")
-                                                    .expect("id always exists")
-                                                    .clone()
-                                                }
-                                                handle_onchange = { handle_onchange.clone() }
-                                            />
-                                        // </div>
-
-
-                                        // <div hidden={!is_angle_detection_on}>
-                                            <MyBitmap
-                                                prm_dat_bitmap = { &ANGLE_REPORT_MODE }
-                                                vval={
-                                                    self.vvals.borrow().get_by_id(ANGLE_REPORT_MODE.id)
-                                                    .expect("id is always valid")
-                                                    .expect("id always exists")
-                                                    .clone()
-                                                }
-                                                handle_onchange = { handle_onchange.clone() }
-                                            />
-                                        // </div>
-
-
-                                        // <div hidden={!is_angle_detection_on}>
-                                            <MyInput
-                                                prm_dat_dec = { &ANGLE_REPORT_PERIOD }
-                                                radix_disp = { RadixDisp::Dec }
-                                                vval={
-                                                    self.vvals.borrow().get_by_id(ANGLE_REPORT_PERIOD.id)
-                                                    .expect("id is always valid")
-                                                    .expect("id always exists")
-                                                    .clone()
-                                                }
-                                                handle_onchange = { handle_onchange.clone() }
-                                            />
-                                        // </div>
-
-                                        // <div hidden={!is_angle_detection_on}>
-                                            <MyInput
-                                                prm_dat_dec = { &ANGLE_REPORT_REPEAT }
-                                                radix_disp = { RadixDisp::Dec }
-                                                vval={
-                                                    self.vvals.borrow().get_by_id(ANGLE_REPORT_REPEAT.id)
-                                                    .expect("id is always valid")
-                                                    .expect("id always exists")
-                                                    .clone()
-                                                }
-                                                handle_onchange = { handle_onchange.clone() }
-                                            />
-                                        // </div>
-
-                                        // <div hidden={!is_angle_detection_on}>
-                                            <MyInput
-                                                prm_dat_dec = { &ANGLE_RISING_TIME }
-                                                radix_disp = { RadixDisp::Dec }
-                                                vval={
-                                                    self.vvals.borrow().get_by_id(ANGLE_RISING_TIME.id)
-                                                    .expect("id is always valid")
-                                                    .expect("id always exists")
-                                                    .clone()
-                                                }
-                                                handle_onchange = { handle_onchange.clone() }
-                                            />
-                                        // </div>
-
-                                        // <div hidden={!is_angle_detection_on}>
-                                            <MyInput
-                                                prm_dat_dec = { &ANGLE_FALLING_TIME }
-                                                radix_disp = { RadixDisp::Dec }
-                                                vval={
-                                                    self.vvals.borrow().get_by_id(ANGLE_FALLING_TIME.id)
-                                                    .expect("id is always valid")
-                                                    .expect("id always exists")
-                                                    .clone()
-                                                }
-                                                handle_onchange = { handle_onchange.clone() }
-                                            />
-                                        // </div>
-
-                                        // <div hidden={!is_angle_detection_on}>
-                                            <MyInput
-                                                prm_dat_dec = { &ANGLE_LEARNING_TIME }
-                                                radix_disp = { RadixDisp::Dec }
-                                                vval={
-                                                    self.vvals.borrow().get_by_id(ANGLE_LEARNING_TIME.id)
-                                                    .expect("id is always valid")
-                                                    .expect("id always exists")
-                                                    .clone()
-                                                }
-                                                handle_onchange = { handle_onchange.clone() }
-                                            />
-                                        // </div>
-
-                                        // <div hidden={!is_angle_detection_on}>
-                                            <MyInput
-                                                prm_dat_dec = { &ANGLE_ACC_ACCURACY }
-                                                radix_disp = { RadixDisp::Dec }
-                                                vval={
-                                                    self.vvals.borrow().get_by_id(ANGLE_ACC_ACCURACY.id)
-                                                    .expect("id is always valid")
-                                                    .expect("id always exists")
-                                                    .clone()
-                                                }
-                                                handle_onchange = { handle_onchange.clone() }
-                                            />
-                                        // </div>
-
-                                        // <div hidden={!is_angle_detection_on}>
-                                            <MyInput
-                                                prm_dat_dec = { &ANGLE_DEVIATION_DELTA }
-                                                radix_disp = { RadixDisp::Dec }
-                                                vval={
-                                                    self.vvals.borrow().get_by_id(ANGLE_DEVIATION_DELTA.id)
-                                                    .expect("id is always valid")
-                                                    .expect("id always exists")
-                                                    .clone()
-                                                }
-                                                handle_onchange = { handle_onchange.clone() }
-                                            />
-                                        // </div>
-
-                                        // <div hidden={!is_angle_detection_on}>
-                                            <MyInput
-                                                prm_dat_dec = { &ANGLE_DEVIATION_MIN_INTERVAL }
-                                                radix_disp = { RadixDisp::Dec }
-                                                vval={
-                                                    self.vvals.borrow().get_by_id(ANGLE_DEVIATION_MIN_INTERVAL.id)
-                                                    .expect("id is always valid")
-                                                    .expect("id always exists")
-                                                    .clone()
-                                                }
-                                                handle_onchange = { handle_onchange.clone() }
-                                            />
-                                        // </div>
-
-                                        // <div hidden={!is_angle_detection_on}>
-                                            <MyInput
-                                                prm_dat_dec = { &ANGLE_DEVIATION_MAX_INTERVAL }
-                                                radix_disp = { RadixDisp::Dec }
-                                                vval={
-                                                    self.vvals.borrow().get_by_id(ANGLE_DEVIATION_MAX_INTERVAL.id)
-                                                    .expect("id is always valid")
-                                                    .expect("id always exists")
-                                                    .clone()
-                                                }
-                                                handle_onchange = { handle_onchange.clone() }
-                                            />
-                                        // </div>
-                                    </div>
-                                    </div>
-
-
-
-                                    // BLE Beaconing Parameters
-                                    <h5 hidden={!is_ble_beaconing_on} class="col-span-full text-xl font-bold dark:text-white">
-                                        {"BLE Beaconing Parameters"}
-                                    </h5>
-
-                                    <div hidden={!is_ble_beaconing_on}>
-                                        <MySelect
-                                            prm_dat_distinct = { &BEACONING_TX_POWER } 
-                                            vval={
-                                                self.vvals.borrow().get_by_id(BEACONING_TX_POWER.id)
-                                                .expect("id is always valid")
-                                                .expect("id always exists")
-                                                .clone()
-                                            }
-                                            handle_onchange = { handle_onchange.clone() }
-                                        />
-                                    </div>
-
-                                    <div hidden={!is_ble_beaconing_on}>
-                                        <MyOptionalInput
-                                            prm_dat_optional = { &BEACONING_STATIC_INTERVAL }
-                                            radix_disp = { RadixDisp::Dec }
-                                            vval={
-                                                self.vvals.borrow().get_by_id(BEACONING_STATIC_INTERVAL.id)
-                                                .expect("id is always valid")
-                                                .expect("id always exists")
-                                                .clone()
-                                            }
-                                            handle_onchange = { handle_onchange.clone() }
-                                        />
-                                    </div>
-
-                                    <div hidden={!is_ble_beaconing_on}>
-                                        <MyOptionalInput
-                                            prm_dat_optional = { &BEACONING_MOTION_INTERVAL }
-                                            radix_disp = { RadixDisp::Dec }
-                                            vval={
-                                                self.vvals.borrow().get_by_id(BEACONING_MOTION_INTERVAL.id)
-                                                .expect("id is always valid")
-                                                .expect("id always exists")
-                                                .clone()
-                                            }
-                                            handle_onchange = { handle_onchange.clone() }
-                                        />
-                                    </div>
-
-                                    <div hidden={!is_ble_beaconing_on}>
-                                        <MyInput
-                                            prm_dat_dec = { &BEACONING_MOTION_DURATION }
-                                            radix_disp = { RadixDisp::Dec }
-                                            vval={
-                                                self.vvals.borrow().get_by_id(BEACONING_MOTION_DURATION.id)
-                                                .expect("id is always valid")
-                                                .expect("id always exists")
-                                                .clone()
-                                            }
-                                            handle_onchange = { handle_onchange.clone() }
-                                        />
-                                    </div>
-
-                                    <div hidden={!is_ble_beaconing_on}>
-                                        <MyInput
-                                            prm_dat_dec = { &BEACON_ID_0 }
-                                            radix_disp = { RadixDisp::Hex }
-                                            vval={
-                                                self.vvals.borrow().get_by_id(BEACON_ID_0.id)
-                                                .expect("id is always valid")
-                                                .expect("id always exists")
-                                                .clone()
-                                            }
-                                            handle_onchange = { handle_onchange.clone() }
-                                        />
-                                    </div>
-
-                                    <div hidden={!is_ble_beaconing_on}>
-                                        <MyInput
-                                            prm_dat_dec = { &BEACON_ID_1 }
-                                            radix_disp = { RadixDisp::Hex }
-                                            vval={
-                                                self.vvals.borrow().get_by_id(BEACON_ID_1.id)
-                                                .expect("id is always valid")
-                                                .expect("id always exists")
-                                                .clone()
-                                            }
-                                            handle_onchange = { handle_onchange.clone() }
-                                        />
-                                    </div>
-
-                                    <div hidden={!is_ble_beaconing_on}>
-                                        <MyInput
-                                            prm_dat_dec = { &BEACON_ID_2 }
-                                            radix_disp = { RadixDisp::Hex }
-                                            vval={
-                                                self.vvals.borrow().get_by_id(BEACON_ID_2.id)
-                                                .expect("id is always valid")
-                                                .expect("id always exists")
-                                                .clone()
-                                            }
-                                            handle_onchange = { handle_onchange.clone() }
-                                        />
-                                    </div>
-
-                                    <div hidden={!is_ble_beaconing_on}>
-                                        <MyInput
-                                            prm_dat_dec = { &BEACON_ID_3 }
-                                            radix_disp = { RadixDisp::Hex }
-                                            vval={
-                                                self.vvals.borrow().get_by_id(BEACON_ID_3.id)
-                                                .expect("id is always valid")
-                                                .expect("id always exists")
-                                                .clone()
-                                            }
-                                            handle_onchange = { handle_onchange.clone() }
-                                        />
-                                    </div>
-
-                                    <div hidden={!is_ble_beaconing_on}>
-                                        <MyInput
-                                            prm_dat_dec = { &BEACON_ID_4 }
-                                            radix_disp = { RadixDisp::Hex }
-                                            vval={
-                                                self.vvals.borrow().get_by_id(BEACON_ID_4.id)
-                                                .expect("id is always valid")
-                                                .expect("id always exists")
-                                                .clone()
-                                            }
-                                            handle_onchange = { handle_onchange.clone() }
-                                        />
-                                    </div>
-
-                                    // BLE Scan Collection Parameters
-                                    <h5 hidden={!is_scan_collection_on} class="col-span-full text-xl font-bold dark:text-white">
-                                        {"BLE Scan Collection Parameters"}
-                                    </h5>
-
-                                    <div hidden={!is_scan_collection_on}>
-                                        <MyInput
-                                            prm_dat_dec = { &COLLECTION_NB_ENTRY }
-                                            radix_disp = { RadixDisp::Dec }
-                                            vval={
-                                                self.vvals.borrow().get_by_id(COLLECTION_NB_ENTRY.id)
-                                                .expect("id is always valid")
-                                                .expect("id always exists")
-                                                .clone()
-                                            }
-                                            handle_onchange = { handle_onchange.clone() }
-                                        />
-                                    </div>
-
-                                    <div hidden={!is_scan_collection_on}>
-                                        <MySelect
-                                            prm_dat_distinct = { &COLLECTION_BLE_FILTER_TYPE } 
-                                            vval={
-                                                self.vvals.borrow().get_by_id(COLLECTION_BLE_FILTER_TYPE.id)
-                                                .expect("id is always valid")
-                                                .expect("id always exists")
-                                                .clone()
-                                            }
-                                            handle_onchange = { handle_onchange.clone() }
-                                        />
-                                    </div>
-
-                                    <div hidden={!is_scan_collection_on}>
-                                        <MyOptionalInput
-                                            prm_dat_optional = { &COLLECTION_BLE_FILTER_MAIN_1 }
-                                            radix_disp = { RadixDisp::Hex }
-                                            vval={
-                                                self.vvals.borrow().get_by_id(COLLECTION_BLE_FILTER_MAIN_1.id)
-                                                .expect("id is always valid")
-                                                .expect("id always exists")
-                                                .clone()
-                                            }
-                                            handle_onchange = { handle_onchange.clone() }
-                                        />
-                                    </div>
-
-                                    <div hidden={!is_scan_collection_on}>
-                                        <MyOptionalInput
-                                            prm_dat_optional = { &COLLECTION_BLE_FILTER_MAIN_2 }
-                                            radix_disp = { RadixDisp::Hex }
-                                            vval={
-                                                self.vvals.borrow().get_by_id(COLLECTION_BLE_FILTER_MAIN_2.id)
-                                                .expect("id is always valid")
-                                                .expect("id always exists")
-                                                .clone()
-                                            }
-                                            handle_onchange = { handle_onchange.clone() }
-                                        />
-                                    </div>
-
-                                    <div hidden={!is_scan_collection_on}>
-                                        <MyOptionalInput
-                                            prm_dat_optional = { &COLLECTION_BLE_FILTER_SEC_VALUE }
-                                            radix_disp = { RadixDisp::Hex }
-                                            vval={
-                                                self.vvals.borrow().get_by_id(COLLECTION_BLE_FILTER_SEC_VALUE.id)
-                                                .expect("id is always valid")
-                                                .expect("id always exists")
-                                                .clone()
-                                            }
-                                            handle_onchange = { handle_onchange.clone() }
-                                        />
-                                    </div>
-
-                                    <div hidden={!is_scan_collection_on}>
-                                        <MyOptionalInput
-                                            prm_dat_optional = { &COLLECTION_BLE_FILTER_SEC_MASK }
-                                            radix_disp = { RadixDisp::Hex }
-                                            vval={
-                                                self.vvals.borrow().get_by_id(COLLECTION_BLE_FILTER_SEC_MASK.id)
-                                                .expect("id is always valid")
-                                                .expect("id always exists")
-                                                .clone()
-                                            }
-                                            handle_onchange = { handle_onchange.clone() }
-                                        />
-                                    </div>
-
-
-                                    // BLE Geofencing Parameters
-                                    <h5 hidden={!is_geofencing_on} class="col-span-full text-xl font-bold dark:text-white">
-                                        {"BLE Geofencing Parameters"}
-                                    </h5>
-
-                                    <div hidden={!is_geofencing_on}>
-                                        <MyInput
-                                            prm_dat_dec = { &GEOFENCING_COLLECT_PERIOD }
-                                            radix_disp = { RadixDisp::Dec }
-                                            vval={
-                                                self.vvals.borrow().get_by_id(GEOFENCING_COLLECT_PERIOD.id)
-                                                .expect("id is always valid")
-                                                .expect("id always exists")
-                                                .clone()
-                                            }
-                                            handle_onchange = { handle_onchange.clone() }
-                                        />
-                                    </div>
-
-                                    <div hidden={!is_geofencing_on}>
-                                        <MyInput
-                                            prm_dat_dec = { &GEOFENCING_SCAN_DURATION }
-                                            radix_disp = { RadixDisp::Dec }
-                                            vval={
-                                                self.vvals.borrow().get_by_id(GEOFENCING_SCAN_DURATION.id)
-                                                .expect("id is always valid")
-                                                .expect("id always exists")
-                                                .clone()
-                                            }
-                                            handle_onchange = { handle_onchange.clone() }
-                                        />
-                                    </div>
-
 
                                     // LoRaWAN Transmission Parameters
                                     <h5 class="col-span-full text-xl font-bold dark:text-white">
@@ -1970,8 +2001,8 @@ impl Component for BeeQueenApp {
                                         handle_onchange = { handle_onchange.clone() }
                                     />
 
-                                    <MyInput
-                                        prm_dat_dec = { &PW_STAT_PERIOD }
+                                    <MyOptionalInput
+                                        prm_dat_optional = { &PW_STAT_PERIOD }
                                         radix_disp = { RadixDisp::Dec }
                                         vval={
                                             self.vvals.borrow().get_by_id(PW_STAT_PERIOD.id)
