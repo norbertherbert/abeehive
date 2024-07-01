@@ -318,7 +318,11 @@ impl Component for BeeQueenApp {
     
                         // log!(&cfg_string);
 
-                        let vvals = PrmVVals::from_cfg_vec(&cfg_vec);
+                        let vvals = if cfg_vec.len() > 0 {
+                            PrmVVals::from_cfg_vec(&cfg_vec)
+                        } else {
+                            Ok(PrmVVals::new())
+                        };
                         match vvals {
                             Ok(vvals) => {
                                 // log!(format!("{:?}", vvals));
