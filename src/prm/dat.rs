@@ -629,7 +629,7 @@ pub static GPS_CONVERGENCE_MOTION: PrmDatDec = PrmDatDec {
     id: 0x7A,
     name: "gps_convergence_motion",
     label: "GPS Convergence Time - Motion",
-    description: "Time to let to the GPS module to refine the calculated GPS position in motion. [0..300][s]",
+    description: "Time to let to the GPS module to refine the calculated GPS position in motion. This parameter will overwrite ul_period. Set it to the same or smaller than ul_period. [0..300][s]",
     default_val: 20,
     range: (0, 300),
 };
@@ -2374,7 +2374,7 @@ pub static GEOFENCING_SCAN_PERIOD: PrmDatOptional = PrmDatOptional {
     id: 0x18,
     name: "geofencing_scan_period",
     label: "Geofencing Scan Period",
-    description: "Geofencing Scan Period Unit: [1..300][s]",
+    description: "Geofencing Scan Period [1..300][s]",
     disabled_val: 0,
     default_val: 0,
     range: (1, 300),
@@ -2389,7 +2389,7 @@ pub static GEOFENCING_COLLECT_PERIOD: PrmDatDec = PrmDatDec {
     id: 0x19,
     name: "geofencing_collect_period",
     label: "Geofencing Collect Period",
-    description: "Geofencing Collect Period Unit: [15..3600][s]",
+    description: "Geofencing Collect Period [15..3600][s]",
     default_val: 60,
     range: (15, 3600),
 };
