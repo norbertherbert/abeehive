@@ -1,5 +1,12 @@
 /dist/
-/target/
 /Cargo.lock
 /node_modules/
 /package-lock.json
+
+target/*
+!target/release
+!target/bundle
+
+target/release/*
+!target/release/abeehive.exe
+!target/release/abeehive
