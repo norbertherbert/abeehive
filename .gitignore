@@ -5,8 +5,8 @@
 
 target/*
 !target/release
-!target/bundle
 
 target/release/*
 !target/release/abeehive.exe
 !target/release/abeehive
+# !target/release/bundle
