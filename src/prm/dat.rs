@@ -1992,9 +1992,9 @@ pub static TEMPERATURE_LOW: PrmDatOptional = PrmDatOptional {
 
 pub static TEMPERATURE_ACTION: PrmDatDistinct = PrmDatDistinct {
     id: 0x1D,
-    name: "reed_switch_configuration",
-    label: "Reed Switch Configuration.",
-    description: "Reed Switch Configuration.",
+    name: "temperature_action",
+    label: "Temperature Action",
+    description: "Configure the action to be done when entering a critical state.",
     default_val: TemperatureActionOptions::NO_ACTION.val,
     distinct_vals: &[
         TemperatureActionOptions::NO_ACTION,
@@ -2011,15 +2011,15 @@ impl TemperatureActionOptions {
     };
     pub const GEOLOC_DISABLED_ON_HIGH: DistinctVal = DistinctVal {
         val: 1,
-        txt: "Geolocation disabled if temperature_high is reached.",
+        txt: "Geoloc disabled if temperature_high is reached.",
     };
     pub const GEOLOC_DISABLED_ON_LOW: DistinctVal = DistinctVal {
         val: 2,
-        txt: "Geolocation disabled if temperature_low is reached.",
+        txt: "Geoloc disabled if temperature_low is reached.",
     };
     pub const GEOLOC_DISABLED_ON_HIGH_LOW: DistinctVal = DistinctVal {
         val: 3,
-        txt: "Geolocation disabled if temperature_low or temperature_high is reached.",
+        txt: "Geoloc disabled if temperature_low or temperature_high is reached.",
     };
 
 }
