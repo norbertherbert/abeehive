@@ -1963,7 +1963,7 @@ pub static MOTION_DURATION: PrmDatDec = PrmDatDec {
 pub static TEMPERATURE_HIGH: PrmDatOptional = PrmDatOptional {
     id: 0x1B,
     name: "temperature_high",
-    label: "Temperature High Threshold.",
+    label: "High Temperature Threshold.",
     description: "The high threshold of Temperature. [-44..85][°C]",
     default_val: 255,
     disabled_val: 255,
@@ -1978,7 +1978,7 @@ pub static TEMPERATURE_HIGH: PrmDatOptional = PrmDatOptional {
 pub static TEMPERATURE_LOW: PrmDatOptional = PrmDatOptional {
     id: 0x1C,
     name: "temperature_low",
-    label: "Temperature Low Threshold.",
+    label: "Low Temperature Threshold.",
     description: "The low threshold of Temperature. [-44..85][°C]",
     default_val: 255,
     disabled_val: 255,

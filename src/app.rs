@@ -2040,41 +2040,6 @@ impl Component for BeeQueenApp {
                                         handle_onchange = { handle_onchange.clone() }
                                     />
 
-                                    <div class = "col-span-1 row-span-4">
-                                        <MycButtonMapping
-                                            vval={
-                                                self.vvals.borrow().get_by_id(BUTTON_MAPPING.id)
-                                                .expect("id is always valid")
-                                                .expect("id always exists")
-                                                .clone()
-                                            }
-                                            handle_onchange = { handle_onchange.clone() }
-                                            />
-                                    </div>
-
-                                    <MySelect
-                                        prm_dat_distinct = { &REED_SWITCH_CONFIGURATION } //
-                                        vval={
-                                            self.vvals.borrow().get_by_id(REED_SWITCH_CONFIGURATION.id)
-                                            .expect("id is always valid")
-                                            .expect("id always exists")
-                                            .clone()
-                                        }
-                                        handle_onchange = { handle_onchange.clone() }
-                                    />
-
-                                    <div class = "col-span-1 row-span-2">
-                                        <MycBatteryCapacity
-                                            vval={
-                                                self.vvals.borrow().get_by_id(BATTERY_CAPACITY.id)
-                                                .expect("id is always valid")
-                                                .expect("id always exists")
-                                                .clone()
-                                            }
-                                            handle_onchange = { handle_onchange.clone() }
-                                        />
-                                    </div>
-
                                     <MyInput
                                         prm_dat_dec = { &BLE_CNX_ADV_DURATION }
                                         radix_disp = { RadixDisp::Dec }
@@ -2086,19 +2051,6 @@ impl Component for BeeQueenApp {
                                         }
                                         handle_onchange = { handle_onchange.clone() }
                                     />
-
-                                    <MyInput
-                                        prm_dat_dec = { &PASSWORD }
-                                        radix_disp = { RadixDisp::Dec }
-                                        vval={
-                                            self.vvals.borrow().get_by_id(PASSWORD.id)
-                                            .expect("id is always valid")
-                                            .expect("id always exists")
-                                            .clone()
-                                        }
-                                        handle_onchange = { handle_onchange.clone() }
-                                    />
-
 
                                     // Temperature Parameters
 
@@ -2128,6 +2080,53 @@ impl Component for BeeQueenApp {
                                         prm_dat_distinct = { &TEMPERATURE_ACTION } //
                                         vval={
                                             self.vvals.borrow().get_by_id(TEMPERATURE_ACTION.id)
+                                            .expect("id is always valid")
+                                            .expect("id always exists")
+                                            .clone()
+                                        }
+                                        handle_onchange = { handle_onchange.clone() }
+                                    />
+
+                                    <MySelect
+                                        prm_dat_distinct = { &REED_SWITCH_CONFIGURATION } //
+                                        vval={
+                                            self.vvals.borrow().get_by_id(REED_SWITCH_CONFIGURATION.id)
+                                            .expect("id is always valid")
+                                            .expect("id always exists")
+                                            .clone()
+                                        }
+                                        handle_onchange = { handle_onchange.clone() }
+                                    />
+
+                                    <div class = "col-span-1 row-span-4">
+                                        <MycButtonMapping
+                                            vval={
+                                                self.vvals.borrow().get_by_id(BUTTON_MAPPING.id)
+                                                .expect("id is always valid")
+                                                .expect("id always exists")
+                                                .clone()
+                                            }
+                                            handle_onchange = { handle_onchange.clone() }
+                                            />
+                                    </div>
+
+                                    <div class = "col-span-1 row-span-2">
+                                        <MycBatteryCapacity
+                                            vval={
+                                                self.vvals.borrow().get_by_id(BATTERY_CAPACITY.id)
+                                                .expect("id is always valid")
+                                                .expect("id always exists")
+                                                .clone()
+                                            }
+                                            handle_onchange = { handle_onchange.clone() }
+                                        />
+                                    </div>
+
+                                    <MyInput
+                                        prm_dat_dec = { &PASSWORD }
+                                        radix_disp = { RadixDisp::Dec }
+                                        vval={
+                                            self.vvals.borrow().get_by_id(PASSWORD.id)
                                             .expect("id is always valid")
                                             .expect("id always exists")
                                             .clone()

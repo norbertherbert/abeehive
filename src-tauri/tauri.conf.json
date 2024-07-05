@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "abeehive",
-    "version": "0.0.2"
+    "version": "0.0.3"
   },
   "tauri": {
     "allowlist": {
@@ -30,7 +30,7 @@
     },
     "windows": [
       {
-        "title": "abeehive 0.0.2",
+        "title": "abeehive 0.0.3",
         "width": 800,
         "height": 600
       }

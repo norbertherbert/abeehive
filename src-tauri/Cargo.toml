@@ -1,6 +1,6 @@
 [package]
 name = "abeehive-tauri"
-version = "0.0.2"
+version = "0.0.3"
 description = "Abeehive - config tool for Abeeway devices"
 authors = ["you"]
 edition = "2021"
