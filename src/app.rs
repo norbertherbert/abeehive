@@ -575,6 +575,7 @@ impl Component for BeeQueenApp {
         let mut is_scan_collection_on = false;
         let mut is_geofencing_on = false;
         let mut is_angle_detection_on = false;
+        let is_temperature_on = true;
 
         if !self.vvals.borrow().is_empty() {
 
@@ -1537,6 +1538,60 @@ impl Component for BeeQueenApp {
                                     </div>
 
 
+                                    // Temperature Parameters
+                                    <div class = {
+                                        if is_temperature_on {
+                                            "col-span-full grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6"
+                                        }
+                                        else {""}                                          
+                                    }>
+                                        <h7 class="col-span-full text-base font-bold dark:text-white">
+                                            {"Temperature Parameters"}
+                                        </h7>
+
+
+                                        <MySelect
+                                            prm_dat_distinct = { &TEMPERATURE_ACTION } 
+                                            vval={
+                                                self.vvals.borrow().get_by_id(TEMPERATURE_ACTION.id)
+                                                .expect("id is always valid")
+                                                .expect("id always exists")
+                                                .clone()
+                                            }
+                                            handle_onchange = { handle_onchange.clone() }
+                                        />
+
+
+                                        <div hidden={!is_temperature_on}>
+                                            <MyOptionalInput
+                                                prm_dat_optional = { &TEMPERATURE_HIGH }
+                                                radix_disp = { RadixDisp::Dec }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(TEMPERATURE_HIGH.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        </div>
+                                        <div hidden={!is_temperature_on}>
+                                            <MyOptionalInput
+                                                prm_dat_optional = { &TEMPERATURE_LOW }
+                                                radix_disp = { RadixDisp::Dec }
+                                                vval={
+                                                    self.vvals.borrow().get_by_id(TEMPERATURE_LOW.id)
+                                                    .expect("id is always valid")
+                                                    .expect("id always exists")
+                                                    .clone()
+                                                }
+                                                handle_onchange = { handle_onchange.clone() }
+                                            />
+                                        </div>
+
+                                    </div>
+                                    
+
                                     // GNSS Configuration Parameters
                                     <h5 hidden = { !is_gps_used } class="col-span-full text-xl font-bold dark:text-white">
                                         {"GNSS Configuration Parameters"}
@@ -2100,8 +2155,6 @@ impl Component for BeeQueenApp {
                                     />
 
                                 </div>
-
-
 
 
                                 // -- end of PARAMETER COMPONENTS

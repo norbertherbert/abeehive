@@ -8,15 +8,15 @@ target/*
 target/release/*
 !target/release/abeehive.exe
 !target/release/abeehive
-!target/release/bundle
-target/release/bundle/*
-!target/release/bundle/appimage
-target/release/bundle/appimage/*
-!target/release/bundle/appimage/abeehive_0.0.2_amd64.AppImage
-!target/release/bundle/appimage/abeehive_0.0.2_amd64.AppImage.tar.gz
-!target/release/bundle/appimage/abeehive_0.0.2_amd64.AppImage.tar.gz.sig
-!target/release/bundle/deb
-target/release/bundle/deb/*
-!target/release/bundle/deb/abeehive_0.0.2_amd64.deb
+# !target/release/bundle
+# target/release/bundle/*
+# !target/release/bundle/appimage
+# target/release/bundle/appimage/*
+# !target/release/bundle/appimage/abeehive_0.0.2_amd64.AppImage
+# !target/release/bundle/appimage/abeehive_0.0.2_amd64.AppImage.tar.gz
+# !target/release/bundle/appimage/abeehive_0.0.2_amd64.AppImage.tar.gz.sig
+# !target/release/bundle/deb
+# target/release/bundle/deb/*
+# !target/release/bundle/deb/abeehive_0.0.2_amd64.deb
 
 /build.sh
