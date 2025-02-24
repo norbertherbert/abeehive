@@ -1,4 +1,5 @@
-This pre-compiled tool provides similar functionality for Abeeway AT2 devices as the online Bequeen tool provides for Abeeway AT3 devices.
+This pre-compiled executables can be used to edit configuration files of Abeeway AT2 devices.
+Please download and run the appropriate binary file. 
 
-- Windows executable: abeehive.exe
-- Linux executable: abeehive
+- Windows executable: `abeehive.exe`
+- Linux executable: `abeehive`
