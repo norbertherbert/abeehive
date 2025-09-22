@@ -1,8 +1,12 @@
 {
+  "scripts": {
+    "tw:build": "npx @tailwindcss/cli -i ./src/input.css -o ./src/output.css -w"
+  },
   "devDependencies": {
-    "tailwindcss": "^3.4.3"
+    "@tailwindcss/cli": "^4.1.13",
+    "tailwindcss": "^4.1.13"
   },
   "dependencies": {
-    "flowbite": "^2.3.0"
+    "flowbite": "3.1.2"
   }
 }

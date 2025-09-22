@@ -1,11 +1,9 @@
 [build]
-target = "./index.html"
-
-[watch]
-ignore = ["./src-tauri"]
+target = "index.html"
+release = false
 
 [serve]
-address = "127.0.0.1"
+addresses = ["127.0.0.1"]
 port = 1420
 open = false
 

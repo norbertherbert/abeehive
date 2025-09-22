@@ -8,9 +8,7 @@ pub enum NavbarAction {
     Close,
     GetFromFile,
     SaveToFile,
-    ExportToLWDLFile,
-    GetFromDeviceUSB,
-    SaveToDeviceUSB,
+    AboutModalShow
 }
 
 #[derive(Properties, PartialEq)]
@@ -22,14 +20,6 @@ pub struct Props {
 #[function_component(Navbar)]
 pub fn navbar(props: &Props) -> Html {
     
-    
-
-
-
-
-    
-
-
     let onclick_new_tracking_gps = {
         let parent_onclick = props.onclick.clone();
         Callback::from(move |_ev: MouseEvent| {
@@ -88,12 +78,6 @@ pub fn navbar(props: &Props) -> Html {
 
 
 
-
-
-
-
-
-
     let onclick_close = {
         let parent_onclick = props.onclick.clone();
         Callback::from(move |_ev: MouseEvent| {
@@ -112,36 +96,29 @@ pub fn navbar(props: &Props) -> Html {
             parent_onclick.emit(NavbarAction::SaveToFile);
         })
     };
-    let onclick_export_to_lwdl_file = {
+
+    let onclick_about_modal_toggle = {
         let parent_onclick = props.onclick.clone();
         Callback::from(move |_ev: MouseEvent| {
-            parent_onclick.emit(NavbarAction::ExportToLWDLFile);
-        })
-    };
-    let onclick_get_from_usb = {
-        let parent_onclick = props.onclick.clone();
-        Callback::from(move |_ev: MouseEvent| {
-            parent_onclick.emit(NavbarAction::GetFromDeviceUSB);
-        })
-    };
-    let onclick_save_to_usb = {
-        let parent_onclick = props.onclick.clone();
-        Callback::from(move |_ev: MouseEvent| {
-            parent_onclick.emit(NavbarAction::SaveToDeviceUSB);
+            parent_onclick.emit(NavbarAction::AboutModalShow);
         })
     };
 
     html! {<>
 
         <nav class="bg-white dark:bg-gray-900 fixed w-full z-20 top-0 start-0 border-b border-gray-200 dark:border-gray-600">
-            <div class="max-w-screen-xl flex flex-wrap items-center justify-start gap-2 mx-auto p-4">
+            <div class="w-full flex flex-wrap items-center justify-start gap-2 mx-auto p-4">
 
 
 
 
                 // <a href="https://abeeway.com/" target="_blank" class="flex items-center space-x-3 rtl:space-x-reverse">
                 <a href="https://abeeway.com/" target="_blank">
-                    <img src="../../assets/bee-hive.png" class="h-8" alt="aBeeHive Logo" />
+                    <img 
+                        src="assets/beequeen.png" 
+                        class="logo mr-3 h-8 sm:h-12" 
+                        alt="Beequeen Logo" 
+                    />
                 </a>
 
 
@@ -151,12 +128,12 @@ pub fn navbar(props: &Props) -> Html {
                         href="https://abeeway.com/" target="_blank" 
                         // class = "hidden sm:block"
                     >
-                        <span class="text-2xl font-semibold whitespace-nowrap dark:text-white">
-                            {"aBeeHive"}
+                        <span class="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
+                            {"BeeQueen - "}<i>{"for AT2 Fw v2.6"}</i>
                         </span>
                     </a>
 
-                    <div class="mb-0.5" >
+                    <div class="self-center pt-1 pl-10 font-mono whitespace-nowrap dark:text-white" >
                         { props.source_name.clone() }
                     </div>
 
@@ -216,17 +193,18 @@ pub fn navbar(props: &Props) -> Html {
                             // <!-- Dropdown menu -->
                             <div id="dropdownNavbarFile" class="z-10 hidden font-normal bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
                                 <ul class="py-2 text-sm text-gray-700 dark:text-gray-400" aria-labelledby="dropdownLargeButton">
-                                    <li aria-labelledby="dropdownNavbarLink">
+                                <li aria-labelledby="dropdownNavbarLink">
+
                                         <button 
                                             id="configTemplatesButton" 
                                             data-dropdown-toggle="configTemplatesDropdown" 
                                             data-dropdown-placement="right-start" 
                                             type="button" 
                                             class="flex items-center justify-between w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                                        >
-                                            { "New from Template" }
-                                            <svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+                                        >    
+                                            { "New" }
+                                            <svg class="w-2.5 h-2.5 ms-3 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
                                             </svg>
                                         </button>
                                         
@@ -305,7 +283,7 @@ pub fn navbar(props: &Props) -> Html {
                                             class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                                             onclick = { onclick_get_from_file.clone() }
                                         >
-                                            {"Open file..."}
+                                            {"Open..."}
                                         </a>
                                     </li>
                                     <li>
@@ -313,7 +291,7 @@ pub fn navbar(props: &Props) -> Html {
                                             class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                                             onclick = { onclick_save_to_file.clone() }
                                         >
-                                            {"Save file as..."}
+                                            {"Save as..."}
                                         </a>
                                     </li>
                                     <li>
@@ -322,81 +300,6 @@ pub fn navbar(props: &Props) -> Html {
                                             onclick = { onclick_close.clone() }
                                         >
                                             {"Close"}
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-
-
-                        // "Device" menu
-                        <li>
-                            <button
-                                id="dropdownNavbarLinkUSB"
-                                data-dropdown-toggle="dropdownNavbarUSB"
-                                // data-dropdown-trigger="hover"
-                                // data-dropdown-delay="500"
-                                class="flex items-center justify-between w-full py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto dark:text-white md:dark:hover:text-blue-500 dark:focus:text-white dark:border-gray-700 dark:hover:bg-gray-700 md:dark:hover:bg-transparent"
-                            >
-                                {"Device"}
-                                <svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
-                                </svg>
-                            </button>
-                            // <!-- Dropdown menu -->
-                            <div id="dropdownNavbarUSB" class="z-10 hidden font-normal bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
-                                <ul class="py-2 text-sm text-gray-700 dark:text-gray-400" aria-labelledby="dropdownLargeButton">
-                                    <li>
-                                        <a href="#"
-                                            class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                                            onclick = { onclick_get_from_usb.clone() }
-                                        >
-                                            {"Get from USB..."}
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#"
-                                            class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                                            onclick = { onclick_save_to_usb.clone() }
-                                        >
-                                            {"Save to USB..."}
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-
-                        // "Export" menu
-                        <li>
-                            <button
-                                id="dropdownNavbarLinkExport"
-                                data-dropdown-toggle="dropdownNavbarExport"
-                                // data-dropdown-trigger="hover"
-                                // data-dropdown-delay="500"
-                                class="flex items-center justify-between w-full py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto dark:text-white md:dark:hover:text-blue-500 dark:focus:text-white dark:border-gray-700 dark:hover:bg-gray-700 md:dark:hover:bg-transparent"
-                            >
-                                {"Export"}
-                                <svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
-                                </svg>
-                            </button>
-                            // <!-- Dropdown menu -->
-                            <div id="dropdownNavbarExport" class="z-10 hidden font-normal bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
-                                <ul class="py-2 text-sm text-gray-700 dark:text-gray-400" aria-labelledby="dropdownLargeButton">
-                                    <li>
-                                        <a href="#"
-                                            class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                                            // onclick = { onclick_export_to_lwdl_file.clone() }
-                                        >
-                                            {"To CLI commands"}
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#"
-                                            class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                                            onclick = { onclick_export_to_lwdl_file.clone() }
-                                        >
-                                            {"To LoRaWAN DL"}
                                         </a>
                                     </li>
                                 </ul>
@@ -421,7 +324,9 @@ pub fn navbar(props: &Props) -> Html {
                             <div id="dropdownNavbarHelp" class="z-10 hidden font-normal bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
                                 <ul class="py-2 text-sm text-gray-700 dark:text-gray-400" aria-labelledby="dropdownLargeButton">
                                     <li>
-                                        <a href="#"
+                                        <a 
+                                            href="https://docs.thingpark.com/thingpark-location/firmware/AT2_v2.6/introduction/"
+                                            target="_blank"
                                             class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                                             // onclick = { onclick_get_from_usb.clone() }
                                         >
@@ -431,7 +336,7 @@ pub fn navbar(props: &Props) -> Html {
                                     <li>
                                         <a href="#"
                                             class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                                            // onclick = { onclick_save_to_usb.clone() }
+                                            onclick = { onclick_about_modal_toggle.clone() }
                                         >
                                             {"About..."}
                                         </a>
@@ -440,7 +345,18 @@ pub fn navbar(props: &Props) -> Html {
                             </div>
                         </li>
 
+                        <li>
 
+                            <a href="https://nano-things.net/beehive/" target="_blank">
+                                <img 
+                                    src="assets/beehive.png" 
+                                    class="logo inline-block h-6 pr-1 pb-1" 
+                                    alt="BeeHive Logo" 
+                                />
+                                {"BeeHive"}
+                            </a>  
+
+                        </li>
 
                     </ul>
                 </div>

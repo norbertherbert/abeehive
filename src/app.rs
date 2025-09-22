@@ -2,20 +2,24 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use web_sys::HtmlElement;
 
+use wasm_bindgen_futures::JsFuture;
+
 use abeehive::prm::val::PrmVVals;
 // use std::fmt;
 // use yewdux::prelude::*;
 use gloo::console::log;
-use js_sys::{
-    // Function, 
-    Function, Promise
-};
-use serde::{Deserialize, Serialize};
-use serde_wasm_bindgen::to_value;
+// use js_sys::{
+//     // Function, 
+//     Function, Promise
+// };
+use serde::Deserialize; // , Serialize};
+// use serde_wasm_bindgen::to_value;
 // use std::ops::Deref;
 use wasm_bindgen::prelude::*;
-use wasm_bindgen_futures::spawn_local;
+// use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
+
+use abeehive::js::file_api;
 
 use abeehive::components::{
     RadixDisp,
@@ -29,13 +33,17 @@ use abeehive::components::{
     myc_battery_capacity::MycBatteryCapacity,
 
     modal::Modal,
+
     navbar::{Navbar, NavbarAction},
-    select_usb_port::SelectUsbPort,
 };
 
-use abeehive::prm::{ dat::*, val::PrmVVal, typ::PrmVal };
+use abeehive::prm::{ 
+    dat::*, val::PrmVVal, 
+    // typ::PrmVal 
+};
 
 use abeehive::templates::*;
+
 
 #[wasm_bindgen]
 extern "C" {
@@ -43,45 +51,8 @@ extern "C" {
     #[wasm_bindgen(js_name = "initFlowbite")]
     fn init_flowbite();
 
-    #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "tauri"])]
-    async fn invoke(cmd: &str, args: JsValue) -> JsValue;
-
-    #[wasm_bindgen(js_namespace = ["window.__TAURI__.event"], js_name = "listen")]
-    fn listen_(event: &str, handler: &Closure<dyn FnMut(JsValue)>) -> Promise;
-
 }
 
-// #[wasm_bindgen(module = "/assets/flowbite.js")]
-// extern "C" {
-//     #[wasm_bindgen(js_name = "initFlowbite")]
-//     fn init_flowbite();
-// }
-
-#[derive(Serialize, Deserialize)]
-struct SaveArgs {
-    cfg_string: String,
-}
-
-#[derive(Serialize, Deserialize)]
-struct GetConfigUsbArgs {
-    port: String,
-}
-
-#[derive(Serialize, Deserialize)]
-struct SaveConfigToUsbArgs {
-    cli_cmds: Vec<(u8, PrmVal)>,
-    port: String,
-}
-
-#[derive(Deserialize, Debug)]
-struct FileOpenEvent {
-    payload: (String, String),
-}
-
-#[derive(Deserialize, Debug)]
-struct SaveAsEvent {
-    payload: String
-}
 
 #[derive(Debug, PartialEq)]
 pub enum Msg {
@@ -91,18 +62,9 @@ pub enum Msg {
     New(CfgTemplate),
     Close,
     Open,
-    OpenWith,
+    AboutModalToggle,
+    // OpenWith,
     SaveAs,
-    ExportAsLWDL,
-    GetConfigUsbModalToggle,
-    SaveConfigUsbModalToggle,
-    GetSerialPortsForGetCfg,
-    UpdateSerialPortsForGetCfg(Vec<String>),
-    GetSerialPortsForSaveCfg,
-    UpdateSerialPortsForSaveCfg(Vec<String>),
-    SelectedUsbPortChanged(String),
-    GetConfigUsb,
-    SaveConfigUsb,
     UpdateVVals((String, PrmVVals)),
     UpdateSourceName(String),
     Navbar(NavbarAction),
@@ -112,14 +74,18 @@ pub enum Msg {
 pub struct BeeQueenApp {
     source_name: String,
     vvals: Rc<RefCell<PrmVVals>>,
-    get_serialport_modal_is_visible: bool,
-    save_serialport_modal_is_visible: bool,
-    serial_ports: Vec<String>,
-    selected_serial_port: String,
+    about_modal_is_visible: bool,
     greet_msg: String,
-    file_open_listener: Option<(Promise, Closure<dyn FnMut(JsValue)>)>,
-    save_as_listener: Option<(Promise, Closure<dyn FnMut(JsValue)>)>,
+    // file_open_listener: Option<(Promise, Closure<dyn FnMut(JsValue)>)>,
+    // save_as_listener: Option<(Promise, Closure<dyn FnMut(JsValue)>)>,
     phantom_node_ref: NodeRef, // needed for simulating click outside a Flowbite dropdown and make it close
+}
+
+
+#[derive(Deserialize, Debug, Clone, PartialEq)]
+struct FileOpenResult {
+    file_name: String,
+    config_str: String,
 }
 
 
@@ -134,13 +100,10 @@ impl Component for BeeQueenApp {
         let beequeen_app = BeeQueenApp {
             source_name: String::new(),
             vvals: Rc::new(RefCell::new(PrmVVals::new())),
-            get_serialport_modal_is_visible: false,
-            save_serialport_modal_is_visible: false,
-            serial_ports: Vec::new(),
-            selected_serial_port: String::new(),
+            about_modal_is_visible: false,
             greet_msg: String::new(),
-            file_open_listener: None,
-            save_as_listener: None,
+            // file_open_listener: None,
+            // save_as_listener: None,
             phantom_node_ref: NodeRef::default(),
         };
         
@@ -198,150 +161,71 @@ impl Component for BeeQueenApp {
             },
 
             Msg::Open => {
-                let args = to_value(&()).unwrap();
-                spawn_local(async move {
-                    invoke("open", args).await; // .as_string().unwrap();
+
+                let update_on_file_open = ctx.link().callback(move | args: (String, PrmVVals)| {
+                    Msg::UpdateVVals(args)
                 });
+
+                wasm_bindgen_futures::spawn_local(async move {
+                    match JsFuture::from(file_api::open_config_file_str()).await {
+                        Ok(js_val) => {
+                            // Deserialize the returned JS object into our Rust struct
+                            let res: Result<FileOpenResult, _> = serde_wasm_bindgen::from_value(js_val);
+                            match res {
+                                Ok(data) => {
+                                    // log!(&data.file_name);
+                                    // log!(&data.config_str);
+
+                                    let res  = PrmVVals::from_cfg_str(&data.config_str);
+                                    match res {
+                                        Ok(vvals) => update_on_file_open.emit((data.file_name, vvals)),
+                                        Err(e) => log!(format!("Parameter parse error: {e:?}")),
+                                    };
+
+                                }
+                                Err(e) => log!(format!("Deserialize error: {e:?}")),
+                            }
+                        }
+                        Err(e) => log!(format!("JS error: {e:?}")),
+                    }
+                });
+                
                 true
             },
-            Msg::OpenWith => {
-                let args = to_value(&()).unwrap();
-                spawn_local(async move {
-                    invoke("open_with", args).await; // .as_string().unwrap();
-                });
+            Msg::AboutModalToggle => {
+                self.about_modal_is_visible = !self.about_modal_is_visible;
                 true
             },
             Msg::SaveAs => {
 
-                let cfg_string = self.vvals.borrow_mut().to_cfg_string();
-                let args = to_value(&SaveArgs { cfg_string }).unwrap();
-                spawn_local(async move {
-                    invoke("save_as", args).await; //.as_string().unwrap();
-                });
+                let file_name = "config.txt";
+                let config_str = self.vvals.borrow_mut().to_cfg_string();
+                // log!(config_str.clone());
 
-                true
-            },
-            Msg::ExportAsLWDL => {
-
-                let lwdl_string = self.vvals.borrow_mut().to_lwdl_string();
-                let args = to_value(&SaveArgs { cfg_string: lwdl_string }).unwrap();
-                spawn_local(async move {
-                    invoke("save_as", args).await; //.as_string().unwrap();
-                });
-
-                true
-            }
-            Msg::GetConfigUsbModalToggle => {
-                self.get_serialport_modal_is_visible = !self.get_serialport_modal_is_visible;
-                true
-            },
-            Msg::SaveConfigUsbModalToggle => {
-                self.save_serialport_modal_is_visible = !self.save_serialport_modal_is_visible;
-                true
-            },
-            
-            
-            Msg::GetSerialPortsForGetCfg => {
-
-                let args = to_value(&()).unwrap();
-
-                let send_ports = ctx.link().callback(move |ports: Vec<String>| {
-                    Msg::UpdateSerialPortsForGetCfg(ports)
-                });
-             
-                spawn_local(async move {
-                    let ports = invoke("get_serial_ports", args).await;
-                    let ports: Vec<String> = serde_wasm_bindgen::from_value(ports).unwrap();
-                    log!(format!("KAKUKKK: {:?}", &ports));
-                    send_ports.emit(ports);
-                });
-
-                true
-            },
-            Msg::UpdateSerialPortsForGetCfg(ports) => {
-                self.serial_ports = ports;
-                self.get_serialport_modal_is_visible = true;
-                true
-            },
-
-            
-            Msg::GetSerialPortsForSaveCfg => {
-
-                let args = to_value(&()).unwrap();
-
-                let send_ports = ctx.link().callback(move |ports: Vec<String>| {
-                    Msg::UpdateSerialPortsForSaveCfg(ports)
-                });
-             
-                spawn_local(async move {
-                    let ports = invoke("get_serial_ports", args).await;
-                    let ports: Vec<String> = serde_wasm_bindgen::from_value(ports).unwrap();
-                    log!(format!("KAKUKKK: {:?}", &ports));
-                    send_ports.emit(ports);
-                });
-
-                true
-            },
-            Msg::UpdateSerialPortsForSaveCfg(ports) => {
-                self.serial_ports = ports;
-                self.save_serialport_modal_is_visible = true;
-                true
-            },
-
-
-            Msg::SelectedUsbPortChanged(port) => {
-                self.selected_serial_port = port;
-                true
-            },
-
-
-            Msg::GetConfigUsb => {
-
-                log!(&self.selected_serial_port);
-
-                if !self.selected_serial_port.is_empty() {
-                    let args = to_value(&GetConfigUsbArgs {
-                        port: self.selected_serial_port.clone(),
-                    })
-                    .unwrap();
-
-                    let selected_serial_port = self.selected_serial_port.clone();
-                    let update_vvals = ctx.link().callback(move |vvals: PrmVVals| {
-                        Msg::UpdateVVals(( format!("USB port: {}", selected_serial_port), vvals ))
-                    });
-
-                    // let cloned_vvals = self.vvals.clone();
-
-                    spawn_local(async move {
-                        let cfg = invoke("get_config_usb_cmd", args).await;
-                        let cfg_vec: Vec<(u8, PrmVal)> = serde_wasm_bindgen::from_value(cfg).unwrap();
-    
-                        // log!(&cfg_string);
-
-                        let vvals = if cfg_vec.len() > 0 {
-                            PrmVVals::from_cfg_vec(&cfg_vec)
-                        } else {
-                            Ok(PrmVVals::new())
-                        };
-                        match vvals {
-                            Ok(vvals) => {
-                                // log!(format!("{:?}", vvals));
-                                update_vvals.emit(vvals);
+                wasm_bindgen_futures::spawn_local(async move {
+                    match JsFuture::from(file_api::save_config_file_str(file_name, &config_str)).await {
+                        Ok(js_val) => {
+                            // Deserialize the returned JS object into our Rust struct
+                            let res: Result<String, _> = serde_wasm_bindgen::from_value(js_val);
+                            match res {
+                                Ok(file_name) => {
+                                    log!(file_name);
+                                }
+                                Err(e) => log!(format!("Deserialize error: {e:?}")),
                             }
-                            Err(_err) => {} // TODO!
                         }
-
-                    });
-                }
+                        Err(e) => log!(format!("JS error: {e:?}")),
+                    }
+                });
 
                 true
             },
-
+            
             Msg::UpdateVVals(( source_name, vvals )) => {
                 // log!(format!("{:?}", vvals));
                 self.source_name = source_name;
                 self.vvals.replace(vvals);
-                self.get_serialport_modal_is_visible = false;
+                self.about_modal_is_visible = false;
                 true
             }
 
@@ -349,32 +233,6 @@ impl Component for BeeQueenApp {
                 self.source_name = source_name;
                 true
             }
-
-            Msg::SaveConfigUsb => {
-
-                log!(&self.selected_serial_port);
-
-                if !self.selected_serial_port.is_empty() {
-
-                    let cli_cmds = self.vvals.borrow().to_cfg_vec().clone();
-                    let port = self.selected_serial_port.clone();
-                    let args = to_value(&SaveConfigToUsbArgs{ cli_cmds, port }).unwrap();
-
-                    let save_config_usb_modal_toggle = ctx.link().callback(move |()| {
-                        Msg::SaveConfigUsbModalToggle
-                    });
-
-                    spawn_local(async move {
-                        invoke("save_config_to_usb_cmd", args).await; //.as_string().unwrap();
-                        save_config_usb_modal_toggle.emit(())
-                    });
-    
-                }
-
-                true
-            },
-
-
 
             Msg::Navbar(navbar_action) => {
                 if let Some(element) = self.phantom_node_ref.cast::<HtmlElement>() {
@@ -403,21 +261,9 @@ impl Component for BeeQueenApp {
                             Msg::SaveAs
                         }).emit(());
                     },
-                    
-                    NavbarAction::ExportToLWDLFile => {
+                    NavbarAction::AboutModalShow => {
                         ctx.link().callback(move |_: ()| {
-                            Msg::ExportAsLWDL
-                        }).emit(());
-                    },
-
-                    NavbarAction::GetFromDeviceUSB => {
-                        ctx.link().callback(move |_: ()| {
-                            Msg::GetSerialPortsForGetCfg
-                        }).emit(());
-                    },
-                    NavbarAction::SaveToDeviceUSB => {
-                        ctx.link().callback(move |_: ()| {
-                            Msg::GetSerialPortsForSaveCfg
+                            Msg::AboutModalToggle
                         }).emit(());
                     },
 
@@ -434,125 +280,66 @@ impl Component for BeeQueenApp {
     }
 
 
-    fn rendered(&mut self, ctx: &Context<Self>, first_render: bool) {
+    fn rendered(&mut self, _ctx: &Context<Self>, _first_render: bool) {
 
-        if first_render { 
+        // if first_render { 
 
-            let open_with = ctx.link().callback(move |_| {
-                Msg::OpenWith
-            });
-            open_with.emit(());
+        //     let open_with = ctx.link().callback(move |_| {
+        //         Msg::OpenWith
+        //     });
+        //     open_with.emit(());
 
-        }
+        // }
 
         // ************************************************************************
         // *** Initiating the Flowbite framework as an external Javascript Call 
         // ************************************************************************
 
         init_flowbite();
-
-        // if let Some(element) = self.phantom_node_ref.cast::<HtmlElement>() {
-        //     element.click();
-        // }
-
-
-        // *************************************
-        // *** Handling the "FileOpen" Event
-        // *************************************
-
-        let update_on_file_open = ctx.link().callback(move | args: (String, PrmVVals)| {
-            Msg::UpdateVVals(args)
-        });
- 
-        let file_open_closure = Closure::<dyn FnMut(JsValue)>::new(move |raw| {
-
-            let file_open_event: FileOpenEvent = serde_wasm_bindgen::from_value(raw).unwrap();
-
-            log!(format!("{}", &file_open_event.payload.0));
-            // log!(format!("{}", &file_open_event.payload.1));
-
-            let vvals = PrmVVals::from_cfg_str(&file_open_event.payload.1)
-            .unwrap();
-
-            // log!(format!("{:?}", &vvals));
-
-            update_on_file_open.emit((file_open_event.payload.0, vvals));
-
-        });
-
-        let unlisten_file_open = listen_("FileOpen", &file_open_closure);
-
-        self.file_open_listener = Some((
-            unlisten_file_open,
-            file_open_closure,
-        ));
-
-
-        // *************************************
-        // *** Handling the "SaveAs" Event
-        // *************************************
-
-
-        let update_on_save_as = ctx.link().callback(move | file_name: String | {
-            Msg::UpdateSourceName(file_name)
-        });
- 
-        let save_as_closure = Closure::<dyn FnMut(JsValue)>::new(move |raw| {
-            let save_as_event: SaveAsEvent = serde_wasm_bindgen::from_value(raw).unwrap();
-            log!(format!("{}", &save_as_event.payload));
-            update_on_save_as.emit(save_as_event.payload);
-        });
-
-        let unlisten_save_as = listen_("SaveAs", &save_as_closure);
-
-        self.save_as_listener = Some((
-            unlisten_save_as,
-            save_as_closure,
-        ));
-        
+       
     }
 
-    fn destroy(&mut self, _ctx: &Context<Self>) {
+    // fn destroy(&mut self, _ctx: &Context<Self>) {
 
-        if let Some(ref file_open_listener) = self.file_open_listener {
+    //     if let Some(ref file_open_listener) = self.file_open_listener {
         
-            let unlisten_file_open_promise = file_open_listener.0.clone();
+    //         let unlisten_file_open_promise = file_open_listener.0.clone();
         
-            spawn_local(async move {
+    //         spawn_local(async move {
 
-                let unlisten_file_open: Function = wasm_bindgen_futures::JsFuture::from(unlisten_file_open_promise)
-                .await
-                .unwrap()
-                .into();
+    //             let unlisten_file_open: Function = wasm_bindgen_futures::JsFuture::from(unlisten_file_open_promise)
+    //             .await
+    //             .unwrap()
+    //             .into();
 
-                unlisten_file_open.call0(&JsValue::undefined()).unwrap();
+    //             unlisten_file_open.call0(&JsValue::undefined()).unwrap();
 
-            });
+    //         });
 
-            self.file_open_listener = None;
+    //         self.file_open_listener = None;
 
-        }
+    //     }
 
-        if let Some(ref save_as_listener) = self.save_as_listener {
+    //     if let Some(ref save_as_listener) = self.save_as_listener {
         
-            let unlisten_save_as_promise = save_as_listener.0.clone();
+    //         let unlisten_save_as_promise = save_as_listener.0.clone();
         
-            spawn_local(async move {
+    //         spawn_local(async move {
 
-                let unlisten_save_as: Function = wasm_bindgen_futures::JsFuture::from(unlisten_save_as_promise)
-                .await
-                .unwrap()
-                .into();
+    //             let unlisten_save_as: Function = wasm_bindgen_futures::JsFuture::from(unlisten_save_as_promise)
+    //             .await
+    //             .unwrap()
+    //             .into();
 
-                unlisten_save_as.call0(&JsValue::undefined()).unwrap();
+    //             unlisten_save_as.call0(&JsValue::undefined()).unwrap();
 
-            });
+    //         });
 
-            self.save_as_listener = None;
+    //         self.save_as_listener = None;
 
-        }
+    //     }
 
-    }
+    // }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
 
@@ -784,70 +571,27 @@ impl Component for BeeQueenApp {
                 <main class="pt-14" ref={self.phantom_node_ref.clone()} >
 
                     <Modal
-                        title = "Get config from device"
-                        is_visible = { self.get_serialport_modal_is_visible }
+                        title = "About BeeQueen"
+                        is_visible = { self.about_modal_is_visible }
                         onclose = { ctx.link().callback(move |_| {
-                            Msg::GetConfigUsbModalToggle
+                            Msg::AboutModalToggle
                         }) } 
                     >
 
-                        <SelectUsbPort
-                            id = { "selected-usb-port" }
-                            label = { "Select the USB port connecting the device" }
-                            description = { "Select the USB port connecting the device" }
-                            select_options = { self.serial_ports.clone() }
-                            value = { self.selected_serial_port.clone() }
-                            handle_onchange = { ctx.link().callback(move |port: String| {
-                                Msg::SelectedUsbPortChanged(port)
-                            }) } 
-                        />
+                        { "BeeQueen AT2v2.6 - Abeeway Configuration Editor Tool for Asset Tracker v2 firmware v2.6" }
 
-                        <button
-                            class="mt-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                            onclick = { ctx.link().callback(move |_| {
-                                Msg::GetConfigUsb
-                            }) } 
-                        >
-                            { "Get Config from Device" }
-                        </button>
-
-                    </Modal>
-
-                    <Modal
-                        title = "Save config to device"
-                        is_visible = { self.save_serialport_modal_is_visible }
-                        onclose = { ctx.link().callback(move |_| {
-                            Msg::SaveConfigUsbModalToggle
-                        }) } 
-                    >
-
-                        <SelectUsbPort
-                            id = { "selected-usb-port" }
-                            label = { "Select the USB port connecting the device" }
-                            description = { "Select the USB port connecting the device" }
-                            select_options = { self.serial_ports.clone() }
-                            value = { self.selected_serial_port.clone() }
-                            handle_onchange = { ctx.link().callback(move |port: String| {
-                                Msg::SelectedUsbPortChanged(port)
-                            }) }
-                        />
-
-                        <button
-                            class="mt-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                            onclick = { ctx.link().callback(move |_| {
-                                Msg::SaveConfigUsb
-                            }) } 
-                        >
-                            { "Save Config to Device" }
-                        </button>
+                        // <button
+                        //     class="mt-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                        //     onclick = { ctx.link().callback(move |_| {
+                        //         Msg::SaveConfigUsb
+                        //     }) } 
+                        // >
+                        //     { "Save Config to Device" }
+                        // </button>
 
                     </Modal>
 
                     
-
-
-
-
 
                     // -- PARAMETER COOMPONENTS:
 
@@ -974,7 +718,7 @@ impl Component for BeeQueenApp {
                                         handle_onchange = { handle_onchange.clone() }
                                     />
 
-                                    // Angle Deteection Parameters
+                                    // Angle Detection Parameters
                                     <div class = {
                                         if is_angle_detection_on {
                                             "col-span-full grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6"
@@ -982,7 +726,7 @@ impl Component for BeeQueenApp {
                                         else {""}                                          
                                     }>
                                         <h7 class="col-span-full text-base font-bold dark:text-white">
-                                            {"Angle Deteection Parameters"}
+                                            {"Angle Detection Parameters"}
                                         </h7>
 
                                         <MySelect

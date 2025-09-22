@@ -3,24 +3,22 @@ name = "abeehive"
 version = "0.0.3"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
-yew = { version = "0.21", features = ["csr"] }
-yewdux = "0.10.0"
+anyhow = "1.0.86"
+
 wasm-bindgen = "0.2.92"
 wasm-bindgen-futures = "0.4"
+gloo = "0.11.0"
+yew = { version = "0.21", features = ["csr"] }
+yewdux = "0.11.0"
 web-sys = { version = "0.3.56", features = ["HtmlInputElement"] }
 js-sys = "0.3"
 serde = { version = "1", features = ["derive"] }
 serde-wasm-bindgen = "0.6"
-gloo = "0.11.0"
 regex = "1.10.4"
-toml = "0.8.12"
-anyhow = "1.0.86"
-base64 = "0.22.1"
+toml = "0.9.6"
 
-[workspace]
-members = ["src-tauri"]
+base64 = "0.22.1"
 
 [lib]
 name = "abeehive"

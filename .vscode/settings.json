@@ -1,6 +1,0 @@
-{
-  "emmet.includeLanguages": {
-    "rust": "html"
-  },
-  "css.customData": [".vscode/css_custom_data.json"]
-}
