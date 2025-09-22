@@ -1,15 +1,7 @@
-# Tauri + Yew
+# commands
 
-This template should help get you started developing with Tauri and Yew.
-
-## Recommended IDE Setup
-
-[VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer).
-
-cargo tauri icon
-npx tailwindcss -i ./src/input.css -o ./src/output.css --watch
-cargo tauri dev
-
-## abeehive
-
-The App
+```sh
+npx @tailwindcss/cli -i ./src/input.css -o ./src/output.css -w
+trunk build --release --public-url /beequeen/AT2v2.6/
+trunk serve
+```
