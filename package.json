@@ -1,5 +1,7 @@
 {
   "scripts": {
+    "dev": "trunk serve",
+    "build": "trunk build --release --public-url /beequeen/AT2v2.6/",
     "tw:build": "npx @tailwindcss/cli -i ./src/input.css -o ./src/output.css -w"
   },
   "devDependencies": {
