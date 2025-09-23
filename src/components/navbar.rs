@@ -1,4 +1,6 @@
 use yew::prelude::*;
+use web_sys::HtmlSelectElement;
+// use wasm_bindgen::JsCast;
 
 use crate::templates::CfgTemplate;
 
@@ -104,16 +106,33 @@ pub fn navbar(props: &Props) -> Html {
         })
     };
 
+
+
+    let selected_fw_version = use_state(|| "https://nano-things.net/beequeen/AT2v2.6/".to_string());
+
+    let on_selected_fw_version_change = {
+        let selected = selected_fw_version.clone();
+        Callback::from(move |e: Event| {
+            let select: HtmlSelectElement = e.target_unchecked_into();
+            let url = select.value();
+            selected.set(url.clone());
+
+            if !url.is_empty() {
+                // Navigate in the same tab
+                if let Some(win) = web_sys::window() {
+                    let _ = win.location().set_href(&url);
+                }
+            }
+        })
+    };
+
+
     html! {<>
 
         <nav class="bg-white dark:bg-gray-900 fixed w-full z-20 top-0 start-0 border-b border-gray-200 dark:border-gray-600">
             <div class="w-full flex flex-wrap items-center justify-start gap-2 mx-auto p-4">
 
-
-
-
-                // <a href="https://abeeway.com/" target="_blank" class="flex items-center space-x-3 rtl:space-x-reverse">
-                <a href="https://abeeway.com/" target="_blank">
+                <a href="https://docs.thingpark.com/thingpark-location/firmware/AT2_v2.6/introduction/" target="_blank">
                     <img 
                         src="assets/beequeen.png" 
                         class="logo mr-3 h-8 sm:h-12" 
@@ -121,17 +140,42 @@ pub fn navbar(props: &Props) -> Html {
                     />
                 </a>
 
-
                 <div class="flex items-end gap-3">
 
-                    <a 
-                        href="https://abeeway.com/" target="_blank" 
-                        // class = "hidden sm:block"
-                    >
+                    <a href="https://docs.thingpark.com/thingpark-location/firmware/AT2_v2.6/introduction/" target="_blank">
                         <span class="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
-                            {"BeeQueen - "}<i>{"for AT2 Fw v2.6"}</i>
+                            {"BeeQueen"}
                         </span>
                     </a>
+
+                    <span className="text-base font-normal whitespace-nowrap dark:text-white">
+                        {"- for"}
+                    </span>
+
+                    <select
+                        id="version-select"
+                        class="rounded border pl-2 pr-10  py-1 text-sm dark:bg-gray-800 dark:text-white"
+                        defaultValue="https://nano-things.net/beequeen/AT2v2.6/"
+                        value = { (*selected_fw_version).clone() }
+                        onchange = { on_selected_fw_version_change }
+                    >
+                        <option value="https://nano-things.net/beequeen/AT3v1.3/">
+                            {"AT3 Fw v1.3"}
+                        </option>
+                        <option value="https://nano-things.net/beequeen/AT3v1.2/">
+                            {"AT3 Fw v1.2"}
+                        </option>
+                        <option value="https://nano-things.net/beequeen/AT2v2.6/">
+                            {"AT2 Fw v2.6"}
+                        </option>
+                    </select>
+
+
+
+
+
+
+
 
                     <div class="self-center pt-1 pl-10 font-mono whitespace-nowrap dark:text-white" >
                         { props.source_name.clone() }
@@ -347,7 +391,7 @@ pub fn navbar(props: &Props) -> Html {
 
                         <li>
 
-                            <a href="https://nano-things.net/beehive/" target="_blank">
+                            <a href="https://nano-things.net/beehive/AT2v2.6" target="_blank">
                                 <img 
                                     src="assets/beehive.png" 
                                     class="logo inline-block h-6 pr-1 pb-1" 
