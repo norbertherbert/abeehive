@@ -159,11 +159,8 @@ pub fn navbar(props: &Props) -> Html {
                         value = { (*selected_fw_version).clone() }
                         onchange = { on_selected_fw_version_change }
                     >
-                        <option value="https://nano-things.net/beequeen/AT3v1.3/">
-                            {"AT3 Fw v1.3"}
-                        </option>
-                        <option value="https://nano-things.net/beequeen/AT3v1.2/">
-                            {"AT3 Fw v1.2"}
+                        <option value="https://nano-things.net/beequeen">
+                            {"AT3 Fw Latest"}
                         </option>
                         <option value="https://nano-things.net/beequeen/AT2v2.6/">
                             {"AT2 Fw v2.6"}
